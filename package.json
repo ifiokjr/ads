@@ -4,12 +4,38 @@
   "description": "integration of gdm script and veGenie onto VeInteractive sites",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha test"
+    "test": "./node_modules/.bin/testem"
   },
   "repository": {
     "type": "git",
     "url": "https://bitbucket.org/vetechteam/gdm"
   },
   "author": "Ifiok Jr.",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^1.8.3",
+    "browserify": "^8.0.3",
+    "chai": "^1.10.0",
+    "glob": "^4.3.2",
+    "gulp": "^3.8.10",
+    "gulp-filesize": "0.0.6",
+    "gulp-jshint": "^1.9.0",
+    "gulp-notify": "^2.1.0",
+    "gulp-testem": "0.0.1",
+    "gulp-uglify": "^1.0.2",
+    "gulp-util": "^3.0.1",
+    "jquery": "^1.11.2",
+    "jshint-stylish": "^1.0.0",
+    "lodash": "^2.4.1",
+    "lodash-cli": "^2.4.2",
+    "mocha": "^2.1.0",
+    "notify-send": "^0.1.2",
+    "pretty-hrtime": "^1.0.0",
+    "require-dir": "^0.1.0",
+    "sinon": "^1.12.2",
+    "sinon-chai": "^2.6.0",
+    "testem": "^0.6.24",
+    "vinyl-source-stream": "^1.0.0",
+    "watchify": "^2.2.1"
+  }
 }
