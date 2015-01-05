@@ -32,6 +32,6 @@ module.exports = {
   },
   production: {
     jsSrc: dest + '/*.js',
-    dest: dest
+    dest: dest + '/gdm.min.js'
   }
 };

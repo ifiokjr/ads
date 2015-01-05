@@ -1,11 +1,11 @@
-Implementations
+### Implementations
 
 - GDM general script [ ]
 - URL Matching [ ]
 - Checking For Dom Elements - Auto Refresh [ ] 
 - saving to Local Storage
 
-OPTIONAL
+#### OPTIONAL
 - Genie Extras - purchased items [ ]
 - Added Items
 - Run of site tracking
@@ -13,8 +13,16 @@ OPTIONAL
 ``` 
 var settings = {
     gdm: {
+        exclude: false, // can be an array of urls for pages to exclude gdm script from
+        
         flexId: '00000', // an alphanumeric string -- REQUIRED
+        
         completionId: '', // the genie completion id -- REQUIRED
+        
+        journeyCode: '', // Genie Journey Code -- REQUIRED
+        
+        segmentIds: [1,2], // Genie Segment ids
+        
         orderId: {
             selector: '#orderId', // A jQuery Selector for the order ID from the completion page -- REQUIRED (will default to timestamp if left blank)
             mask: 'number', // string from selection of [number, all, capitals]-- OPTIONAL
