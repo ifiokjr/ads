@@ -3,6 +3,7 @@
  * This module is what determine the settings
  * for each module used in the application.
  */
+
 var rawSettings = window.veTagData.settings.gdm;
 
 module.exports = {
@@ -17,5 +18,6 @@ module.exports = {
     orderId: rawSettings.orderId,
     orderValue: rawSettings.orderValue,
     completePage: rawSettings.completePage,
-  }
+  },
+  namespace: 'veapps.' + rawSettings.flexId + '.GDM.'
 };

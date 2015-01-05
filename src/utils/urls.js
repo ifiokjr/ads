@@ -3,8 +3,6 @@ var urlPattern = require('url-pattern'),
     $ = window.VEjQuery;
 
 
-
-
 var PAGE_URL = cleanUrl(window.location.hostname + window.location.pathname),
     PAGE_PARAMS = convertSearchToObject(window.location.search || '');
 log('PAGE_URL and PAGE_PARAMS have been set.')
@@ -56,6 +54,8 @@ function checkParamsMatch(params) {
   // for (key in pageParams)
   // TODO: Add support for splats [DONE]
   $.each(params, function(key, value) {
+    key = string(key);
+    value = String(value);
     var pattern = urlPattern.newPattern(value);
     if(!(pattern.match(PAGE_PARAMS[key]) || pattern.match(decodeURIComponent(PAGE_PARAMS[key])))) {
       match = false;

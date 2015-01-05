@@ -7,7 +7,7 @@ var gulp     = require('gulp');
 var config   = require('../config');
 var watchify = require('./browserify');
 
-gulp.task('watch', ['watchify'], function(callback) {
+gulp.task('watch', ['watchify', 'lint'], function(callback) {
   gulp.watch(config.markup.src, ['markup']);
   // Watchify will watch and recompile our JS, so no need to gulp.watch it
 });

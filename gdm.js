@@ -315,6 +315,7 @@ Utils = GDMObject.Utils;
         this.sessionTimeOutMinutes = 60;
         this.isSupported = supportStorage(this.method);
     }
+  
     Storage.prototype.store = function(object) {
         if(this.isSupported) {
             for(var key in object) {
