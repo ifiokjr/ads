@@ -8,8 +8,8 @@ var store = require('store'),
     checkElement = require('./utils/checkElements'),
     addPixel = require('./utils/addPixel'),
     $ = window.VEjQuery,
-    log = require('bows')('Genie Handler'),
-    logOV = require('bows')('Order Value');
+    log = require('./utils/log'),
+    logOV = require('./utils/log');
 
 
 var ORDERVALUE = 'orderValue';
@@ -47,14 +47,14 @@ var masks = {
 
 function createCompletePagePixel(config) {
   var src,
-      orderValue = getOrderValue(),
-      orderId = getOrderId(config.orderId),
+      orderValue = getOrderValue() || config.orderValue.default,
+      orderId = getOrderId(config.orderId) || (new Date()).getTime(),
       completionId = config.completionId;
   src = 'https://secure.adnxs.com/px?id=' + completionId + '&order_id=' +
     orderId + '&value=' + orderValue + '&t=2';
   
   addPixel(src);
-  log('Pixel Added to complete page')
+  log('Pixel Added to complete page');
 }
 
   
@@ -86,7 +86,10 @@ function completePage(config) {
 // OrderValue Page grab order Value and add to local storage
 
 function orderValuePage(config) {
-  $.each(config.completePage.urls, function(index, url) {
+  
+  var match = false,
+      page = config.orderValue.page;
+  $.each( page.urls, function(index, url) {
     if(urlCheck.test(url, config.completePage.params)) {
       match = true;
     }
@@ -113,7 +116,8 @@ module.exports = {
 
 function getOrderId (orderIdObject) {
   var $el = $(orderIdObject.selector);
-  return $el.text().replace(orderIdObject.regex, '') || $el.val().replace(orderIdObject.regex, '');
+  var val = $el.text().replace(orderIdObject.regex, '') || $el.val().replace(orderIdObject.regex, '');
+  return encodeURIComponent(val);
 }
 
 
@@ -122,7 +126,7 @@ function checkForOrderValueSelector(orderValueObject) {
   
   checkElement.check( orderValueObject.selector, function($el) {
     logOV('Order Value element found');
-    var val = $el.val().replace(orderIdObject.regex, '') ||
+    var val = $el.val().replace(orderValueObject.regex, '') ||
         $el.text().replace(orderValueObject.regex, '') ||
         String(orderValueObject.default);
     storeOrderValue(val);
@@ -138,5 +142,5 @@ function storeOrderValue(val) {
 
 function getOrderValue() {
   logOV('Obtaining Order Value');
-  store.get(namespace + ORDERVALUE);
+  return store.get(namespace + ORDERVALUE);
 }

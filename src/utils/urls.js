@@ -1,15 +1,16 @@
 var urlPattern = require('url-pattern'),
-    log = require('bows')('URL Tests'),
+    log = require('./log'),
     $ = window.VEjQuery;
 
 
 var PAGE_URL = cleanUrl(window.location.hostname + window.location.pathname),
     PAGE_PARAMS = convertSearchToObject(window.location.search || '');
-log('PAGE_URL and PAGE_PARAMS have been set.')
+log('PAGE_URL and PAGE_PARAMS have been set.');
 
 function convertSearchToObject(searchString) {
+  if (searchString === '' || searchString === '?') { return {}; }
   var queries, ii, searchObject, split;
-  queries = searchString.search.replace(/^\?/, '').split('&');
+  queries = searchString.replace(/^\?/, '').split('&');
   for(ii = 0; ii < queries.length; ii++) {
     split = queries[ii].split('=');
     searchObject[split[0]] = split[1];
@@ -60,7 +61,7 @@ function checkParamsMatch(params) {
     if(!(pattern.match(PAGE_PARAMS[key]) || pattern.match(decodeURIComponent(PAGE_PARAMS[key])))) {
       match = false;
     }
-  });
+  }); 
   log( 'Result of parameters matching is', match );
   return match;
 }

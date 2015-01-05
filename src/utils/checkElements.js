@@ -1,5 +1,5 @@
 // Check to see if element exists if not keep checking every second until it is found. 
-var log = require('bows')('Check Elements');
+var log = require('./log');
 var $ = VEjQuery;
 
 function interval(ms, maxRetries, fn) {
