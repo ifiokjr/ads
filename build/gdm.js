@@ -1,8 +1,11 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/index.js":[function(require,module,exports){
-var settings = require('./settings'), 
+// Load Polyfills
+require('./utils/polyfills');
+
+var settings = require('./settings'),
     gdmHandler = require('./gdmhandler'),
     genieHandler = require('./geniehandler');
-console.info('entering the application')
+console.info('entering the application');
 // Firstly lets run the gdm handler. 
 gdmHandler.start(settings.gdm);
 
@@ -10,7 +13,7 @@ gdmHandler.start(settings.gdm);
 // Now we run the Genie specific tags. 
 genieHandler.start(settings.genie);
 
-},{"./gdmhandler":"/home/codio/workspace/src/gdmhandler.js","./geniehandler":"/home/codio/workspace/src/geniehandler.js","./settings":"/home/codio/workspace/src/settings.js"}],"/home/codio/workspace/node_modules/store/store.js":[function(require,module,exports){
+},{"./gdmhandler":"/home/codio/workspace/src/gdmhandler.js","./geniehandler":"/home/codio/workspace/src/geniehandler.js","./settings":"/home/codio/workspace/src/settings.js","./utils/polyfills":"/home/codio/workspace/src/utils/polyfills.js"}],"/home/codio/workspace/node_modules/store/store.js":[function(require,module,exports){
 ;(function(win){
 	var store = {},
 		doc = win.document,
@@ -564,6 +567,86 @@ function log() {
 }
 
 module.exports = log
+},{}],"/home/codio/workspace/src/utils/polyfills.js":[function(require,module,exports){
+// Object.create
+// 
+if (typeof Object.create != 'function') {
+  Object.create = (function() {
+    var Temp = function() {};
+    return function (prototype) {
+      if (arguments.length > 1) {
+        throw Error('Second argument not supported');
+      }
+      if (typeof prototype != 'object') {
+        throw TypeError('Argument must be an object');
+      }
+      Temp.prototype = prototype;
+      var result = new Temp();
+      Temp.prototype = null;
+      return result;
+    };
+  })();
+}
+
+// forEach
+// Production steps of ECMA-262, Edition 5, 15.4.4.18
+// Reference: http://es5.github.io/#x15.4.4.18
+if (!Array.prototype.forEach) {
+
+  Array.prototype.forEach = function(callback, thisArg) {
+
+    var T, k;
+
+    if (this == null) {
+      throw new TypeError(' this is null or not defined');
+    }
+
+    // 1. Let O be the result of calling ToObject passing the |this| value as the argument.
+    var O = Object(this);
+
+    // 2. Let lenValue be the result of calling the Get internal method of O with the argument "length".
+    // 3. Let len be ToUint32(lenValue).
+    var len = O.length >>> 0;
+
+    // 4. If IsCallable(callback) is false, throw a TypeError exception.
+    // See: http://es5.github.com/#x9.11
+    if (typeof callback !== "function") {
+      throw new TypeError(callback + ' is not a function');
+    }
+
+    // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.
+    if (arguments.length > 1) {
+      T = thisArg;
+    }
+
+    // 6. Let k be 0
+    k = 0;
+
+    // 7. Repeat, while k < len
+    while (k < len) {
+
+      var kValue;
+
+      // a. Let Pk be ToString(k).
+      //   This is implicit for LHS operands of the in operator
+      // b. Let kPresent be the result of calling the HasProperty internal method of O with argument Pk.
+      //   This step can be combined with c
+      // c. If kPresent is true, then
+      if (k in O) {
+
+        // i. Let kValue be the result of calling the Get internal method of O with argument Pk.
+        kValue = O[k];
+
+        // ii. Call the Call internal method of callback with T as the this value and
+        // argument list containing kValue, k, and O.
+        callback.call(T, kValue, k, O);
+      }
+      // d. Increase k by 1.
+      k++;
+    }
+    // 8. return undefined
+  };
+}
 },{}],"/home/codio/workspace/src/utils/type.js":[function(require,module,exports){
 /**
  * toString ref.

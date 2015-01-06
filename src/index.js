@@ -1,7 +1,10 @@
-var settings = require('./settings'), 
+// Load Polyfills
+require('./utils/polyfills');
+
+var settings = require('./settings'),
     gdmHandler = require('./gdmhandler'),
     genieHandler = require('./geniehandler');
-console.info('entering the application')
+console.info('entering the application');
 // Firstly lets run the gdm handler. 
 gdmHandler.start(settings.gdm);
 
