@@ -18,6 +18,14 @@ if (typeof Object.create != 'function') {
   })();
 }
 
+Object.size = function(obj) {
+  var size = 0,
+    key;
+  for(key in obj) {
+    if(obj.hasOwnProperty(key)) size++;
+  }
+  return size;
+};
 // forEach
 // Production steps of ECMA-262, Edition 5, 15.4.4.18
 // Reference: http://es5.github.io/#x15.4.4.18

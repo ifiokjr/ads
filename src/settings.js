@@ -18,6 +18,9 @@ module.exports = {
     orderId: rawSettings.orderId,
     orderValue: rawSettings.orderValue,
     completePage: rawSettings.completePage,
+    ros: rawSettings.ros,
+    basketPages: rawSettings.basketPages,
+    productPages: rawSettings.productPages
   },
   namespace: 'veapps.' + rawSettings.flexId + '.GDM.'
 };

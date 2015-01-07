@@ -22644,24 +22644,41 @@ exports.install = function install(target, now, toFake) {
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],67:[function(require,module,exports){
 // Check if GDMHandler should be called. 
-
-var type = require( './utils/type' );
-
-
+var type = require('./utils/type'),
+  log = require('./utils/log');
 // A simple function for launching the GDM script
-function launchGDM() {
-  (function(a) { var d = document,c = d.createElement("script");c.async = !0, c.defer = !0, c.src = a, d.getElementsByTagName("head")[0].appendChild(c)})((iatDev = (window.location.href.indexOf("iatDev=1") > -1 || document.cookie.indexOf("iatDev=1") > -1), "//" + (window.location.protocol == "http:" && !iatDev ? "h" : "") + "fp.gdmdigital.com/" + flexId + ".js?r=" + Math.random() * 1e16 + '&m=992&a=' + flexId + (iatDev ? "&d=1" : "")));
-}
 
+function launchGDM(flexId) {
+  log('Launching GDM Script');
+  (function(a) {
+    var d = document,
+      c = d.createElement("script");
+    c.async = !0;
+    c.defer = !0;
+    c.src = a;
+    d.getElementsByTagName('head')[0].appendChild(c);
+  })((iatDev = (window.location.href.indexOf("iatDev=1") > -1 || document.cookie.indexOf("iatDev=1") > -1), "//" + (window.location.protocol === "http:" && !iatDev ? "h" : "") + "fp.gdmdigital.com/" + flexId + ".js?r=" + Math.random() * 1e16 + '&m=992&a=' + flexId + (iatDev ? "&d=1" : "")));
+}
 module.exports = {
   start: function(config) {
-    if ( !type(config, 'object') ) return;
-    if (config.exclude) return;
-    
+    if(!type(config, 'object')) {
+      return;
+    }
+    if(config.exclude) {
+      return;
+    }
     launchGDM(config.flexId);
   }
 };
-},{"./utils/type":68}],68:[function(require,module,exports){
+},{"./utils/log":68,"./utils/type":69}],68:[function(require,module,exports){
+function log() {
+  if(veTagData.settings.consoleMessagesEnabled) {
+    console.info(arguments);
+  }
+}
+
+module.exports = log
+},{}],69:[function(require,module,exports){
 /**
  * toString ref.
  */
@@ -22693,20 +22710,22 @@ module.exports = function(val, testType) {
   val = val.valueOf ? val.valueOf() : Object.prototype.valueOf.apply(val)
   return testType === typeof val;
 };
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 (function (global){
 global.chai = require('chai');
 global.should = require('chai').should();
 global.sinon = require('sinon');
 global.VEjQuery = require('jquery');
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"chai":9,"jquery":41,"sinon":42}],70:[function(require,module,exports){
+},{"chai":9,"jquery":41,"sinon":42}],71:[function(require,module,exports){
+(function (global){
 require('../config/setup.js');
 GDMHandler = require('../../src/gdmhandler.js');
-
+console.log(global);
 describe('GDM Handler', function() {
   it('should a callable function', function() {
     
-  })
+  });
 });
-},{"../../src/gdmhandler.js":67,"../config/setup.js":69}]},{},[70]);
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../../src/gdmhandler.js":67,"../config/setup.js":70}]},{},[71]);

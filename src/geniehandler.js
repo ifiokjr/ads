@@ -1,13 +1,15 @@
 /*
  * Set up all the tags and pixels for VeGenie to work properly. 
+ * 
  */
 
-var store = require('store'),
+var store = require('./utils/store'),
     namespace = require('./settings').namespace,
     urlCheck = require('./utils/urls'),
     checkElement = require('./utils/checkElements'),
     addPixel = require('./utils/addPixel'),
     $ = window.VEjQuery,
+    pixelSrc = require('./utils/pixelSrc'),
     log = require('./utils/log'),
     logOV = require('./utils/log');
 
@@ -15,21 +17,7 @@ var store = require('store'),
 var ORDERVALUE = 'orderValue';
 
 // Criteria for the dynamic identifiers of which page is a complete page.
-var criteria = {
-  
-  contains: function($el, value) {
-    return $el.text().indexOf(String(value)) !== -1;
-  },
-  
-  equal: function($el, value) {
-    return $el.text() === String(value);
-  },
-  
-  not: function($el, value) {
-    return $el.text().indexOf(String(value)) === -1;
-  }
-  
-};
+var criteria = require('./utils/criteria');
 
 var masks = {
   
@@ -44,43 +32,84 @@ var masks = {
 };
 
 
+// PIXELS
 
 function createCompletePagePixel(config) {
-  var src,
+  var nexusSrc, genieSrc,
       orderValue = getOrderValue() || config.orderValue.default,
       orderId = getOrderId(config.orderId) || (new Date()).getTime(),
-      completionId = config.completionId;
-  src = 'https://secure.adnxs.com/px?id=' + completionId + '&order_id=' +
+      completionId = config.completionId,
+      items, // retrieve itemString generated on the cart page
+      journeyCode = config.journeyCode;
+  
+  nexusSrc = 'https://secure.adnxs.com/px?id=' + completionId + '&order_id=' +
     orderId + '&value=' + orderValue + '&t=2';
   
-  addPixel(src);
-  log('Pixel Added to complete page');
+  addPixel(nexusSrc);
+  log('AppNexus Pixel Added to complete page');
+  
+  if (journeyCode && journeyCode.length) {
+    
+    var params = {
+      companyId: journeyCode,
+      items: items,
+      orderId: orderId
+    };
+    
+    genieSrc = pixelSrc.adgenie(params, true) ;
+    addPixel(genieSrc);
+  }
 }
 
+
+// Add the ROS to the site when not on completion or product page. 
+function createROSPixel (config) {
   
+  src = pixelSrc.ros(config.segmentIds);
+  
+  addPixel(src);
+    
+  log('ROS Pixel added to the site.');
+}
+
+// Still to be implemented
+function buildProductPagePixel (config) {
+  
+}
+
+
+// Utility function for checking the current page. 
+function checkCurrentPage (urls, params) {
+  var match = false;
+  $.each(urls, function(index, url) {
+    if(urlCheck.test(url, params)) {
+      match = true;
+    }
+  });
+  return match;
+}
+
 function completePage(config) {
   var match = false,
       dynamicId = config.completePage.dynamicIdentifier;
   
   // dynamically check for checkout page
   if (dynamicId.selector.length) {
-    checkElement.check(selector, function($el) {
+    checkElement.checkUpdates(selector, function($el, newVal) {
       if (dynamicId.criteria.length && dynamicId.value.length &&
           criteria[dynamicId.criteria]($el, dynamicId.value)) {
         createCompletePagePixel(config);
+        return true;
       }
     });
   }
   
-  $.each(config.completePage.urls, function(index, url) {
-    if(urlCheck.test(url, config.completePage.params)) {
-      match = true;
-    }
-  });
+  match = checkCurrentPage(config.completePage.urls, config.completePage.params);
   
   if ( match ) { // we are on a complete page
     createCompletePagePixel(config);
   }
+  return match;
 }
 
 // OrderValue Page grab order Value and add to local storage
@@ -89,46 +118,111 @@ function orderValuePage(config) {
   
   var match = false,
       page = config.orderValue.page;
-  $.each( page.urls, function(index, url) {
-    if(urlCheck.test(url, config.completePage.params)) {
-      match = true;
-    }
-  });
+  
+  match = checkCurrentPage(page.urls, page.params);
   
   if( match ) {
-    logOV('We are on the Order Value Page');
+    logOV('We are on an Order Value Page');
     checkForOrderValueSelector(config.orderValue);
   }
+  return match;
+}
+
+
+function rosPages(config) {
+  if (!config.ros) {return false;}
+  createROSPixel(config);
+  
+}
+
+
+function basketPages(config) {
+  var match = false,
+      page = config.basketPages.page;
+  
+  match = checkCurrentPage(page.urls, page.params);
+  
+  if( match ) {
+    logOV('We are on a Basket Page');
+    createBasketInformation(config.basketPages);
+  }
+  return match;
+}
+
+
+function productPages(config) {
+  var match = false,
+      page = config.productPages.page;
+  
+  match = checkCurrentPage( page.urls, page.params );
+  
+  if( match ) {
+    logOV('We are on a Product Page');
+    buildProductPagePixel( config.productPages );
+  }
+  
+  return match;
 }
 
 
 module.exports = {
   start: function(config) {
-    
-    // Are we on the complete page?
-    completePage(config);
+    var complete, orderVal, basket, product;
     
     // Are we on the order value page?
-    orderValuePage(config);
+    orderVal = orderValuePage(config);
+    
+    // Are we on the complete page?
+    complete = completePage(config);
+    
+    // basket = basketPages(config);
+    
+    // product = productPages(config);
+    
+    if ( !complete && !basket && !product ) { rosPages(config); }
   }
 };
 
 
-function getOrderId (orderIdObject) {
-  var $el = $(orderIdObject.selector);
-  var val = $el.text().replace(orderIdObject.regex, '') || $el.val().replace(orderIdObject.regex, '');
+
+function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
+  regex = regex || new RegExp('', 'g');
+  return ($el.text() && $el.text().replace(regex, '')) ||
+      ($el.val() && $el.val().replace(regex, '')) ||
+      String( fallback || lastResort );
+}
+
+
+/*
+ * Find the orderId from the page if this is the relevant page.
+ */
+function getOrderId (orderIdObject, fallback) {
+  var $el = $(orderIdObject.selector),
+      timestamp = (new Date()).getTime();
+  
+  if (!$el.length) { return orderIdObject.default || timestamp; }
+  
+  var val = regexReplacementFromElement( $el, orderIdObject.regex, orderIdObject.default, timestamp);
+     
   return encodeURIComponent(val);
 }
 
 
+// TODO: Still to be implemented
+function createBasketInformation(config) {
+  
+}
+
+/*
+ * Find the OrderValue from the page when this is the relevant page.
+ */
 function checkForOrderValueSelector(orderValueObject) {
   logOV('Checking For Order Value');
   
   checkElement.check( orderValueObject.selector, function($el) {
     logOV('Order Value element found');
-    var val = $el.val().replace(orderValueObject.regex, '') ||
-        $el.text().replace(orderValueObject.regex, '') ||
-        String(orderValueObject.default);
+    var val = regexReplacementFromElement( $el, orderValueObject.regex, orderValueObject.default );
+    
     storeOrderValue(val);
   });
 }
@@ -138,6 +232,7 @@ function storeOrderValue(val) {
   logOV('Storing Order Value');
   store.set(namespace+ORDERVALUE, val);
 }
+
 
 
 function getOrderValue() {

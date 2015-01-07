@@ -3,17 +3,17 @@
   "serve_files": ["./tests/compiledTests.js"],
   "src_files": [
     "./src/**.js", 
-    "./tests/unit/**.test.js",
+    "./tests/unit/*.test.js",
     "./tests/setup.js"
   ],
   "launchers": {
     "Node": {
-      "command": "./node_modules/.bin/mocha -r ./tests/compiledTests.js -R tap ./tests/unit/**.test.js",
+      "command": "./node_modules/.bin/mocha ./tests/unit/*.js -R tap",
       "protocol": "tap"
     }
   },
   "before_tests": "./node_modules/.bin/browserify ./tests/unit/*.js -o ./tests/compiledTests.js",
   "on_exit": "rm ./tests/compiledTests.js",
-  "launch_in_dev": ["chrome", "node"], 
+  "launch_in_dev": ["node"], 
   "host": "0.0.0.0"
 }

@@ -10,10 +10,12 @@
 - Added Items
 - Run of site tracking
 
-``` 
+```
 var settings = {
     gdm: {
         exclude: false, // can be an array of urls for pages to exclude gdm script from
+        
+        ros: true, 
         
         flexId: '00000', // an alphanumeric string -- REQUIRED
         
@@ -23,11 +25,36 @@ var settings = {
         
         segmentIds: [1,2], // Genie Segment ids
         
+        
+        
         orderId: {
             selector: '#orderId', // A jQuery Selector for the order ID from the completion page -- REQUIRED (will default to timestamp if left blank)
             mask: 'number', // string from selection of [number, all, capitals]-- OPTIONAL
             regex: /[0-9]/,
         },
+        
+        productPages: {
+            selector: '#product-id', // A jQuery Selector for the productPage ID from the product pages
+            default: '0', // The value to use when nothing found -- OPTIONAL
+            page: { // the page where this can be stored from (if left blank defaults to completion page) -- OPTIONAL
+                params: {},
+                urls: ['www.awesome.com/products/*']
+            },
+            regex: /[0-9]+\.[0-9]+/g
+        }, 
+        
+        basketPages: {
+            selectors: {
+                productId: 'td>tr', 
+                productPrice: 'td>tr:first',
+            }
+            page: { // the page where this can be stored from (if left blank defaults to completion page) -- OPTIONAL
+                params: {},
+                urls: ['www.awesome.com/cart']
+            },
+            regex: /[0-9]/g
+        }
+        
         orderValue: {
             selector: '#orderValue', // A jQuery Selector for the order ID from the completion or checkout pages (uses localstorage). -- REQUIRED
             default: '0', // The value to use when nothing found -- OPTIONAL
@@ -40,6 +67,7 @@ var settings = {
             },
             regex: /[0-9]+\.[0-9]+/
         },
+                
         completePage: {
             urls: ['www.awesome.com/completed-yo/*'], // the actual page that will have the image tag implemented on it -- REQUIRED
             params: { // -- OPTIONAL

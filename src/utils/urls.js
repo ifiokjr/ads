@@ -9,7 +9,7 @@ log('PAGE_URL and PAGE_PARAMS have been set.');
 
 function convertSearchToObject(searchString) {
   if (searchString === '' || searchString === '?') { return {}; }
-  var queries, ii, searchObject, split;
+  var queries, ii, searchObject = {}, split;
   queries = searchString.replace(/^\?/, '').split('&');
   for(ii = 0; ii < queries.length; ii++) {
     split = queries[ii].split('=');
