@@ -8,8 +8,8 @@ var SECURE = (window.location.protocol || 'https:') === 'https:' ? true : false,
 
 
 module.exports = {
-  ros: function(segmentIds) {
-    if(SECURE) {
+  ros: function(segmentIds, secure) {
+    if(secure) {
       return '//secure.adnxs.com/seg?add=' + segmentIds[0] + ',' + segmentIds[1] + '&t=2';
     } else {
       return '//ib.adnxs.com/seg?add=' + segmentIds[0] + ',' + segmentIds[1] + '&t=2';
@@ -34,7 +34,6 @@ module.exports = {
       startString = startString + key + '=' + val +
         (paramNum >= Object.size(params) ? '' : '&');
       
-      log('Start String is now ' + startString + ' called this many times: ' + paramNum);
     });
     
     return startString;

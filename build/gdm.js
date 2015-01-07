@@ -341,6 +341,7 @@ var store = require('./utils/store'),
     $ = window.VEjQuery,
     pixelSrc = require('./utils/pixelSrc'),
     log = require('./utils/log'),
+    type = require('./utils/type'),
     logOV = require('./utils/log');
 
 
@@ -370,9 +371,12 @@ function createCompletePagePixel(config) {
       orderId = getOrderId(config.orderId) || (new Date()).getTime(),
       completionId = config.completionId,
       items, // retrieve itemString generated on the cart page
-      journeyCode = config.journeyCode;
+      journeyCode = config.journeyCode, segmentIds = '';
   
-  nexusSrc = 'https://secure.adnxs.com/px?id=' + completionId + '&order_id=' +
+  if (type(config.segmentIds, 'array')) {
+    segmentIds = '&remove=' + config.segmentIds[0] + ',' + config.segmentIds[1];
+  }
+  nexusSrc = '//secure.adnxs.com/px?id=' + completionId + segmentIds + '&order_id=' +
     orderId + '&value=' + orderValue + '&t=2';
   
   addPixel(nexusSrc);
@@ -382,7 +386,7 @@ function createCompletePagePixel(config) {
     
     var params = {
       companyId: journeyCode,
-      items: items,
+      items: (items || 'BASKETVAL') + ':' + orderValue,
       orderId: orderId
     };
     
@@ -394,10 +398,13 @@ function createCompletePagePixel(config) {
 
 // Add the ROS to the site when not on completion or product page. 
 function createROSPixel (config) {
+  var srcIb, srcSecure;
   
-  src = pixelSrc.ros(config.segmentIds);
+  srcIb = pixelSrc.ros(config.segmentIds);
+  srcSecure = pixelSrc.ros(config.segmentIds, true);
   
-  addPixel(src);
+  addPixel(srcIb);
+  addPixel(srcSecure);
     
   log('ROS Pixel added to the site.');
 }
@@ -569,7 +576,7 @@ function getOrderValue() {
   logOV('Obtaining Order Value');
   return store.get(namespace + ORDERVALUE);
 }
-},{"./settings":6,"./utils/addPixel":7,"./utils/checkElements":8,"./utils/criteria":9,"./utils/log":10,"./utils/pixelSrc":11,"./utils/store":13,"./utils/urls":15}],6:[function(require,module,exports){
+},{"./settings":6,"./utils/addPixel":7,"./utils/checkElements":8,"./utils/criteria":9,"./utils/log":10,"./utils/pixelSrc":11,"./utils/store":13,"./utils/type":14,"./utils/urls":15}],6:[function(require,module,exports){
 /*
  *
  * This module is what determine the settings
@@ -708,14 +715,16 @@ var criteria = {
 
 module.exports = criteria;
 },{}],10:[function(require,module,exports){
+var type = require('./type');
+
 function log() {
-  if(veTagData.settings.consoleMessagesEnabled) {
-    console.info(arguments);
+  if(veTagData.settings.consoleMessagesEnabled && !type(console, 'undefined')) {
+    console.info.apply(console, arguments);
   }
 }
 
-module.exports = log
-},{}],11:[function(require,module,exports){
+module.exports = log;
+},{"./type":14}],11:[function(require,module,exports){
 /**
  * This is a file for automatically generating the relevant pixels for our code.
  */
@@ -726,8 +735,8 @@ var SECURE = (window.location.protocol || 'https:') === 'https:' ? true : false,
 
 
 module.exports = {
-  ros: function(segmentIds) {
-    if(SECURE) {
+  ros: function(segmentIds, secure) {
+    if(secure) {
       return '//secure.adnxs.com/seg?add=' + segmentIds[0] + ',' + segmentIds[1] + '&t=2';
     } else {
       return '//ib.adnxs.com/seg?add=' + segmentIds[0] + ',' + segmentIds[1] + '&t=2';
@@ -752,7 +761,6 @@ module.exports = {
       startString = startString + key + '=' + val +
         (paramNum >= Object.size(params) ? '' : '&');
       
-      log('Start String is now ' + startString + ' called this many times: ' + paramNum);
     });
     
     return startString;

@@ -11,6 +11,7 @@ var store = require('./utils/store'),
     $ = window.VEjQuery,
     pixelSrc = require('./utils/pixelSrc'),
     log = require('./utils/log'),
+    type = require('./utils/type'),
     logOV = require('./utils/log');
 
 
@@ -40,9 +41,12 @@ function createCompletePagePixel(config) {
       orderId = getOrderId(config.orderId) || (new Date()).getTime(),
       completionId = config.completionId,
       items, // retrieve itemString generated on the cart page
-      journeyCode = config.journeyCode;
+      journeyCode = config.journeyCode, segmentIds = '';
   
-  nexusSrc = 'https://secure.adnxs.com/px?id=' + completionId + '&order_id=' +
+  if (type(config.segmentIds, 'array')) {
+    segmentIds = '&remove=' + config.segmentIds[0] + ',' + config.segmentIds[1];
+  }
+  nexusSrc = '//secure.adnxs.com/px?id=' + completionId + segmentIds + '&order_id=' +
     orderId + '&value=' + orderValue + '&t=2';
   
   addPixel(nexusSrc);
@@ -52,7 +56,7 @@ function createCompletePagePixel(config) {
     
     var params = {
       companyId: journeyCode,
-      items: items,
+      items: (items || 'BASKETVAL') + ':' + orderValue,
       orderId: orderId
     };
     
@@ -64,10 +68,13 @@ function createCompletePagePixel(config) {
 
 // Add the ROS to the site when not on completion or product page. 
 function createROSPixel (config) {
+  var srcIb, srcSecure;
   
-  src = pixelSrc.ros(config.segmentIds);
+  srcIb = pixelSrc.ros(config.segmentIds);
+  srcSecure = pixelSrc.ros(config.segmentIds, true);
   
-  addPixel(src);
+  addPixel(srcIb);
+  addPixel(srcSecure);
     
   log('ROS Pixel added to the site.');
 }
