@@ -22671,14 +22671,23 @@ module.exports = {
   }
 };
 },{"./utils/log":68,"./utils/type":69}],68:[function(require,module,exports){
+var type = require('./type');
+
 function log() {
-  if(veTagData.settings.consoleMessagesEnabled) {
-    console.info(arguments);
+  if(veTagData.settings.consoleMessagesEnabled && !type(console, 'undefined')) {
+    console.info.apply(console, arguments);
   }
 }
 
-module.exports = log
-},{}],69:[function(require,module,exports){
+function safe() {
+  if(veTagData.settings.consoleMessagesEnabled && !type(console, 'undefined')) {
+    console.log.apply(console, arguments);
+  }
+}
+
+module.exports = log;
+module.exports.safe = safe;
+},{"./type":69}],69:[function(require,module,exports){
 /**
  * toString ref.
  */

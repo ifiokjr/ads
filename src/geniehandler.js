@@ -37,7 +37,7 @@ var masks = {
 
 function createCompletePagePixel(config) {
   var nexusSrc, genieSrc,
-      orderValue = getOrderValue() || config.orderValue.default,
+      orderValue = getOrderValue() || config.orderValue['default'],
       orderId = getOrderId(config.orderId) || (new Date()).getTime(),
       completionId = config.completionId,
       items, // retrieve itemString generated on the cart page
@@ -207,9 +207,9 @@ function getOrderId (orderIdObject, fallback) {
   var $el = $(orderIdObject.selector),
       timestamp = (new Date()).getTime();
   
-  if (!$el.length) { return orderIdObject.default || timestamp; }
+  if (!$el.length) { return orderIdObject['default'] || timestamp; }
   
-  var val = regexReplacementFromElement( $el, orderIdObject.regex, orderIdObject.default, timestamp);
+  var val = regexReplacementFromElement( $el, orderIdObject.regex, orderIdObject, timestamp);
      
   return encodeURIComponent(val);
 }
@@ -228,7 +228,7 @@ function checkForOrderValueSelector(orderValueObject) {
   
   checkElement.check( orderValueObject.selector, function($el) {
     logOV('Order Value element found');
-    var val = regexReplacementFromElement( $el, orderValueObject.regex, orderValueObject.default );
+    var val = regexReplacementFromElement( $el, orderValueObject.regex, orderValueObject );
     
     storeOrderValue(val);
   });

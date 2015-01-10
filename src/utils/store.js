@@ -6,7 +6,7 @@
  * 
  * This file checks which methods to use for local storage. 
  */
-var store = require('store'),
+var store, storage,
     type = require('./type'),
     noop = function() {},
     noStorage, simpleStorage,
@@ -40,7 +40,7 @@ simpleStorage = {
   SUPPORT: 'simple'
 };
 
-var STORAGE_SUPPORTED = supportStorage(method);
+var STORAGE_SUPPORTED; // = supportStorage(method);
 
 function supportStorage(method) {
   var test = 'testStorage';
@@ -53,12 +53,14 @@ function supportStorage(method) {
   }
 }
 
-if ( !STORAGE_SUPPORTED ) {
-  storage = noStorage;
-} else if (!type(JSON.parse, 'function') || !type(JSON.stringify, 'function')) {
-  storage = simpleStorage;
+
+
+if(type(JSON.parse, 'function') && type(JSON.stringify, 'function')) {
+  store = require('store');
+  storage = store.enabled ? store : noStorage;
 } else {
-  storage = store;
+  storage = (STORAGE_SUPPORTED || (STORAGE_SUPPORTED = supportStorage(method))) ? simpleStorage : noStorage;
 }
+
 
 module.exports = storage;
