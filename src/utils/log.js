@@ -1,14 +1,18 @@
+/*
+ * Deprecated for debug
+ */
+
 var type = require('./type');
 
-function log() {
+function log(message, obj1, obj2) {
   if(veTagData.settings.consoleMessagesEnabled && !type(console, 'undefined')) {
-    console.info.apply(console, arguments);
+    console.info(message, (obj1 || ''), (obj2 || ''));
   }
 }
 
-function safe() {
+function safe(message, obj1, obj2) {
   if(veTagData.settings.consoleMessagesEnabled && !type(console, 'undefined')) {
-    console.log.apply(console, arguments);
+    console.log(message, (obj1 || ''), (obj2 || ''));
   }
 }
 
