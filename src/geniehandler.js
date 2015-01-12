@@ -10,9 +10,9 @@ var store = require('./utils/store'),
     addPixel = require('./utils/addPixel'),
     $ = window.VEjQuery,
     pixelSrc = require('./utils/pixelSrc'),
-    log = require('./utils/log'),
+    log = require('debug')('Genie Conversion Pixel'),
     type = require('./utils/type'),
-    logOV = require('./utils/log');
+    logOV = require('debug')('Genie Order Value');
 
 
 var ORDERVALUE = 'orderValue';

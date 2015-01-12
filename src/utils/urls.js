@@ -1,5 +1,5 @@
 var urlPattern = require('url-pattern'),
-    log = require('./log'),
+    log = require('debug')('URLs'),
     $ = window.VEjQuery;
 
 
@@ -21,11 +21,11 @@ function convertSearchToObject(searchString) {
 
 function cleanUrl(dirtyURL) {
   try {
-    var url = new String(dirtyURL).toLowerCase();
-    url = url.replace("http://", "");
-    url = url.replace("https://", "");
-    url = url.replace("#", "?");
-    url = url.replace(";", "?");
+    var url = (dirtyURL + '').toLowerCase();
+    url = url.replace('http://', '');
+    url = url.replace('https://', '');
+    url = url.replace('#', '?');
+    url = url.replace(';', '?');
     if( url.substr(0, 4) === 'www.' ) {
       url = url.replace('www.', '');
     }
@@ -41,8 +41,9 @@ function checkURLMatches(testPattern) {
     testPattern = testPattern.replace('www.', '');
   }
   var pattern = urlPattern.newPattern(testPattern);
-  return !!pattern.match(PAGE_URL);
-  log( 'Result of URLs matching is', match);
+  var match = !!pattern.match(PAGE_URL);
+  log( 'Result of URLs matching ' + testPattern + ' is', match );
+  return match;
 }
 
 
@@ -61,7 +62,7 @@ function checkParamsMatch(params) {
     if(!(pattern.match(PAGE_PARAMS[key]) || pattern.match(decodeURIComponent(PAGE_PARAMS[key])))) {
       match = false;
     }
-  }); 
+  });
   log( 'Result of parameters matching is', match );
   return match;
 }

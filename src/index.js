@@ -1,12 +1,12 @@
 // Load Polyfills
-// 
+var log = require('debug')('General');
 try {
   require('./utils/polyfills');
 
   var settings = require('./settings'),
       gdmHandler = require('./gdmhandler'),
       genieHandler = require('./geniehandler');
-  console.info('entering the application');
+  log('Entering the application');
   // Firstly lets run the gdm handler. 
   gdmHandler.start(settings.gdm);
 

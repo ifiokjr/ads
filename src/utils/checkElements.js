@@ -1,5 +1,5 @@
 // Check to see if element exists if not keep checking every second until it is found. 
-var log = require('./log'),
+var log = require('debug')('Checking Elements'),
     type = require('./type'),
     $ = VEjQuery;
 

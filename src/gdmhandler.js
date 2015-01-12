@@ -1,6 +1,6 @@
 // Check if GDMHandler should be called. 
 var type = require('./utils/type'),
-  log = require('./utils/log');
+  log = require('debug')('GDM Handler');
 // A simple function for launching the GDM script
 
 function launchGDM(flexId) {
