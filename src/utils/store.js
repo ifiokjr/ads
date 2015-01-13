@@ -55,7 +55,7 @@ function supportStorage(method) {
 
 
 
-if(type(JSON.parse, 'function') && type(JSON.stringify, 'function')) {
+if(JSON && type(JSON.parse, 'function') && type(JSON.stringify, 'function')) {
   store = require('store');
   storage = store.enabled ? store : noStorage;
 } else {
