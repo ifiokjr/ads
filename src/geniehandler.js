@@ -12,7 +12,9 @@ var store = require('./utils/store'),
     pixelSrc = require('./utils/pixelSrc'),
     log = require('debug')('Genie Conversion Pixel'),
     type = require('./utils/type'),
-    logOV = require('debug')('Genie Order Value');
+    logOV = require('debug')('Genie Order Value'),
+    logROS = require('debug')('Genie ROS Tag'),
+    logPP = require('debug')('Product Page');
 
 
 var ORDERVALUE = 'orderValue';
@@ -38,7 +40,7 @@ var masks = {
 function createCompletePagePixel(config) {
   var nexusSrc, genieSrc,
       orderValue = getOrderValue() || config.orderValue['default'],
-      orderId = getOrderId(config.orderId) || (new Date()).getTime(),
+      orderId = getVal(config.orderId) || (new Date()).getTime(),
       completionId = config.completionId,
       items, // retrieve itemString generated on the cart page
       journeyCode = config.journeyCode, segmentIds = '';
@@ -76,12 +78,32 @@ function createROSPixel (config) {
   addPixel(srcIb);
   addPixel(srcSecure);
     
-  log('ROS Pixel added to the site.');
+  logROS('ROS Pixel added to the site.');
 }
 
 // Still to be implemented
+
 function buildProductPagePixel (config) {
+  var srcIb, srcSecure, genieSrc,
+      productId = getVal(config.productPages),
+      journeyCode = config.journeyCode;
   
+  srcIb = pixelSrc.ros(config. segmentIds);
+  srcSecure = pixelSrc.ros(config.segmentIds, true);
+  
+  addPixel(srcIb);
+  addPixel(srcSecure);
+  
+  var params = {
+      adgCompanyID: journeyCode,
+      adgItem: productId
+    };
+  
+  
+  genieSrc = pixelSrc.adgenie(params, false) ;
+  logPP('Genie Src is', genieSrc);
+  addPixel(genieSrc);
+  logPP('Product Page Pixel added to the site.');
 }
 
 
@@ -111,7 +133,7 @@ function completePage(config) {
     });
   }
   
-  match = checkCurrentPage(config.completePage.urls, config.completePage.params);
+  match = checkCurrentPage(config.completePage.page.urls, config.completePage.page.params);
   
   if ( match ) { // we are on a complete page
     createCompletePagePixel(config);
@@ -138,6 +160,7 @@ function orderValuePage(config) {
 
 function rosPages(config) {
   if (!config.ros) {return false;}
+  logROS('Page qualifies for ROS');
   createROSPixel(config);
   
 }
@@ -164,8 +187,8 @@ function productPages(config) {
   match = checkCurrentPage( page.urls, page.params );
   
   if( match ) {
-    logOV('We are on a Product Page');
-    buildProductPagePixel( config.productPages );
+    log('We are on a Product Page');
+    buildProductPagePixel( config );
   }
   
   return match;
@@ -184,7 +207,7 @@ module.exports = {
     
     // basket = basketPages(config);
     
-    // product = productPages(config);
+    product = productPages(config);
     
     if ( !complete && !basket && !product ) { rosPages(config); }
   }
@@ -193,7 +216,7 @@ module.exports = {
 
 
 function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
-  regex = regex || new RegExp('', 'g');
+  regex = type(regex, 'regexp') ? regex : new RegExp('', 'g');
   return ($el.text() && $el.text().replace(regex, '')) ||
       ($el.val() && $el.val().replace(regex, '')) ||
       String( fallback || lastResort );
@@ -201,15 +224,15 @@ function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
 
 
 /*
- * Find the orderId from the page if this is the relevant page.
+ * Obtain the falue from the current page if this is the relevant page.
  */
-function getOrderId (orderIdObject, fallback) {
-  var $el = $(orderIdObject.selector),
+function getVal (obj, fallback) {
+  var $el = $(obj.selector),
       timestamp = (new Date()).getTime();
   
-  if (!$el.length) { return orderIdObject['default'] || timestamp; }
+  if (!$el.length) { return obj['default'] || timestamp; }
   
-  var val = regexReplacementFromElement( $el, orderIdObject.regex, orderIdObject, timestamp);
+  var val = regexReplacementFromElement( $el, obj.regex, obj, timestamp);
      
   return encodeURIComponent(val);
 }
@@ -241,8 +264,10 @@ function storeOrderValue(val) {
 }
 
 
+// If order value should be called from the complete page - then run this instead. 
+function orderValueOnCompletePage(orderValueObject) {}
 
-function getOrderValue() {
+function getOrderValue(orderValueObject) {
   logOV('Obtaining Order Value');
   return store.get(namespace + ORDERVALUE);
 }
