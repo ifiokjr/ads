@@ -817,7 +817,8 @@ var store = require('./utils/store'),
     pixelSrc = require('./utils/pixelSrc'),
     log = require('debug')('Genie Conversion Pixel'),
     type = require('./utils/type'),
-    logOV = require('debug')('Genie Order Value');
+    logOV = require('debug')('Genie Order Value'),
+    logROS = require('debug')('Genie ROS Tag'),
     logPP = require('debug')('Product Page');
 
 
@@ -882,7 +883,7 @@ function createROSPixel (config) {
   addPixel(srcIb);
   addPixel(srcSecure);
     
-  log('ROS Pixel added to the site.');
+  logROS('ROS Pixel added to the site.');
 }
 
 // Still to be implemented
@@ -964,6 +965,7 @@ function orderValuePage(config) {
 
 function rosPages(config) {
   if (!config.ros) {return false;}
+  logROS('Page qualifies for ROS');
   createROSPixel(config);
   
 }
@@ -1460,7 +1462,7 @@ function supportStorage(method) {
 
 
 
-if(type(JSON.parse, 'function') && type(JSON.stringify, 'function')) {
+if(window.JSON && type(window.JSON.parse, 'function') && type(window.JSON.stringify, 'function')) {
   store = require('store');
   storage = store.enabled ? store : noStorage;
 } else {
