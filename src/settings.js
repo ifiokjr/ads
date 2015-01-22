@@ -9,9 +9,11 @@ var rawSettings = window.veTagData.settings.gdm;
 module.exports = {
   gdm: {
     exclude: rawSettings.exclude,
-    flexId: rawSettings.flexId
+    flexId: rawSettings.flexId,
+    gdmConversionCode: rawSettings.completionId
   },
   genie: {
+    gdmConversionCode: rawSettings.gdmConversionCode,
     completionId: rawSettings.completionId,
     journeyCode: rawSettings.journeyCode,
     segmentIds: rawSettings.segmentIds,

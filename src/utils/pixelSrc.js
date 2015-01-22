@@ -37,5 +37,9 @@ module.exports = {
     });
     
     return startString;
+  },
+  
+  appnexus: function(config) {
+    return config;
   }
 };

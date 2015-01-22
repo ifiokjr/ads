@@ -40,6 +40,7 @@ function checkURLMatches(testPattern) {
   if(testPattern.substr(0, 4) === 'www.') {
     testPattern = testPattern.replace('www.', '');
   }
+  testPattern = testPattern.toLowerCase();
   var pattern = urlPattern.newPattern(testPattern);
   var match = !!pattern.match(PAGE_URL);
   log( 'Result of URLs matching ' + testPattern + ' is', match );
@@ -49,17 +50,17 @@ function checkURLMatches(testPattern) {
 
 function checkParamsMatch(params) {
   var match = true;
-  if(!params.length) {
-    return true;
+  if(!Object.size(params)) {
+    return match;
   }
   // loop through the params and make sure they are in the pageParams
   // for (key in pageParams)
   // TODO: Add support for splats [DONE]
   $.each(params, function(key, value) {
-    key = string(key);
+    key = String(key);
     value = String(value);
     var pattern = urlPattern.newPattern(value);
-    if(!(pattern.match(PAGE_PARAMS[key]) || pattern.match(decodeURIComponent(PAGE_PARAMS[key])))) {
+    if((PAGE_PARAMS[key] == null) || !(pattern.match(PAGE_PARAMS[key]) || pattern.match(decodeURIComponent(PAGE_PARAMS[key])))) {
       match = false;
     }
   });

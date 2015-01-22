@@ -796,7 +796,7 @@ module.exports = {
     if(!type(config, 'object')) {
       return;
     }
-    if(config.exclude) {
+    if(config.exclude || !config.flexId) {
       return;
     }
     launchGDM(config.flexId);
@@ -843,21 +843,32 @@ var masks = {
 // PIXELS
 
 function createCompletePagePixel(config) {
-  var nexusSrc, genieSrc,
+  var genieNexusSrc, gdmNexusSrc, genieSrc,
       orderValue = getOrderValue() || config.orderValue['default'],
       orderId = getVal(config.orderId) || (new Date()).getTime(),
-      completionId = config.completionId,
+      completionId = config.completionId, gdmConversionCode = config.gdmConversionCode,
       items, // retrieve itemString generated on the cart page
       journeyCode = config.journeyCode, segmentIds = '';
   
-  if (type(config.segmentIds, 'array')) {
-    segmentIds = '&remove=' + config.segmentIds[0] + ',' + config.segmentIds[1];
-  }
-  nexusSrc = '//secure.adnxs.com/px?id=' + completionId + segmentIds + '&order_id=' +
-    orderId + '&value=' + orderValue + '&t=2';
   
-  addPixel(nexusSrc);
-  log('AppNexus Pixel Added to complete page');
+  
+  if (type(config.segmentIds, 'array') && completionId) {
+    segmentIds = '&remove=' + config.segmentIds[0] + ',' + config.segmentIds[1];
+    genieNexusSrc = '//secure.adnxs.com/px?id=' + completionId + segmentIds + '&order_id=' +
+    orderId + '&value=' + orderValue + '&t=2';
+    addPixel(genieNexusSrc);
+    log('Genie App Nexus Completion Pixel added to complete page');
+  }
+  
+  
+  if (gdmConversionCode) {
+    gdmNexusSrc = '//secure.adnxs.com/px?id=' + gdmConversionCode + '&order_id=' +
+      orderId + '&value=' + orderValue + '&t=2';
+
+    addPixel(gdmNexusSrc);
+    log('GDM App Nexus Completion Pixel added to complete page');
+  }
+  
   
   if (journeyCode && journeyCode.length) {
     
@@ -868,6 +879,7 @@ function createCompletePagePixel(config) {
     };
     
     genieSrc = pixelSrc.adgenie(params, true) ;
+    log('adGenie Completion Pixel added to complete page');
     addPixel(genieSrc);
   }
 }
@@ -1012,7 +1024,7 @@ module.exports = {
     
     // basket = basketPages(config);
     
-    product = productPages(config);
+    if (!complete) {product = productPages(config);}
     
     if ( !complete && !basket && !product ) { rosPages(config); }
   }
@@ -1022,8 +1034,8 @@ module.exports = {
 
 function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
   regex = type(regex, 'regexp') ? regex : new RegExp('', 'g');
-  return ($el.text() && $el.text().replace(regex, '')) ||
-      ($el.val() && $el.val().replace(regex, '')) ||
+  return ($el.text() && $el.text().trim().replace(regex, '')) ||
+      ($el.val() && $el.val().trim().replace(regex, '')) ||
       String( fallback || lastResort );
 }
 
@@ -1088,9 +1100,11 @@ var rawSettings = window.veTagData.settings.gdm;
 module.exports = {
   gdm: {
     exclude: rawSettings.exclude,
-    flexId: rawSettings.flexId
+    flexId: rawSettings.flexId,
+    gdmConversionCode: rawSettings.completionId
   },
   genie: {
+    gdmConversionCode: rawSettings.gdmConversionCode,
     completionId: rawSettings.completionId,
     journeyCode: rawSettings.journeyCode,
     segmentIds: rawSettings.segmentIds,
@@ -1275,6 +1289,10 @@ module.exports = {
     });
     
     return startString;
+  },
+  
+  appnexus: function(config) {
+    return config;
   }
 };
 },{"./log":13,"./type":17}],15:[function(require,module,exports){
@@ -1546,6 +1564,7 @@ function checkURLMatches(testPattern) {
   if(testPattern.substr(0, 4) === 'www.') {
     testPattern = testPattern.replace('www.', '');
   }
+  testPattern = testPattern.toLowerCase();
   var pattern = urlPattern.newPattern(testPattern);
   var match = !!pattern.match(PAGE_URL);
   log( 'Result of URLs matching ' + testPattern + ' is', match );
@@ -1555,17 +1574,17 @@ function checkURLMatches(testPattern) {
 
 function checkParamsMatch(params) {
   var match = true;
-  if(!params.length) {
-    return true;
+  if(!Object.size(params)) {
+    return match;
   }
   // loop through the params and make sure they are in the pageParams
   // for (key in pageParams)
   // TODO: Add support for splats [DONE]
   $.each(params, function(key, value) {
-    key = string(key);
+    key = String(key);
     value = String(value);
     var pattern = urlPattern.newPattern(value);
-    if(!(pattern.match(PAGE_PARAMS[key]) || pattern.match(decodeURIComponent(PAGE_PARAMS[key])))) {
+    if((PAGE_PARAMS[key] == null) || !(pattern.match(PAGE_PARAMS[key]) || pattern.match(decodeURIComponent(PAGE_PARAMS[key])))) {
       match = false;
     }
   });

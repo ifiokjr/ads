@@ -19,7 +19,7 @@ module.exports = {
     if(!type(config, 'object')) {
       return;
     }
-    if(config.exclude) {
+    if(config.exclude || !config.flexId) {
       return;
     }
     launchGDM(config.flexId);
