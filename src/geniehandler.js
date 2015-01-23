@@ -97,6 +97,7 @@ function createROSPixel (config) {
 
 function buildProductPagePixel (config) {
   var srcIb, srcSecure, genieSrc,
+      
       productId = getVal(config.productPages),
       journeyCode = config.journeyCode;
   
@@ -196,13 +197,15 @@ function productPages(config) {
   var match = false,
       page = config.productPages.page;
   
-  match = checkCurrentPage( page.urls, page.params );
+  match = checkCurrentPage( page.urls, page.params ) &&
+    !!$(page.selector).length; // TODO: only return match if we can be sure that the product id can be found.
   
   if( match ) {
     log('We are on a Product Page');
     buildProductPagePixel( config );
   }
   
+   
   return match;
 }
 

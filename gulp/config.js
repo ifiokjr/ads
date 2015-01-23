@@ -24,14 +24,10 @@ module.exports = {
       outputName: 'gdm.js',
       // list of externally available modules to exclude from the bundle
       external: ['jquery']
-    }, {
-      entries: tests + '/unit/*.js',
-      dest: tests,
-      outputName: 'compiledTests.js'
     }]
   },
   production: {
-    jsSrc: dest + '/*.js',
-    dest: dest + '/gdm.min.js'
+    jsSrc: dest + '/gdm.js',
+    dest: dest
   }
 };
