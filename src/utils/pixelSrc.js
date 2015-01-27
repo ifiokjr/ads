@@ -2,7 +2,7 @@
  * This is a file for automatically generating the relevant pixels for our code.
  */
 var SECURE = (window.location.protocol || 'https:') === 'https:' ? true : false,
-    $ = window.VEjQuery,
+    $ = require('./jq'),
     type = require('./type'),
     log = require('./log');
 

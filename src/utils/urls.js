@@ -1,6 +1,6 @@
 var urlPattern = require('url-pattern'),
-    log = require('debug')('URLs'),
-    $ = window.VEjQuery;
+    log = require('debug')('urls'),
+    $ = require('./jq');
 
 
 var PAGE_URL = cleanUrl(window.location.hostname + window.location.pathname),
@@ -64,7 +64,7 @@ function checkParamsMatch(params) {
       match = false;
     }
   });
-  log( 'Result of parameters matching is', match );
+  // log( 'Result of parameters matching is', match );
   return match;
 }
 

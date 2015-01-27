@@ -7,13 +7,15 @@
 var rawSettings = window.veTagData.settings.gdm;
 
 module.exports = {
-  gdm: {
+  gdm: rawSettings.gdm || {
     exclude: rawSettings.exclude,
     flexId: rawSettings.flexId,
-    gdmConversionCode: rawSettings.completionId
+    gdmConversionCode: rawSettings.gdmConversionCode,
+    gdmSegementId: rawSettings.gdmSegementId
   },
   genie: {
     gdmConversionCode: rawSettings.gdmConversionCode,
+    gdmSegementId: rawSettings.gdmSegementId,
     completionId: rawSettings.completionId,
     journeyCode: rawSettings.journeyCode,
     segmentIds: rawSettings.segmentIds,
@@ -24,5 +26,6 @@ module.exports = {
     basketPages: rawSettings.basketPages,
     productPages: rawSettings.productPages
   },
-  namespace: 'veapps.' + rawSettings.flexId + '.GDM.'
+  namespace: 'veapps.' + (rawSettings.flexId || '') + (rawSettings.journeyCode || '') + '.GDM.',
+  version: require('../package.json').version.split('.')
 };

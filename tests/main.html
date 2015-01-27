@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mocha Integration Tests</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+  </head>
+  <body>
+    <div id='fixtures' style="display: none">
+      <p id="orderId">09809</p>
+      <p id="orderValue">££569.67</p>
+      <p id="dynamicId">Not yet!</p>
+      <table>
+        <tr>
+          <td class="productId">12</td>
+          <td class="productValue">$45,07</td>
+        </tr>
+        <tr>
+          <td class="productId">14</td>
+          <td class="productValue">$95,00</td>
+        </tr>
+      </table>
+    </div>
+    <div id="mocha"></div>
+<!--     <script src="../node_modules/mocha/mocha.js"></script> -->
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+<!-- 
+    <script src="../node_modules/sinon/pkg/sinon.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script src="../node_modules/chai-jquery/chai-jquery.js"></script>
+    <script src="../node_modules/chai-things/lib/chai-things.js"></script>
+    <script src="../node_modules/sinon/pkg/sinon.js"></script>
+    <script src="../node_modules/sinon-chai/lib/sinon-chai.js"></script> -->
+<!--     <script>
+      var should = chai.should();
+    </script> -->
+    <script>
+     window.veTagData = {};
+     veTagData.settings = {}
+     veTagData.settings.gdm = {
+          exclude: false,
+          ros: true,
+          flexId: '5032',
+          completionId: 10000,
+          gdmConversionCode: 10000,
+          journeyCode: 'asdfasdf',
+          segmentIds: [100, 200],
+          orderId: {
+              selector: '#orderId',
+              mask: '',
+              'regex': /[^0-9]/g,
+              page: {
+                  params: { },
+                  urls: [  ]
+              },
+          },
+          productPages: {
+              selector: '',
+              'default': '000000',
+              page: {
+                  params: { },
+                  urls: [  ]
+              },
+              'regex': null
+          }, 
+          basketPages: {
+              selectors: {
+                  productId: '.productId', 
+                  productPrice: '.productValue'
+              },
+              page: {
+                  params: { page: 'basket' },
+                  urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
+              },
+              'regex': null
+          },
+          orderValue: {
+              selector: '#orderValue',
+              'default': '1.00',
+               mask: '',
+              page: {
+                  params: {  },
+                  urls: [  ]
+              },
+              'regex': /[^0-9,\.]/g
+          },
+          completePage: {
+              page: {
+                  params: {  },
+                  urls: [ 'ranger-quiet.codio.io/tests/*'  ]                  
+              },  
+
+              dynamicIdentifier: { 
+                  selector: '#dynamicId',
+                  criteria: 'contains',
+                  value: 'Complete Page'
+              }
+          }
+      }
+    </script>
+    <script src="../build/gdm.debug.js"></script>
+<!--     <script>mocha.setup('bdd')</script> -->
+<!--     <script src="integration/tests.js"></script> -->
+<!--     <script>
+      mocha.run();
+    </script> -->
+  </body>
+</html>
