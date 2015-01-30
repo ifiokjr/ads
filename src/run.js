@@ -11,7 +11,7 @@ var store = require('./utils/store'),
     addPixel = require('./utils/addPixel'),
     $ = require('./utils/jq'),
     pixelSrc = require('./utils/pixelSrc'),
-    log = require('debug')('Genie Conversion Pixel'),
+    log = require('debug')('conversion:pixel'),
     type = require('./utils/type'),
     logOV = require('debug')('run:value'),
     logROS = require('debug')('run:ros'),
@@ -124,7 +124,7 @@ function buildProductPagePixel (productPageObj) {
 
 function buildBasketPagePixel (idList) {
   var journeyCode = settings.genie.journeyCode;
-  
+  if(!idList) { return; }
   var params = {
       adgCompanyID: journeyCode,
       adgBasketItems: idList
@@ -220,9 +220,13 @@ function createBasketInformation(config) {
   var $productIdEl = checkElement.check(config.selectors.productId),  // called synchronously
       $productPriceEl = checkElement.check(config.selectors.productPrice);  // called synchronously
   
+
+  
   var itemString = createItemString($productPriceEl);
   var idList = createIdList($productIdEl);
   
+  
+  // TODO: This is called regardless of whether we have something to store or not. That is not good!
   setTimeout(function () {
     storeValue(itemString, ITEMSTRING);
     storeValue(idList, IDLIST);
@@ -278,6 +282,7 @@ function getValue(valName) {
 // Basket page stuff
 
 function createItemString($el) {
+  if(!$el || !$el.length) {return '';}
   var itemString = '';
   var len = $el.length;
   if (!len) {return '';}
@@ -291,6 +296,7 @@ function createItemString($el) {
 }
 
 function createIdList($el) {
+  if(!$el || !$el.length) {return '';}
   var idList = '';
   var len = $el.length;
   if (!len) {return '';}

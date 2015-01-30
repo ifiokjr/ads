@@ -53,8 +53,9 @@ function checkElement(selector, successFn) {
       successFn($el);
     } else {
       return $el;
-    }    
+    }
   }
+  return $el;
   
   
 }

@@ -5,7 +5,7 @@ debug.enable('*');
 
 log('Launching application');
 require('./main');
-},{"./main":10,"debug":2}],2:[function(require,module,exports){
+},{"./main":9,"debug":2}],2:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -1005,65 +1005,6 @@ module.exports = {
 };
 
 },{}],8:[function(require,module,exports){
-module.exports={
-  "name": "gdm",
-  "version": "1.0.0",
-  "description": "integration of gdm script and veGenie onto VeInteractive sites",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "./node_modules/.bin/testem"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://bitbucket.org/vetechteam/gdm"
-  },
-  "author": "Ifiok Jr.",
-  "license": "ISC",
-  "devDependencies": {
-    "browser-sync": "^1.8.3",
-    "browserify": "^8.0.3",
-    "chai": "^1.10.0",
-    "chai-jquery": "^2.0.0",
-    "chai-things": "^0.2.0",
-    "glob": "^4.3.2",
-    "gulp": "^3.8.10",
-    "gulp-filesize": "0.0.6",
-    "gulp-jshint": "^1.9.0",
-    "gulp-notify": "^2.1.0",
-    "gulp-rename": "^1.2.0",
-    "gulp-testem": "0.0.1",
-    "gulp-uglify": "^1.0.2",
-    "gulp-util": "^3.0.1",
-    "jquery": "^1.11.2",
-    "jshint-stylish": "^1.0.0",
-    "karma": "^0.12.31",
-    "karma-browserify": "^2.0.0",
-    "karma-chai-plugins": "^0.2.4",
-    "karma-jquery": "^0.1.0",
-    "karma-mocha": "^0.1.10",
-    "karma-mocha-reporter": "^0.3.1",
-    "karma-phantomjs-launcher": "^0.1.4",
-    "lodash": "^2.4.1",
-    "lodash-cli": "^2.4.2",
-    "mocha": "^2.1.0",
-    "notify-send": "^0.1.2",
-    "pretty-hrtime": "^1.0.0",
-    "require-dir": "^0.1.0",
-    "sinon": "^1.12.2",
-    "sinon-chai": "^2.6.0",
-    "testem": "^0.6.24",
-    "vinyl-source-stream": "^1.0.0",
-    "watchify": "^2.2.1"
-  },
-  "dependencies": {
-    "debug": "^2.1.1",
-    "pubsub-js": "^1.5.0",
-    "store": "^1.3.17",
-    "url-pattern": "^0.6.0"
-  }
-}
-
-},{}],9:[function(require,module,exports){
 // Check if GDMHandler should be called. 
 var type = require('./utils/type'),
   log = require('debug')('GDM Handler');
@@ -1091,7 +1032,7 @@ module.exports = {
     launchGDM(config.flexId);
   }
 };
-},{"./utils/type":22,"debug":2}],10:[function(require,module,exports){
+},{"./utils/type":21,"debug":2}],9:[function(require,module,exports){
 // Load Polyfills
 var log = require('debug')('main');
 
@@ -1109,7 +1050,7 @@ log('running main code');
 // Now we run the Genie specific tags. 
 run.start(settings.genie);
 
-},{"./gdmhandler":9,"./run":12,"./settings":13,"./utils/polyfills":20,"debug":2}],11:[function(require,module,exports){
+},{"./gdmhandler":8,"./run":11,"./settings":12,"./utils/polyfills":19,"debug":2}],10:[function(require,module,exports){
 var PubSub = require('pubsub-js'),
   checkElement = require('./utils/checkElements'),
   type = require('./utils/type'),
@@ -1229,7 +1170,7 @@ module.exports = {
   id: new Page(pageObject.orderId, settings.orderId  ),
   complete: new Page(pageObject.completePage, settings.completePage)
 };
-},{"./settings":13,"./utils/checkElements":15,"./utils/criteria":16,"./utils/jq":17,"./utils/type":22,"./utils/urls":23,"debug":2,"pubsub-js":5}],12:[function(require,module,exports){
+},{"./settings":12,"./utils/checkElements":14,"./utils/criteria":15,"./utils/jq":16,"./utils/type":21,"./utils/urls":22,"debug":2,"pubsub-js":5}],11:[function(require,module,exports){
 /*
  * Set up all the tags and pixels for VeGenie to work properly. 
  * 
@@ -1243,7 +1184,7 @@ var store = require('./utils/store'),
     addPixel = require('./utils/addPixel'),
     $ = require('./utils/jq'),
     pixelSrc = require('./utils/pixelSrc'),
-    log = require('debug')('Genie Conversion Pixel'),
+    log = require('debug')('conversion:pixel'),
     type = require('./utils/type'),
     logOV = require('debug')('run:value'),
     logROS = require('debug')('run:ros'),
@@ -1267,8 +1208,8 @@ var valueFromCompletePage = pages.value.fromCompletePage();
 function createCompletePagePixel(data) {
   var config = settings.genie;
   var genieNexusSrc, gdmNexusSrc,  genieSrc,
-      orderValue = getValue(ORDERVALUE) || config.orderValue['default'],
-      orderId = getVal(config.orderId) || (new Date()).getTime(),
+      orderValue = valueFromCompletePage ? getVal(config.orderValue) : getValue(ORDERVALUE) || config.orderValue['default'],
+      orderId = idFromCompletePage ? getVal(config.orderId) : getValue(ORDERID) || (new Date()).getTime(),
       completionId = config.completionId, gdmConversionCode = config.gdmConversionCode,
       gdmSegmentId = config.gdmSegementId,
       items = getValue(ITEMSTRING) || null, // retrieve itemString generated on the cart page
@@ -1356,7 +1297,7 @@ function buildProductPagePixel (productPageObj) {
 
 function buildBasketPagePixel (idList) {
   var journeyCode = settings.genie.journeyCode;
-  
+  if(!idList) { return; }
   var params = {
       adgCompanyID: journeyCode,
       adgBasketItems: idList
@@ -1452,9 +1393,13 @@ function createBasketInformation(config) {
   var $productIdEl = checkElement.check(config.selectors.productId),  // called synchronously
       $productPriceEl = checkElement.check(config.selectors.productPrice);  // called synchronously
   
+
+  
   var itemString = createItemString($productPriceEl);
   var idList = createIdList($productIdEl);
   
+  
+  // TODO: This is called regardless of whether we have something to store or not. That is not good!
   setTimeout(function () {
     storeValue(itemString, ITEMSTRING);
     storeValue(idList, IDLIST);
@@ -1510,6 +1455,7 @@ function getValue(valName) {
 // Basket page stuff
 
 function createItemString($el) {
+  if(!$el || !$el.length) {return '';}
   var itemString = '';
   var len = $el.length;
   if (!len) {return '';}
@@ -1523,6 +1469,7 @@ function createItemString($el) {
 }
 
 function createIdList($el) {
+  if(!$el || !$el.length) {return '';}
   var idList = '';
   var len = $el.length;
   if (!len) {return '';}
@@ -1535,7 +1482,7 @@ function createIdList($el) {
   return idList;
 }
 
-},{"./pages":11,"./settings":13,"./utils/addPixel":14,"./utils/checkElements":15,"./utils/criteria":16,"./utils/jq":17,"./utils/pixelSrc":19,"./utils/store":21,"./utils/type":22,"./utils/urls":23,"debug":2,"pubsub-js":5}],13:[function(require,module,exports){
+},{"./pages":10,"./settings":12,"./utils/addPixel":13,"./utils/checkElements":14,"./utils/criteria":15,"./utils/jq":16,"./utils/pixelSrc":18,"./utils/store":20,"./utils/type":21,"./utils/urls":22,"debug":2,"pubsub-js":5}],12:[function(require,module,exports){
 /*
  *
  * This module is what determine the settings
@@ -1553,7 +1500,7 @@ module.exports = {
   },
   genie: {
     gdmConversionCode: rawSettings.gdmConversionCode,
-    gdmSegementId: rawSettings.gdmSegementId,
+    gdmSegementId: rawSettings.gdmSegementId || rawSettings.gdmSegmentId,
     completionId: rawSettings.completionId,
     journeyCode: rawSettings.journeyCode,
     segmentIds: rawSettings.segmentIds,
@@ -1565,9 +1512,9 @@ module.exports = {
     productPages: rawSettings.productPages
   },
   namespace: 'veapps.' + (rawSettings.flexId || '') + (rawSettings.journeyCode || '') + '.GDM.',
-  version: require('../package.json').version.split('.')
+  version: [1,0,0]
 };
-},{"../package.json":8}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 // Add a pixel to the page. 
 // 
 
@@ -1586,7 +1533,7 @@ function appendPixel( pixelPath ) {
 }
 
 module.exports = appendPixel;
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 // Check to see if element exists if not keep checking every second until it is found. 
 var log = require('debug')('checkElement'),
     type = require('./type'),
@@ -1642,8 +1589,9 @@ function checkElement(selector, successFn) {
       successFn($el);
     } else {
       return $el;
-    }    
+    }
   }
+  return $el;
   
   
 }
@@ -1693,7 +1641,7 @@ function getValOrText($el) {
   if ( type($el, 'string') ) { $el = $($el); }
   return $el.length ? ($el.val() && $el.val().trim()) || ($el.text() && $el.text().trim()) : '';
 }
-},{"./jq":17,"./type":22,"debug":2}],16:[function(require,module,exports){
+},{"./jq":16,"./type":21,"debug":2}],15:[function(require,module,exports){
 var type = require('./type');
 
 var criteria = {
@@ -1743,9 +1691,9 @@ module.exports = {
   criteria: criteria,
   masks: masks
 };
-},{"./type":22}],17:[function(require,module,exports){
+},{"./type":21}],16:[function(require,module,exports){
 module.exports = window.VEjQuery || window.$;
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /*
  * Deprecated for debug
  */
@@ -1766,7 +1714,7 @@ function safe(message, obj1, obj2) {
 
 module.exports = log;
 module.exports.safe = safe;
-},{"./type":22}],19:[function(require,module,exports){
+},{"./type":21}],18:[function(require,module,exports){
 /**
  * This is a file for automatically generating the relevant pixels for our code.
  */
@@ -1812,7 +1760,7 @@ module.exports = {
     return config;
   }
 };
-},{"./jq":17,"./log":18,"./type":22}],20:[function(require,module,exports){
+},{"./jq":16,"./log":17,"./type":21}],19:[function(require,module,exports){
 var type = require('./type');
 
 // Object.create 
@@ -1939,7 +1887,7 @@ if(!Array.prototype.indexOf) {
     return -1;
   };
 }
-},{"./type":22}],21:[function(require,module,exports){
+},{"./type":21}],20:[function(require,module,exports){
 /**
  * Created with GDM.
  * User: ifiokjr
@@ -2006,7 +1954,7 @@ if(window.JSON && type(window.JSON.parse, 'function') && type(window.JSON.string
 
 
 module.exports = storage;
-},{"./type":22,"store":6}],22:[function(require,module,exports){
+},{"./type":21,"store":6}],21:[function(require,module,exports){
 /**
  * toString ref.
  */
@@ -2038,7 +1986,7 @@ module.exports = function(val, testType) {
   val = val.valueOf ? val.valueOf() : Object.prototype.valueOf.apply(val)
   return testType === typeof val;
 };
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var urlPattern = require('url-pattern'),
     log = require('debug')('urls'),
     $ = require('./jq');
@@ -2116,4 +2064,4 @@ module.exports = {
   }
   
 };
-},{"./jq":17,"debug":2,"url-pattern":7}]},{},[1]);
+},{"./jq":16,"debug":2,"url-pattern":7}]},{},[1]);

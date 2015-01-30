@@ -15,7 +15,7 @@ module.exports = {
   },
   genie: {
     gdmConversionCode: rawSettings.gdmConversionCode,
-    gdmSegementId: rawSettings.gdmSegementId,
+    gdmSegementId: rawSettings.gdmSegementId || rawSettings.gdmSegmentId,
     completionId: rawSettings.completionId,
     journeyCode: rawSettings.journeyCode,
     segmentIds: rawSettings.segmentIds,
@@ -27,5 +27,5 @@ module.exports = {
     productPages: rawSettings.productPages
   },
   namespace: 'veapps.' + (rawSettings.flexId || '') + (rawSettings.journeyCode || '') + '.GDM.',
-  version: require('../package.json').version.split('.')
+  version: [1,0,0]
 };
