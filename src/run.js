@@ -174,7 +174,7 @@ module.exports = {
     
     // Are we on the order value page or orderIdPage?
     orderVal = pages.value.run();
-    orderId = pages.id.run();
+    var orderId = pages.id.run();
     
     // Are we on the complete page?
     complete = pages.complete.run();

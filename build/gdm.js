@@ -1210,7 +1210,7 @@ var valueFromCompletePage = pages.value.fromCompletePage();
 
 function createCompletePagePixel(data) {
   var config = settings.genie;
-  var genieNexusSrc, gdmNexusSrc,  genieSrc,
+  var genieNexusSrc, nexusSrc,  genieSrc,
       orderValue = valueFromCompletePage ? getVal(config.orderValue) : getValue(ORDERVALUE) || config.orderValue['default'],
       orderId = idFromCompletePage ? getVal(config.orderId) : getValue(ORDERID) || (new Date()).getTime(),
       completionId = config.completionId, gdmConversionCode = config.gdmConversionCode,
@@ -1221,21 +1221,21 @@ function createCompletePagePixel(data) {
   
   
   
-  if (type(config.segmentIds, 'array') && completionId) {
-    segmentIds = '&remove=' + config.segmentIds[0] + ',' + config.segmentIds[1];
-    genieNexusSrc = '//secure.adnxs.com/px?id=' + completionId + segmentIds + '&order_id=' +
-    orderId + '&value=' + orderValue + '&t=2';
-    addPixel(genieNexusSrc);
-    log('Genie App Nexus Completion Pixel added to complete page');
-  }
+//   if (type(config.segmentIds, 'array') && completionId) {
+//     segmentIds = '&remove=' + config.segmentIds[0] + ',' + config.segmentIds[1];
+//     genieNexusSrc = '//secure.adnxs.com/px?id=' + completionId + segmentIds + '&order_id=' +
+//     orderId + '&value=' + orderValue + '&t=2';
+//     addPixel(genieNexusSrc);
+//     log('Genie App Nexus Completion Pixel added to complete page');
+//   }
   
   
-  if (gdmConversionCode) {
-    gdmNexusSrc = '//secure.adnxs.com/px?id=' + gdmConversionCode + '&seg=' + gdmSegmentId + '&order_id=' +
+  if (completionId) {
+    nexusSrc = '//secure.adnxs.com/px?id=' + completionId + '&seg=' + config.segmentIds[1] + '&order_id=' +
       orderId + '&value=' + orderValue + '&t=2';
 
-    addPixel(gdmNexusSrc);
-    log('GDM App Nexus Completion Pixel added to complete page');
+    addPixel(nexusSrc);
+    log('App Nexus Completion Pixel added to complete page');
   }
   
   
@@ -1730,9 +1730,9 @@ var SECURE = (window.location.protocol || 'https:') === 'https:' ? true : false,
 module.exports = {
   ros: function(segmentIds, secure) {
     if(secure) {
-      return '//secure.adnxs.com/seg?add=' + segmentIds[0] + ',' + segmentIds[1] + '&t=2';
+      return '//secure.adnxs.com/seg?add=' + segmentIds[0] + '&t=2';
     } else {
-      return '//ib.adnxs.com/seg?add=' + segmentIds[0] + ',' + segmentIds[1] + '&t=2';
+      return '//ib.adnxs.com/seg?add=' + segmentIds[0] + '&t=2';
     }
   },
   
