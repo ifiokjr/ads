@@ -1276,8 +1276,8 @@ function buildProductPagePixel (productPageObj) {
       config = settings.genie,
       journeyCode = config.journeyCode;
   
-  srcIb = pixelSrc.ros(config.segmentIds);
-  srcSecure = pixelSrc.ros(config.segmentIds, true);
+  srcIb = pixelSrc.product(config.segmentIds);
+  srcSecure = pixelSrc.product(config.segmentIds, true);
   
   addPixel(srcIb);
   addPixel(srcSecure);
@@ -1347,7 +1347,7 @@ module.exports = {
     
     // Are we on the order value page or orderIdPage?
     orderVal = pages.value.run();
-    orderId = pages.id.run();
+    var orderId = pages.id.run();
     
     // Are we on the complete page?
     complete = pages.complete.run();
@@ -1382,7 +1382,7 @@ function getVal (obj, fallback) {
   
   if (!$el.length) { return obj['default'] || timestamp; }
   
-  var val = regexReplacementFromElement( $el, obj.regex, obj, timestamp);
+  var val = regexReplacementFromElement( $el, obj.regex, obj['default'], timestamp);
      
   return encodeURIComponent(val);
 }
@@ -1727,6 +1727,14 @@ var SECURE = (window.location.protocol || 'https:') === 'https:' ? true : false,
 module.exports = {
   ros: function(segmentIds, secure) {
     if(secure) {
+      return '//secure.adnxs.com/seg?add=' + (segmentIds[2] || segmentIds[0]) + '&t=2';
+    } else {
+      return '//ib.adnxs.com/seg?add=' + (segmentIds[2] || segmentIds[0]) + '&t=2';
+    }
+  },
+  
+  product: function(segmentIds, secure) {
+    if(secure) {
       return '//secure.adnxs.com/seg?add=' + segmentIds[0] + '&t=2';
     } else {
       return '//ib.adnxs.com/seg?add=' + segmentIds[0] + '&t=2';
@@ -1886,6 +1894,17 @@ if(!Array.prototype.indexOf) {
     }
     return -1;
   };
+}
+
+// Trim polyfill for ie7 and ie8
+if (!String.prototype.trim) {
+  (function() {
+    // Make sure we trim BOM and NBSP
+    var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+    String.prototype.trim = function() {
+      return this.replace(rtrim, '');
+    };
+  })();
 }
 },{"./type":21}],20:[function(require,module,exports){
 /**

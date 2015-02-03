@@ -10,6 +10,14 @@ var SECURE = (window.location.protocol || 'https:') === 'https:' ? true : false,
 module.exports = {
   ros: function(segmentIds, secure) {
     if(secure) {
+      return '//secure.adnxs.com/seg?add=' + (segmentIds[2] || segmentIds[0]) + '&t=2';
+    } else {
+      return '//ib.adnxs.com/seg?add=' + (segmentIds[2] || segmentIds[0]) + '&t=2';
+    }
+  },
+  
+  product: function(segmentIds, secure) {
+    if(secure) {
       return '//secure.adnxs.com/seg?add=' + segmentIds[0] + '&t=2';
     } else {
       return '//ib.adnxs.com/seg?add=' + segmentIds[0] + '&t=2';

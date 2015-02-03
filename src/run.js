@@ -103,8 +103,8 @@ function buildProductPagePixel (productPageObj) {
       config = settings.genie,
       journeyCode = config.journeyCode;
   
-  srcIb = pixelSrc.ros(config.segmentIds);
-  srcSecure = pixelSrc.ros(config.segmentIds, true);
+  srcIb = pixelSrc.product(config.segmentIds);
+  srcSecure = pixelSrc.product(config.segmentIds, true);
   
   addPixel(srcIb);
   addPixel(srcSecure);
@@ -209,7 +209,7 @@ function getVal (obj, fallback) {
   
   if (!$el.length) { return obj['default'] || timestamp; }
   
-  var val = regexReplacementFromElement( $el, obj.regex, obj, timestamp);
+  var val = regexReplacementFromElement( $el, obj.regex, obj['default'], timestamp);
      
   return encodeURIComponent(val);
 }

@@ -124,3 +124,14 @@ if(!Array.prototype.indexOf) {
     return -1;
   };
 }
+
+// Trim polyfill for ie7 and ie8
+if (!String.prototype.trim) {
+  (function() {
+    // Make sure we trim BOM and NBSP
+    var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+    String.prototype.trim = function() {
+      return this.replace(rtrim, '');
+    };
+  })();
+}

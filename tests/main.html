@@ -8,7 +8,7 @@
   </head>
   <body>
     <div id='fixtures' style="display: none">
-      <p id="orderId">09809</p>
+<!--       <p id="orderId">09809</p> -->
       <p id="orderValue">££569.67</p>
       <p id="dynamicId">Not yet!</p>
       <table>
@@ -21,6 +21,8 @@
           <td class="productValue">$95,00</td>
         </tr>
       </table>
+      
+      <input type="hidden" value="PRODUCT001" id="pp">
     </div>
     <div id="mocha"></div>
 <!--     <script src="../node_modules/mocha/mocha.js"></script> -->
@@ -43,9 +45,8 @@
           ros: true,
           flexId: '5032',
           completionId: 10000,
-          //gdmConversionCode: 10000,
           journeyCode: 'asdfasdf',
-          segmentIds: [100, 200],
+          segmentIds: [100, 200, 300],
           orderId: {
               selector: '#orderId',
               mask: '',
@@ -53,14 +54,14 @@
               page: {
                   params: { },
                   urls: [  ]
-              },
+              }
           },
           productPages: {
-              selector: '',
+              selector: '#pp',
               'default': '000000',
               page: {
-                  params: { },
-                  urls: [  ]
+                  params: { page: 'product' },
+                  urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
               },
               'regex': null
           }, 
@@ -87,7 +88,7 @@
           },
           completePage: {
               page: {
-                  params: {  },
+                  params: { page: 'complete'  },
                   urls: [ 'ranger-quiet.codio.io/tests/*'  ]                  
               },  
 
@@ -98,6 +99,10 @@
               }
           }
       }
+     
+     setTimeout(function() {
+       $('#dynamicId').text('This is the Complete Page');
+     }, 5000);
     </script>
     <script src="../build/gdm.debug.js"></script>
 <!--     <script>mocha.setup('bdd')</script> -->
