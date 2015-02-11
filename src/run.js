@@ -187,10 +187,9 @@ module.exports = {
     
     // basket = basketPages(config);
     
-    if (!complete) {
-      product = pages.product.run();
-      basket = pages.basket.run();
-    }
+    if (!complete) { basket = pages.basket.run(); }
+    
+    if (!complete && !basket ) { product = pages.product.run(); }
     
     if ( !complete && !basket && !product ) { rosPages(config); }
   }
