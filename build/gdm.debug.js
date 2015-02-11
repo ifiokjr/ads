@@ -1270,11 +1270,21 @@ function createROSPixel (config) {
 // Still to be implemented
 
 function buildProductPagePixel (productPageObj) {
+  // when default is provided we should fallback to it if not then 
+  // don't place a pixel on this page.
+  var noFallback = productPageObj['default'] ? false : true; // 
+  
   var srcIb, srcSecure, genieSrc,
       
-      productId = getVal(productPageObj),
+      productId = getVal(productPageObj, noFallback),
       config = settings.genie,
       journeyCode = config.journeyCode;
+  
+  if( !productId ) {
+    logPP('No Default provided and product element not found on this page');
+    rosPages(require('./settings').genie); // implement ROS if applicable
+    return;
+  }
   
   srcIb = pixelSrc.product(config.segmentIds);
   srcSecure = pixelSrc.product(config.segmentIds, true);
@@ -1306,7 +1316,7 @@ function buildBasketPagePixel (idList) {
   
   genieSrc = pixelSrc.adgenie(params, false) ;
   addPixel(genieSrc);
-  logPP('Basket pixel add added to the site.', genieSrc);
+  logPP('Basket pixel added added to the site.', genieSrc);
 }
 
 
@@ -1354,10 +1364,9 @@ module.exports = {
     
     // basket = basketPages(config);
     
-    if (!complete) {
-      product = pages.product.run();
-      basket = pages.basket.run();
-    }
+    if (!complete) { basket = pages.basket.run(); }
+    
+    if (!complete && !basket ) { product = pages.product.run(); }
     
     if ( !complete && !basket && !product ) { rosPages(config); }
   }
@@ -1376,11 +1385,11 @@ function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
 /*
  * Obtain the falue from the current page if this is the relevant page.
  */
-function getVal (obj, fallback) {
+function getVal ( obj, noFallback ) {
   var $el = $(obj.selector),
       timestamp = (new Date()).getTime();
   
-  if (!$el.length) { return obj['default'] || timestamp; }
+  if (!$el.length) { return noFallback ? '' : obj['default'] || timestamp; }
   
   var val = regexReplacementFromElement( $el, obj.regex, obj['default'], timestamp);
      

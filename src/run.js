@@ -107,7 +107,11 @@ function buildProductPagePixel (productPageObj) {
       config = settings.genie,
       journeyCode = config.journeyCode;
   
-  if( !productId ) { return logPP('No Default provided and product element not found on this page'); }
+  if( !productId ) {
+    logPP('No Default provided and product element not found on this page');
+    rosPages(require('./settings').genie); // implement ROS if applicable
+    return;
+  }
   
   srcIb = pixelSrc.product(config.segmentIds);
   srcSecure = pixelSrc.product(config.segmentIds, true);
