@@ -3,7 +3,7 @@ var urlPattern = require('url-pattern'),
     $ = require('./jq');
 
 
-var PAGE_URL = cleanUrl(window.location.hostname + window.location.pathname),
+var PAGE_URL = cleanUrl(window.location.hostname + ( (window.location.pathname.length > 1) ? window.location.pathname : '' )), // strip out just '/'
     PAGE_PARAMS = convertSearchToObject(window.location.search || '');
 log('PAGE_URL and PAGE_PARAMS have been set.');
 

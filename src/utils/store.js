@@ -1,11 +1,3 @@
-/**
- * Created with GDM.
- * User: ifiokjr
- * Date: 2015-01-06
- * Time: 09:47 AM
- * 
- * This file checks which methods to use for local storage. 
- */
 var store, storage,
     type = require('./type'),
     noop = function() {},

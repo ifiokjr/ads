@@ -49,5 +49,36 @@ module.exports = {
   
   appnexus: function(config) {
     return config;
+  },
+  
+  
+  dbm: {
+    
+    // Generate the dbm ros src tag
+    ros: function(params) {
+      var axel = Math.random() + '';
+      var a = axel * 10000000000000;
+      var base = 'https://ad.doubleclick.net/activity;src=';
+      
+      return base +
+        params.src + ';type=invmedia;cat=' +
+        params.cat + ';ord=' +
+        a + '?';
+
+    },
+    
+    // Generate the dbm conversion pixel
+    conversion: function(params) {
+      var base = 'https://ad.doubleclick.net/activity;src=';
+      return base +
+        params.src + ';type=sales;cat=' +
+        params.cat + ';qty=[Quantity];cost=' +
+        params.orderValue + ';ord=' +
+        params.orderId + '?';
+    }
   }
+  
+  
+  
+  
 };

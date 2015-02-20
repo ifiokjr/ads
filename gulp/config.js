@@ -25,9 +25,9 @@ module.exports = {
       // list of externally available modules to exclude from the bundle
       external: ['jquery']
     }, {
-      entries: src + '/debug.js',
+      entries: src + '/dev-entry.js',
       dest: dest,
-      outputName: 'gdm.debug.js',
+      outputName: 'gdm.dev-entry.js',
       // list of externally available modules to exclude from the bundle
       external: ['jquery']
     }]

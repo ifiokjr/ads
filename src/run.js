@@ -16,9 +16,10 @@ var store = require('./utils/store'),
     logOV = require('debug')('run:value'),
     logROS = require('debug')('run:ros'),
     logPP = require('debug')('run:product'),
+    logB = require('debug')('run:basket'),
     criteria = require('./utils/criteria').criteria,
     settings = require('./settings'),
-    PubSub = require('pubsub-js'),
+    PubSub = require('./pubsub-js'),
     masks = require('./utils/criteria').masks;
 
 
@@ -41,7 +42,8 @@ function createCompletePagePixel(data) {
       gdmSegmentId = config.gdmSegementId,
       items = getValue(ITEMSTRING) || null, // retrieve itemString generated on the cart page
       idList = getValue(IDLIST) || null,
-      journeyCode = config.journeyCode, segmentIds = '';
+      journeyCode = config.journeyCode, segmentIds = '',
+      dbmSrc = config.dbm.src, dbmCat = config.dbm.cat;
   
   
   
@@ -76,6 +78,19 @@ function createCompletePagePixel(data) {
     addPixel(genieSrc);
   }
   
+  if (dbmSrc && dbmCat) {
+    var dbmParams = {
+      src: dbmSrc,
+      cat: dbmCat,
+      orderId: orderId,
+      orderValue: orderValue
+    };
+    
+    var dbmPixelSrc = pixelSrc.dbm.conversion(dbmParams);
+    addPixel(dbmPixelSrc);
+    log('Doubleclick Bid Manager Conversion Pixel added to complete page');
+  }
+  
   // remove zombie listeners once code has run.   
   PubSub.clearAllSubscriptions();
 }
@@ -92,6 +107,20 @@ function createROSPixel (config) {
   addPixel(srcSecure);
     
   logROS('ROS Pixel added to the site.');
+}
+
+function createDbmROSPixel (config) {
+  var params = {
+    src: config.dbm.src,
+    cat: config.dbm.cat
+  };
+  
+  srcDbm = pixelSrc.dbm.ros(params);
+  
+  
+  addPixel(srcDbm);
+    
+  logROS('DBM ROS Pixel added to the site.');
 }
 
 // Still to be implemented
@@ -143,7 +172,7 @@ function buildBasketPagePixel (idList) {
   
   genieSrc = pixelSrc.adgenie(params, false) ;
   addPixel(genieSrc);
-  logPP('Basket pixel added added to the site.', genieSrc);
+  logB('Basket pixel added added to the site.', genieSrc);
 }
 
 
@@ -169,10 +198,16 @@ var listeners = {
 
 
 function rosPages(config) {
-  if (!config.ros) {return false;}
-  logROS('Page qualifies for ROS');
-  createROSPixel(config);
+  if (config.ros) {
+    logROS('Page qualifies for ROS');
+    createROSPixel(config);
+  }
   
+  if( config.dbm.ros) {
+    logROS('Page qualifies for Doubleclick Bid Manager ROS');
+    createDbmROSPixel(config);
+  }
+  return false;
 }
 
 
@@ -191,7 +226,9 @@ module.exports = {
     
     // basket = basketPages(config);
     
-    if (!complete) { basket = pages.basket.run(); }
+    if (!complete) { 
+      basket = pages.basket.run();
+    }
     
     if (!complete && !basket ) { product = pages.product.run(); }
     

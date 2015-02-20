@@ -795,11 +795,15 @@ module.exports = {
 // Load Polyfills
 var log = require('debug')('main');
 
+
+
 require('./utils/polyfills');
 
 var settings = require('./settings'),
     gdm = require('./gdmhandler'),
     run = require('./run');
+
+log('VERSION: ' + settings.version.join('.')); // Version should be obvious from the logger
 log('running gdm handler');
 // Firstly lets run the gdm handler. 
 gdm.start(settings.gdm);
@@ -840,8 +844,9 @@ var PubSub = require('./pubsub-js'),
 // takes in the page settings from the veads object
 function Page( config, settings ) {
   this.urlMatch = false;
-  this.params = settings.page.params;
-  this.urls = settings.page.urls;
+  var page = settings.page || {}; // for older versions which don't have the page obj
+  this.params = page.params || {};
+  this.urls = page.urls || [];
   this.dynamicId = settings.dynamicIdentifier || {};
   
   this.namespace = config.namespace;
@@ -959,9 +964,10 @@ function hasKeys(obj){
  *	@param { Object } ex An Error object
  */
 function throwException( ex ){
-  return function reThrowException(){
-    throw ex;
-  };
+  // for now hide errors
+//   return function reThrowException(){ 
+//     throw ex;
+//   };
 }
 
 function callSubscriberWithDelayedExceptions( subscriber, message, data ){
@@ -1263,7 +1269,7 @@ function createROSPixel (config) {
 function createDbmROSPixel (config) {
   var params = {
     src: config.dbm.src,
-    cat: config.dbm.cat,
+    cat: config.dbm.cat
   };
   
   srcDbm = pixelSrc.dbm.ros(params);
@@ -1379,7 +1385,6 @@ module.exports = {
     
     if (!complete) { 
       basket = pages.basket.run();
-      rosPages(config);
     }
     
     if (!complete && !basket ) { product = pages.product.run(); }
@@ -1535,7 +1540,7 @@ module.exports = {
     ros: rawSettings.ros,
     basketPages: rawSettings.basketPages,
     productPages: rawSettings.productPages,
-    dbm: rawSettings.dbm
+    dbm: rawSettings.dbm || {} // fallback for older versions that don't have this
   },
   dbm: rawSettings.dbm,
   namespace: 'veapps.' + (rawSettings.flexId || '') + (rawSettings.journeyCode || '') + '.GDM.',
@@ -2061,7 +2066,7 @@ var urlPattern = require('url-pattern'),
     $ = require('./jq');
 
 
-var PAGE_URL = cleanUrl(window.location.hostname + window.location.pathname),
+var PAGE_URL = cleanUrl(window.location.hostname + ( (window.location.pathname.length > 1) ? window.location.pathname : '' )), // strip out just '/'
     PAGE_PARAMS = convertSearchToObject(window.location.search || '');
 log('PAGE_URL and PAGE_PARAMS have been set.');
 

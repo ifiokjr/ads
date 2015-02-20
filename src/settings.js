@@ -24,8 +24,10 @@ module.exports = {
     completePage: rawSettings.completePage,
     ros: rawSettings.ros,
     basketPages: rawSettings.basketPages,
-    productPages: rawSettings.productPages
+    productPages: rawSettings.productPages,
+    dbm: rawSettings.dbm || {} // fallback for older versions that don't have this
   },
+  dbm: rawSettings.dbm,
   namespace: 'veapps.' + (rawSettings.flexId || '') + (rawSettings.journeyCode || '') + '.GDM.',
   version: [1,0,0]
 };

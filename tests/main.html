@@ -5,11 +5,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.16/require.min.js"></script>
   </head>
   <body>
     <div id='fixtures' style="display: none">
-<!--       <p id="orderId">09809</p> -->
-      <p id="orderValue">££569.67</p>
+      <p id="orderId">09809</p>
+      <p id="orderValue">£569.67</p>
       <p id="dynamicId">Not yet!</p>
       <table>
         <tr>
@@ -44,6 +45,11 @@
           exclude: false,
           ros: true,
           flexId: '5032',
+          dbm: {
+            src: 'iamsrc',
+            cat: 'iamcat',
+            ros: true
+          },
           completionId: 10000,
           journeyCode: 'asdfasdf',
           segmentIds: [100, 200, 300],
@@ -104,7 +110,7 @@
        $('#dynamicId').text('This is the Complete Page');
      }, 5000);
     </script>
-    <script src="../build/gdm.debug.js"></script>
+    <script src="../build/gdm.dev-entry.js"></script>
 <!--     <script>mocha.setup('bdd')</script> -->
 <!--     <script src="integration/tests.js"></script> -->
 <!--     <script>

@@ -1,4 +1,4 @@
-var PubSub = require('pubsub-js'),
+var PubSub = require('./pubsub-js'),
   checkElement = require('./utils/checkElements'),
   type = require('./utils/type'),
   urlCheck = require('./utils/urls'),
@@ -28,8 +28,9 @@ var PubSub = require('pubsub-js'),
 // takes in the page settings from the veads object
 function Page( config, settings ) {
   this.urlMatch = false;
-  this.params = settings.page.params;
-  this.urls = settings.page.urls;
+  var page = settings.page || {}; // for older versions which don't have the page obj
+  this.params = page.params || {};
+  this.urls = page.urls || [];
   this.dynamicId = settings.dynamicIdentifier || {};
   
   this.namespace = config.namespace;

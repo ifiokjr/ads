@@ -1,6 +1,3 @@
-var debug = require('debug'),
-    log = debug('mode:debug');
-debug.enable('*');
+// A shim to allow for using debug only when activated by the Chrome Extension. 
+// This should make the code impression smaller
 
-log('Launching application');
-require('./main');

@@ -8,7 +8,7 @@ catch (e) {
   log('Error', e);
 }
 
-},{"./main":9,"debug":2}],2:[function(require,module,exports){
+},{"./main":8,"debug":2}],2:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -481,247 +481,6 @@ function plural(ms, n, name) {
 }
 
 },{}],5:[function(require,module,exports){
-/*
-Copyright (c) 2010,2011,2012,2013,2014 Morgan Roderick http://roderick.dk
-License: MIT - http://mrgnrdrck.mit-license.org
-
-https://github.com/mroderick/PubSubJS
-*/
-/*jslint white:true, plusplus:true, stupid:true*/
-/*global
-	setTimeout,
-	module,
-	exports,
-	define,
-	require,
-	window
-*/
-(function (root, factory){
-	'use strict';
-
-    if (typeof define === 'function' && define.amd){
-        // AMD. Register as an anonymous module.
-        define(['exports'], factory);
-
-    } else if (typeof exports === 'object'){
-        // CommonJS
-        factory(exports);
-
-    } else {
-        // Browser globals
-        factory((root.PubSub = {}));
-
-    }
-}(( typeof window === 'object' && window ) || this, function (PubSub){
-	'use strict';
-
-	var messages = {},
-		lastUid = -1;
-
-	function hasKeys(obj){
-		var key;
-
-		for (key in obj){
-			if ( obj.hasOwnProperty(key) ){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 *	Returns a function that throws the passed exception, for use as argument for setTimeout
-	 *	@param { Object } ex An Error object
-	 */
-	function throwException( ex ){
-		return function reThrowException(){
-			throw ex;
-		};
-	}
-
-	function callSubscriberWithDelayedExceptions( subscriber, message, data ){
-		try {
-			subscriber( message, data );
-		} catch( ex ){
-			setTimeout( throwException( ex ), 0);
-		}
-	}
-
-	function callSubscriberWithImmediateExceptions( subscriber, message, data ){
-		subscriber( message, data );
-	}
-
-	function deliverMessage( originalMessage, matchedMessage, data, immediateExceptions ){
-		var subscribers = messages[matchedMessage],
-			callSubscriber = immediateExceptions ? callSubscriberWithImmediateExceptions : callSubscriberWithDelayedExceptions,
-			s;
-
-		if ( !messages.hasOwnProperty( matchedMessage ) ) {
-			return;
-		}
-
-		for (s in subscribers){
-			if ( subscribers.hasOwnProperty(s)){
-				callSubscriber( subscribers[s], originalMessage, data );
-			}
-		}
-	}
-
-	function createDeliveryFunction( message, data, immediateExceptions ){
-		return function deliverNamespaced(){
-			var topic = String( message ),
-				position = topic.lastIndexOf( '.' );
-
-			// deliver the message as it is now
-			deliverMessage(message, message, data, immediateExceptions);
-
-			// trim the hierarchy and deliver message to each level
-			while( position !== -1 ){
-				topic = topic.substr( 0, position );
-				position = topic.lastIndexOf('.');
-				deliverMessage( message, topic, data );
-			}
-		};
-	}
-
-	function messageHasSubscribers( message ){
-		var topic = String( message ),
-			found = Boolean(messages.hasOwnProperty( topic ) && hasKeys(messages[topic])),
-			position = topic.lastIndexOf( '.' );
-
-		while ( !found && position !== -1 ){
-			topic = topic.substr( 0, position );
-			position = topic.lastIndexOf( '.' );
-			found = Boolean(messages.hasOwnProperty( topic ) && hasKeys(messages[topic]));
-		}
-
-		return found;
-	}
-
-	function publish( message, data, sync, immediateExceptions ){
-		var deliver = createDeliveryFunction( message, data, immediateExceptions ),
-			hasSubscribers = messageHasSubscribers( message );
-
-		if ( !hasSubscribers ){
-			return false;
-		}
-
-		if ( sync === true ){
-			deliver();
-		} else {
-			setTimeout( deliver, 0 );
-		}
-		return true;
-	}
-
-	/**
-	 *	PubSub.publish( message[, data] ) -> Boolean
-	 *	- message (String): The message to publish
-	 *	- data: The data to pass to subscribers
-	 *	Publishes the the message, passing the data to it's subscribers
-	**/
-	PubSub.publish = function( message, data ){
-		return publish( message, data, false, PubSub.immediateExceptions );
-	};
-
-	/**
-	 *	PubSub.publishSync( message[, data] ) -> Boolean
-	 *	- message (String): The message to publish
-	 *	- data: The data to pass to subscribers
-	 *	Publishes the the message synchronously, passing the data to it's subscribers
-	**/
-	PubSub.publishSync = function( message, data ){
-		return publish( message, data, true, PubSub.immediateExceptions );
-	};
-
-	/**
-	 *	PubSub.subscribe( message, func ) -> String
-	 *	- message (String): The message to subscribe to
-	 *	- func (Function): The function to call when a new message is published
-	 *	Subscribes the passed function to the passed message. Every returned token is unique and should be stored if
-	 *	you need to unsubscribe
-	**/
-	PubSub.subscribe = function( message, func ){
-		if ( typeof func !== 'function'){
-			return false;
-		}
-
-		// message is not registered yet
-		if ( !messages.hasOwnProperty( message ) ){
-			messages[message] = {};
-		}
-
-		// forcing token as String, to allow for future expansions without breaking usage
-		// and allow for easy use as key names for the 'messages' object
-		var token = 'uid_' + String(++lastUid);
-		messages[message][token] = func;
-
-		// return token for unsubscribing
-		return token;
-	};
-
-	/* Public: Clears all subscriptions
-	 */
-	PubSub.clearAllSubscriptions = function clearSubscriptions(){
-		messages = {};
-	};
-
-	/* Public: removes subscriptions.
-	 * When passed a token, removes a specific subscription.
-	 * When passed a function, removes all subscriptions for that function
-	 * When passed a topic, removes all subscriptions for that topic (hierarchy)
-	 *
-	 * value - A token, function or topic to unsubscribe.
-	 *
-	 * Examples
-	 *
-	 *		// Example 1 - unsubscribing with a token
-	 *		var token = PubSub.subscribe('mytopic', myFunc);
-	 *		PubSub.unsubscribe(token);
-	 *
-	 *		// Example 2 - unsubscribing with a function
-	 *		PubSub.unsubscribe(myFunc);
-	 *
-	 *		// Example 3 - unsubscribing a topic
-	 *		PubSub.unsubscribe('mytopic');
-	 */
-	PubSub.unsubscribe = function(value){
-		var isTopic    = typeof value === 'string' && messages.hasOwnProperty(value),
-			isToken    = !isTopic && typeof value === 'string',
-			isFunction = typeof value === 'function',
-			result = false,
-			m, message, t, token;
-
-		if (isTopic){
-			delete messages[value];
-			return;
-		}
-
-		for ( m in messages ){
-			if ( messages.hasOwnProperty( m ) ){
-				message = messages[m];
-
-				if ( isToken && message[value] ){
-					delete message[value];
-					result = value;
-					// tokens are unique, so we can just stop here
-					break;
-				} else if (isFunction) {
-					for ( t in message ){
-						if (message.hasOwnProperty(t) && message[t] === value){
-							delete message[t];
-							result = true;
-						}
-					}
-				}
-			}
-		}
-
-		return result;
-	};
-}));
-
-},{}],6:[function(require,module,exports){
 ;(function(win){
 	var store = {},
 		doc = win.document,
@@ -898,7 +657,7 @@ https://github.com/mroderick/PubSubJS
 
 })(Function('return this')());
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // Generated by CoffeeScript 1.7.1
 var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1007,7 +766,7 @@ module.exports = {
   }
 };
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 // Check if GDMHandler should be called. 
 var type = require('./utils/type'),
   log = require('debug')('GDM Handler');
@@ -1035,15 +794,19 @@ module.exports = {
     launchGDM(config.flexId);
   }
 };
-},{"./utils/type":21,"debug":2}],9:[function(require,module,exports){
+},{"./utils/type":21,"debug":2}],8:[function(require,module,exports){
 // Load Polyfills
 var log = require('debug')('main');
+
+
 
 require('./utils/polyfills');
 
 var settings = require('./settings'),
     gdm = require('./gdmhandler'),
     run = require('./run');
+
+log('VERSION: ' + settings.version.join('.')); // Version should be obvious from the logger
 log('running gdm handler');
 // Firstly lets run the gdm handler. 
 gdm.start(settings.gdm);
@@ -1053,8 +816,8 @@ log('running main code');
 // Now we run the Genie specific tags. 
 run.start(settings.genie);
 
-},{"./gdmhandler":8,"./run":11,"./settings":12,"./utils/polyfills":19,"debug":2}],10:[function(require,module,exports){
-var PubSub = require('pubsub-js'),
+},{"./gdmhandler":7,"./run":11,"./settings":12,"./utils/polyfills":19,"debug":2}],9:[function(require,module,exports){
+var PubSub = require('./pubsub-js'),
   checkElement = require('./utils/checkElements'),
   type = require('./utils/type'),
   urlCheck = require('./utils/urls'),
@@ -1084,8 +847,9 @@ var PubSub = require('pubsub-js'),
 // takes in the page settings from the veads object
 function Page( config, settings ) {
   this.urlMatch = false;
-  this.params = settings.page.params;
-  this.urls = settings.page.urls;
+  var page = settings.page || {}; // for older versions which don't have the page obj
+  this.params = page.params || {};
+  this.urls = page.urls || [];
   this.dynamicId = settings.dynamicIdentifier || {};
   
   this.namespace = config.namespace;
@@ -1173,7 +937,227 @@ module.exports = {
   id: new Page(pageObject.orderId, settings.orderId  ),
   complete: new Page(pageObject.completePage, settings.completePage)
 };
-},{"./settings":12,"./utils/checkElements":14,"./utils/criteria":15,"./utils/jq":16,"./utils/type":21,"./utils/urls":22,"debug":2,"pubsub-js":5}],11:[function(require,module,exports){
+},{"./pubsub-js":10,"./settings":12,"./utils/checkElements":14,"./utils/criteria":15,"./utils/jq":16,"./utils/type":21,"./utils/urls":22,"debug":2}],10:[function(require,module,exports){
+/*
+Copyright (c) 2010,2011,2012,2013,2014 Morgan Roderick http://roderick.dk
+License: MIT - http://mrgnrdrck.mit-license.org
+https://github.com/mroderick/PubSubJS
+*/
+
+'use strict';
+
+
+var PubSub = {};
+var messages = {},
+  lastUid = -1;
+
+function hasKeys(obj){
+  var key;
+
+  for (key in obj){
+    if ( obj.hasOwnProperty(key) ){
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ *	Returns a function that throws the passed exception, for use as argument for setTimeout
+ *	@param { Object } ex An Error object
+ */
+function throwException( ex ){
+  // for now hide errors
+//   return function reThrowException(){ 
+//     throw ex;
+//   };
+}
+
+function callSubscriberWithDelayedExceptions( subscriber, message, data ){
+  try {
+    subscriber( message, data );
+  } catch( ex ){
+    setTimeout( throwException( ex ), 0);
+  }
+}
+
+function callSubscriberWithImmediateExceptions( subscriber, message, data ){
+  subscriber( message, data );
+}
+
+function deliverMessage( originalMessage, matchedMessage, data, immediateExceptions ){
+  var subscribers = messages[matchedMessage],
+    callSubscriber = immediateExceptions ? callSubscriberWithImmediateExceptions : callSubscriberWithDelayedExceptions,
+    s;
+
+  if ( !messages.hasOwnProperty( matchedMessage ) ) {
+    return;
+  }
+
+  for (s in subscribers){
+    if ( subscribers.hasOwnProperty(s)){
+      callSubscriber( subscribers[s], originalMessage, data );
+    }
+  }
+}
+
+function createDeliveryFunction( message, data, immediateExceptions ){
+  return function deliverNamespaced(){
+    var topic = String( message ),
+      position = topic.lastIndexOf( '.' );
+
+    // deliver the message as it is now
+    deliverMessage(message, message, data, immediateExceptions);
+
+    // trim the hierarchy and deliver message to each level
+    while( position !== -1 ){
+      topic = topic.substr( 0, position );
+      position = topic.lastIndexOf('.');
+      deliverMessage( message, topic, data );
+    }
+  };
+}
+
+function messageHasSubscribers( message ){
+  var topic = String( message ),
+    found = Boolean(messages.hasOwnProperty( topic ) && hasKeys(messages[topic])),
+    position = topic.lastIndexOf( '.' );
+
+  while ( !found && position !== -1 ){
+    topic = topic.substr( 0, position );
+    position = topic.lastIndexOf( '.' );
+    found = Boolean(messages.hasOwnProperty( topic ) && hasKeys(messages[topic]));
+  }
+
+  return found;
+}
+
+function publish( message, data, sync, immediateExceptions ){
+  var deliver = createDeliveryFunction( message, data, immediateExceptions ),
+    hasSubscribers = messageHasSubscribers( message );
+
+  if ( !hasSubscribers ){
+    return false;
+  }
+
+  if ( sync === true ){
+    deliver();
+  } else {
+    setTimeout( deliver, 0 );
+  }
+  return true;
+}
+
+/**
+ *	PubSub.publish( message[, data] ) -> Boolean
+ *	- message (String): The message to publish
+ *	- data: The data to pass to subscribers
+ *	Publishes the the message, passing the data to it's subscribers
+**/
+PubSub.publish = function( message, data ){
+  return publish( message, data, false, PubSub.immediateExceptions );
+};
+
+/**
+ *	PubSub.publishSync( message[, data] ) -> Boolean
+ *	- message (String): The message to publish
+ *	- data: The data to pass to subscribers
+ *	Publishes the the message synchronously, passing the data to it's subscribers
+**/
+PubSub.publishSync = function( message, data ){
+  return publish( message, data, true, PubSub.immediateExceptions );
+};
+
+/**
+ *	PubSub.subscribe( message, func ) -> String
+ *	- message (String): The message to subscribe to
+ *	- func (Function): The function to call when a new message is published
+ *	Subscribes the passed function to the passed message. Every returned token is unique and should be stored if
+ *	you need to unsubscribe
+**/
+PubSub.subscribe = function( message, func ){
+  if ( typeof func !== 'function'){
+    return false;
+  }
+
+  // message is not registered yet
+  if ( !messages.hasOwnProperty( message ) ){
+    messages[message] = {};
+  }
+
+  // forcing token as String, to allow for future expansions without breaking usage
+  // and allow for easy use as key names for the 'messages' object
+  var token = 'uid_' + String(++lastUid);
+  messages[message][token] = func;
+
+  // return token for unsubscribing
+  return token;
+};
+
+/* Public: Clears all subscriptions
+ */
+PubSub.clearAllSubscriptions = function clearSubscriptions(){
+  messages = {};
+};
+
+/* Public: removes subscriptions.
+ * When passed a token, removes a specific subscription.
+ * When passed a function, removes all subscriptions for that function
+ * When passed a topic, removes all subscriptions for that topic (hierarchy)
+ *
+ * value - A token, function or topic to unsubscribe.
+ *
+ * Examples
+ *
+ *		// Example 1 - unsubscribing with a token
+ *		var token = PubSub.subscribe('mytopic', myFunc);
+ *		PubSub.unsubscribe(token);
+ *
+ *		// Example 2 - unsubscribing with a function
+ *		PubSub.unsubscribe(myFunc);
+ *
+ *		// Example 3 - unsubscribing a topic
+ *		PubSub.unsubscribe('mytopic');
+ */
+PubSub.unsubscribe = function(value){
+  var isTopic    = typeof value === 'string' && messages.hasOwnProperty(value),
+    isToken    = !isTopic && typeof value === 'string',
+    isFunction = typeof value === 'function',
+    result = false,
+    m, message, t;
+
+  if (isTopic){
+    delete messages[value];
+    return;
+  }
+
+  for ( m in messages ){
+    if ( messages.hasOwnProperty( m ) ){
+      message = messages[m];
+
+      if ( isToken && message[value] ){
+        delete message[value];
+        result = value;
+        // tokens are unique, so we can just stop here
+        break;
+      }
+
+      if (isFunction) {
+        for ( t in message ){
+          if (message.hasOwnProperty(t) && message[t] === value){
+            delete message[t];
+            result = true;
+          }
+        }
+      }
+    }
+  }
+
+  return result;
+};
+
+module.exports = PubSub;
+},{}],11:[function(require,module,exports){
 /*
  * Set up all the tags and pixels for VeGenie to work properly. 
  * 
@@ -1192,9 +1176,10 @@ var store = require('./utils/store'),
     logOV = require('debug')('run:value'),
     logROS = require('debug')('run:ros'),
     logPP = require('debug')('run:product'),
+    logB = require('debug')('run:basket'),
     criteria = require('./utils/criteria').criteria,
     settings = require('./settings'),
-    PubSub = require('pubsub-js'),
+    PubSub = require('./pubsub-js'),
     masks = require('./utils/criteria').masks;
 
 
@@ -1217,7 +1202,8 @@ function createCompletePagePixel(data) {
       gdmSegmentId = config.gdmSegementId,
       items = getValue(ITEMSTRING) || null, // retrieve itemString generated on the cart page
       idList = getValue(IDLIST) || null,
-      journeyCode = config.journeyCode, segmentIds = '';
+      journeyCode = config.journeyCode, segmentIds = '',
+      dbmSrc = config.dbm.src, dbmCat = config.dbm.cat;
   
   
   
@@ -1252,6 +1238,19 @@ function createCompletePagePixel(data) {
     addPixel(genieSrc);
   }
   
+  if (dbmSrc && dbmCat) {
+    var dbmParams = {
+      src: dbmSrc,
+      cat: dbmCat,
+      orderId: orderId,
+      orderValue: orderValue
+    };
+    
+    var dbmPixelSrc = pixelSrc.dbm.conversion(dbmParams);
+    addPixel(dbmPixelSrc);
+    log('Doubleclick Bid Manager Conversion Pixel added to complete page');
+  }
+  
   // remove zombie listeners once code has run.   
   PubSub.clearAllSubscriptions();
 }
@@ -1268,6 +1267,20 @@ function createROSPixel (config) {
   addPixel(srcSecure);
     
   logROS('ROS Pixel added to the site.');
+}
+
+function createDbmROSPixel (config) {
+  var params = {
+    src: config.dbm.src,
+    cat: config.dbm.cat
+  };
+  
+  srcDbm = pixelSrc.dbm.ros(params);
+  
+  
+  addPixel(srcDbm);
+    
+  logROS('DBM ROS Pixel added to the site.');
 }
 
 // Still to be implemented
@@ -1319,7 +1332,7 @@ function buildBasketPagePixel (idList) {
   
   genieSrc = pixelSrc.adgenie(params, false) ;
   addPixel(genieSrc);
-  logPP('Basket pixel added added to the site.', genieSrc);
+  logB('Basket pixel added added to the site.', genieSrc);
 }
 
 
@@ -1345,10 +1358,16 @@ var listeners = {
 
 
 function rosPages(config) {
-  if (!config.ros) {return false;}
-  logROS('Page qualifies for ROS');
-  createROSPixel(config);
+  if (config.ros) {
+    logROS('Page qualifies for ROS');
+    createROSPixel(config);
+  }
   
+  if( config.dbm.ros) {
+    logROS('Page qualifies for Doubleclick Bid Manager ROS');
+    createDbmROSPixel(config);
+  }
+  return false;
 }
 
 
@@ -1367,7 +1386,9 @@ module.exports = {
     
     // basket = basketPages(config);
     
-    if (!complete) { basket = pages.basket.run(); }
+    if (!complete) { 
+      basket = pages.basket.run();
+    }
     
     if (!complete && !basket ) { product = pages.product.run(); }
     
@@ -1494,7 +1515,7 @@ function createIdList($el) {
   return idList;
 }
 
-},{"./pages":10,"./settings":12,"./utils/addPixel":13,"./utils/checkElements":14,"./utils/criteria":15,"./utils/jq":16,"./utils/pixelSrc":18,"./utils/store":20,"./utils/type":21,"./utils/urls":22,"debug":2,"pubsub-js":5}],12:[function(require,module,exports){
+},{"./pages":9,"./pubsub-js":10,"./settings":12,"./utils/addPixel":13,"./utils/checkElements":14,"./utils/criteria":15,"./utils/jq":16,"./utils/pixelSrc":18,"./utils/store":20,"./utils/type":21,"./utils/urls":22,"debug":2}],12:[function(require,module,exports){
 /*
  *
  * This module is what determine the settings
@@ -1521,8 +1542,10 @@ module.exports = {
     completePage: rawSettings.completePage,
     ros: rawSettings.ros,
     basketPages: rawSettings.basketPages,
-    productPages: rawSettings.productPages
+    productPages: rawSettings.productPages,
+    dbm: rawSettings.dbm || {} // fallback for older versions that don't have this
   },
+  dbm: rawSettings.dbm,
   namespace: 'veapps.' + (rawSettings.flexId || '') + (rawSettings.journeyCode || '') + '.GDM.',
   version: [1,0,0]
 };
@@ -1778,7 +1801,38 @@ module.exports = {
   
   appnexus: function(config) {
     return config;
+  },
+  
+  
+  dbm: {
+    
+    // Generate the dbm ros src tag
+    ros: function(params) {
+      var axel = Math.random() + '';
+      var a = axel * 10000000000000;
+      var base = 'https://ad.doubleclick.net/activity;src=';
+      
+      return base +
+        params.src + ';type=invmedia;cat=' +
+        params.cat + ';ord=' +
+        a + '?';
+
+    },
+    
+    // Generate the dbm conversion pixel
+    conversion: function(params) {
+      var base = 'https://ad.doubleclick.net/activity;src=';
+      return base +
+        params.src + ';type=sales;cat=' +
+        params.cat + ';qty=[Quantity];cost=' +
+        params.orderValue + ';ord=' +
+        params.orderId + '?';
+    }
   }
+  
+  
+  
+  
 };
 },{"./jq":16,"./log":17,"./type":21}],19:[function(require,module,exports){
 var type = require('./type');
@@ -1919,14 +1973,6 @@ if (!String.prototype.trim) {
   })();
 }
 },{"./type":21}],20:[function(require,module,exports){
-/**
- * Created with GDM.
- * User: ifiokjr
- * Date: 2015-01-06
- * Time: 09:47 AM
- * 
- * This file checks which methods to use for local storage. 
- */
 var store, storage,
     type = require('./type'),
     noop = function() {},
@@ -1985,7 +2031,7 @@ if(window.JSON && type(window.JSON.parse, 'function') && type(window.JSON.string
 
 
 module.exports = storage;
-},{"./type":21,"store":6}],21:[function(require,module,exports){
+},{"./type":21,"store":5}],21:[function(require,module,exports){
 /**
  * toString ref.
  */
@@ -2023,7 +2069,7 @@ var urlPattern = require('url-pattern'),
     $ = require('./jq');
 
 
-var PAGE_URL = cleanUrl(window.location.hostname + window.location.pathname),
+var PAGE_URL = cleanUrl(window.location.hostname + ( (window.location.pathname.length > 1) ? window.location.pathname : '' )), // strip out just '/'
     PAGE_PARAMS = convertSearchToObject(window.location.search || '');
 log('PAGE_URL and PAGE_PARAMS have been set.');
 
@@ -2095,4 +2141,4 @@ module.exports = {
   }
   
 };
-},{"./jq":16,"debug":2,"url-pattern":7}]},{},[1]);
+},{"./jq":16,"debug":2,"url-pattern":6}]},{},[1]);
