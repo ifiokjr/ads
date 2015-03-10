@@ -1386,7 +1386,7 @@ module.exports = {
     
     // basket = basketPages(config);
     
-    if (!complete) { 
+    if (!complete) {
       basket = pages.basket.run();
     }
     
