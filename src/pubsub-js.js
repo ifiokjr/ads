@@ -1,9 +1,3 @@
-/*
-Copyright (c) 2010,2011,2012,2013,2014 Morgan Roderick http://roderick.dk
-License: MIT - http://mrgnrdrck.mit-license.org
-https://github.com/mroderick/PubSubJS
-*/
-
 'use strict';
 
 
@@ -28,9 +22,12 @@ function hasKeys(obj){
  */
 function throwException( ex ){
   // for now hide errors
-//   return function reThrowException(){ 
-//     throw ex;
-//   };
+  return function reThrowException(){
+    if(window.vedebugmode) {
+      throw ex;
+    }
+    
+  };
 }
 
 function callSubscriberWithDelayedExceptions( subscriber, message, data ){

@@ -2,6 +2,7 @@
  *
  * This module is what determine the settings
  * for each module used in the application.
+ * 
  */
 
 var rawSettings = window.veTagData.settings.gdm;
@@ -29,5 +30,5 @@ module.exports = {
   },
   dbm: rawSettings.dbm,
   namespace: 'veapps.' + (rawSettings.flexId || '') + (rawSettings.journeyCode || '') + '.GDM.',
-  version: [1,0,0]
+  version: [1,3,1]
 };

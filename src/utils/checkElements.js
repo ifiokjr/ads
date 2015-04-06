@@ -77,7 +77,7 @@ module.exports = {
     }
     
     var stop, $el, newVal;
-    var calledInterval = interval(2000, 1000, function() {
+    var calledInterval = interval(500, 2000, function() {
       $el = $(selector);
       newVal = getValOrText($el);
       if(!type(newVal, 'nan') && !type(newVal, 'null') &&

@@ -10,7 +10,8 @@
   <body>
     <div id='fixtures' style="display: none">
       <p id="orderId">09809</p>
-      <p id="orderValue">£569.67</p>
+      <p class="orderValue">£569.67</p>
+      <p class="orderValue">£569.67</p>
       <p id="dynamicId">Not yet!</p>
       <table>
         <tr>
@@ -47,7 +48,10 @@
           flexId: '5032',
           dbm: {
             src: 'iamsrc',
-            cat: 'iamcat',
+            cat: {
+              ros: 'iam-ros-cat',
+              conversion: 'iam-conversion-cat'
+            },
             ros: true
           },
           completionId: 10000,
@@ -83,15 +87,18 @@
               'regex': null
           },
           orderValue: {
-              selector: '#orderValue',
+              selector: '.orderValue',
               'default': '1.00',
                mask: '',
               page: {
                   params: {  },
-                  urls: [  ]
+                  urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
               },
+              updates: !!~document.URL.indexOf('updates') ? true : false,
               'regex': /[^0-9,\.]/g
           },
+       
+       
           completePage: {
               page: {
                   params: { page: 'complete'  },
@@ -108,6 +115,7 @@
      
      setTimeout(function() {
        $('#dynamicId').text('This is the Complete Page');
+       $('.orderValue').text('$100.00');
      }, 5000);
     </script>
     <script src="../build/gdm.dev-entry.js"></script>

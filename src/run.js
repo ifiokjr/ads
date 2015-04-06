@@ -14,6 +14,7 @@ var store = require('./utils/store'),
     log = require('debug')('conversion:pixel'),
     type = require('./utils/type'),
     logOV = require('debug')('run:value'),
+    logID = require('debug')('run:id'),
     logROS = require('debug')('run:ros'),
     logPP = require('debug')('run:product'),
     logB = require('debug')('run:basket'),
@@ -43,7 +44,7 @@ function createCompletePagePixel(data) {
       items = getValue(ITEMSTRING) || null, // retrieve itemString generated on the cart page
       idList = getValue(IDLIST) || null,
       journeyCode = config.journeyCode, segmentIds = '',
-      dbmSrc = config.dbm.src, dbmCat = config.dbm.cat;
+      dbmSrc = config.dbm.src, dbmCat = config.dbm.cat.conversion || config.dbm.cat.ros;
   
   
   
@@ -112,7 +113,7 @@ function createROSPixel (config) {
 function createDbmROSPixel (config) {
   var params = {
     src: config.dbm.src,
-    cat: config.dbm.cat
+    cat: config.dbm.cat.ros
   };
   
   srcDbm = pixelSrc.dbm.ros(params);
@@ -203,7 +204,7 @@ function rosPages(config) {
     createROSPixel(config);
   }
   
-  if( config.dbm.ros) {
+  if( config.dbm.ros && config.dbm.cat.ros) {
     logROS('Page qualifies for Doubleclick Bid Manager ROS');
     createDbmROSPixel(config);
   }
@@ -217,6 +218,7 @@ module.exports = {
   start: function(config) {
     var complete, orderVal, basket, product;
     
+    rosPages(config);
     // Are we on the order value page or orderIdPage?
     orderVal = pages.value.run();
     var orderId = pages.id.run();
@@ -232,7 +234,6 @@ module.exports = {
     
     if (!complete && !basket ) { product = pages.product.run(); }
     
-    if ( !complete && !basket && !product ) { rosPages(config); }
   }
 };
 
@@ -286,24 +287,26 @@ function createBasketInformation(config) {
  * Find the OrderValue from the page when this is the relevant page.
  */
 function checkForOrderValueSelector(orderValueObject) {
+  var dynamically = (orderValueObject.updates && orderValueObject.urls.length) ? ' - DYNAMAICALLY': '';
+  var check = (orderValueObject.updates && orderValueObject.urls.length) ? checkElement.checkUpdates : checkElement.check;
+
+  logOV('Checking For Order Value' + dynamically);
   
-  logOV('Checking For Order Value');
-  
-  checkElement.check( orderValueObject.selector, function($el) {
-    var val = masks[orderValueObject.mask || 'doNothing'](regexReplacementFromElement( $el, orderValueObject.regex, orderValueObject ));
-    logOV('Order Value element found', val);
+  check( orderValueObject.selector, function($el) {
+    var val = masks[orderValueObject.mask || 'doNothing'](regexReplacementFromElement( $el, orderValueObject.regex, orderValueObject['default'] ));
+    logOV('Order Value element found'+ dynamically + ' : ' + val);
     storeValue(val, ORDERVALUE);
   });
 }
 
 function checkPageObject(obj) {
   
-  logOV('Checking For order Id');
+  logID('Checking For order Id');
   
   checkElement.check( obj.selector, function($el) {
     
-    var val = masks[obj.mask || 'doNothing'](regexReplacementFromElement( $el, obj.regex, obj ));
-    logOV('Order Id element found', val);
+    var val = masks[obj.mask || 'doNothing'](regexReplacementFromElement( $el, obj.regex, obj['default'] ));
+    logID( 'Order ID found ' + val );
     storeValue(val, ORDERID);
   });
 }
