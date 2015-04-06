@@ -1,3 +1,105 @@
+### VeAds Object
+
+Here is the object that this works with. Must be placed within the VeInteractive Tag
+
+```
+gdm = {
+  configuration: {
+    journeyCode: 'asdfasdf',
+
+    dbm: {
+      include: true,
+      src: 'iamsrc',
+      cat: {
+        ros: 'iam-ros-cat',
+        conversion: 'iam-conversion-cat'
+      },
+      ros: true
+    },
+    
+    appNexus: {
+      completionId: 10000,
+      segmentIds: [100, 200, 300]
+    },
+    
+    flex: {
+      include: true,
+      ros: true,
+      id: '5032'
+    }
+    
+  }, 
+
+  orderId: {
+      selector: '#orderId',
+      mask: '',
+      'regex': /[^0-9]/g,
+      page: {
+          params: { },
+          urls: [  ]
+      }
+  },
+  productPages: {
+      selector: '#pp',
+      'default': '000000',
+      page: {
+          params: { page: 'product' },
+          urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
+      },
+      'regex': null
+  }, 
+  basketPages: {
+      selectors: {
+          productId: '.productId', 
+          productPrice: '.productValue'
+      },
+      page: {
+          params: { page: 'basket' },
+          urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
+      },
+      'regex': null
+  },
+  orderValue: {
+      selector: '.orderValue',
+      'default': '1.00',
+       mask: '',
+      page: {
+          params: {  },
+          urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
+      },
+      updates: !!~document.URL.indexOf('updates') ? true : false,
+      'regex': /[^0-9,\.]/g
+  },
+
+
+  completePages: [{
+      page: {
+          params: { page: 'complete'  },
+          urls: [ 'ranger-quiet.codio.io/tests/*'  ]                  
+      },  
+
+      dynamicIdentifier: { 
+          selector: '#dynamicId',
+          criteria: 'contains',
+          value: ['Complete Page', 'J\'ai ne comprend pas'] // Can now be used for multiple identifiers
+      },
+      
+      overrides: {
+        include: true, 
+        appNexus: {
+          conversion: '100veride',
+          segment: '1000',
+        }, 
+        dbm: {
+          cat: 'asdf-override-cat',
+          src: 'override-src'
+        }
+      }
+  }]
+}
+```
+
+
 ### Implementations
 
 - GDM general script [ ]
