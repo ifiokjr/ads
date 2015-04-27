@@ -5,7 +5,7 @@
  * 
  */
 
-var rawSettings = window.veTagData.settings.gdm;
+var rawSettings = window.veTagData.settings.veAds || window.veTagData.settings.gdm;
 
 module.exports = {
   gdm: rawSettings.gdm || {

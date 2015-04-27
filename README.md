@@ -165,7 +165,7 @@ var settings = {
                     checkout: 'true',
                     id: 1
                 },
-                urls: ['www.awesome.com/checkout/, www.awesome.com/checkout/awesome/']
+                urls: ['www.awesome.com/checkout/', 'www.awesome.com/checkout/awesome/']
             },
             regex: /[0-9]+\.[0-9]+/
         },
