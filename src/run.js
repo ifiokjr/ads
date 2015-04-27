@@ -238,6 +238,7 @@ module.exports = {
 };
 
 
+// Export this regex into another file.
 function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
   regex = type(regex, 'regexp') ? regex : new RegExp('', 'g');
   return ($el.text() && $el.text().trim().replace(regex, '')) ||
@@ -269,8 +270,8 @@ function createBasketInformation(config) {
   
 
   
-  var itemString = createItemString($productPriceEl);
-  var idList = createIdList($productIdEl);
+  var itemString = createBasketString($productPriceEl, itemStringCallback);
+  var idList = createBasketString($productIdEl, idListCallback);
   
   
   // TODO: This is called regardless of whether we have something to store or not. That is not good!
@@ -330,30 +331,43 @@ function getValue(valName) {
 
 // Basket page stuff
 
-function createItemString($el) {
-  if(!$el || !$el.length) {return '';}
+
+// Create a list of product names from an element.
+// Blue%20Bag|Red%20Shoes|Green%20Coat
+function idListCallback($el, len) {
+  var idList = '';
+  $el.each(function (idx, el) {
+    var val = checkElement.getValOrText($(el));
+    
+    // run through basket regex here. Using `regexReplacementFromElement`
+    val = encodeURIComponent(val);
+    idList += val + (idx < (len - 1) ? '|' : '');
+  });
+  return idList;
+}
+
+
+// Item string to generate a string that looks like
+// PROD1:7.99|PROD2:4.99|PROD3:12.99
+function itemStringCallback($el, len) {
   var itemString = '';
-  var len = $el.length;
-  if (!len) {return '';}
   $el.each(function (idx, el) {
     var val = checkElement.getValOrText($(el));
     val = masks.currency(val);
     itemString += 'PROD' + (idx + 1) + ':' + val + (idx < (len - 1) ? '|' : '');
   });
-  
   return itemString;
 }
 
-function createIdList($el) {
-  if(!$el || !$el.length) {return '';}
-  var idList = '';
+
+// This function allows us to create a string from the basket page using the 
+// function passed in as a second parameter. 
+// [:TODO] Regex check needs to be perfomed
+function createBasketString($el, fn) {
+  if(!$el || !$el.length || !fn ) {return '';}
+  
   var len = $el.length;
   if (!len) {return '';}
-  $el.each(function (idx, el) {
-    var val = checkElement.getValOrText($(el));
-    val = encodeURIComponent(val);
-    idList += val + (idx < (len - 1) ? '|' : '');
-  });
-  
-  return idList;
+  return fn($el, len); // return the value generated from the callback function  
 }
+
