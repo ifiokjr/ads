@@ -101,7 +101,61 @@ module.exports = {
 };
 
 
+/** NEW VERSION. REGEX. the parameters should change to obj and noFallback. ideal merging with getVal()
+function getValOrText($el,obj) {
+  if ( type($el, 'string') ) { $el = $($el); }
+ 
+   //It can be an ID or a Price. Alphanumeric, can't just set default like in getVal()
+   var val, timestamp = (new Date()).getTime();
+   
+   if (!$el.length){ 
+   
+     if($el.val() && $el.val().trim()){ val = regexReplacementFromElement( $el, obj.regex, obj['default'], timestamp) ;}
+     else { val = $el.text() && $el.text().trim() }
+   
+   }else val = '';
+ 
+  return val;
+}*/
+
+/**
+ * OLD VERSION. Needs amendment for regex
+ */
 function getValOrText($el) {
   if ( type($el, 'string') ) { $el = $($el); }
+
   return $el.length ? ($el.val() && $el.val().trim()) || ($el.text() && $el.text().trim()) : '';
 }
+
+
+/**
+  * Obtain the falue from the current page if this is the relevant page.
+  */
+function getVal ( obj, noFallback ) {
+  var $el = $(obj.selector),
+      timestamp = (new Date()).getTime();
+  
+  if (!$el.length) { return noFallback ? '' : obj['default'] || timestamp; }
+  
+  var val = regexReplacementFromElement( $el, obj.regex, obj['default'], timestamp);
+     
+  return encodeURIComponent(val);
+}
+
+
+/**
+ * 
+ * Checks value captured with an expression and transforms it with regex.
+ *
+ * @param {element} $el - domain element with a value or text
+ * @param {str} regex - regular expression to transform the value of the element
+ * @param {str} fallback - Default value in case previous failures
+ * @param {str} lastResort - last alternative. Ex: Timestamp
+ */
+function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
+  regex = type(regex, 'regexp') ? regex : new RegExp('', 'g');
+  return ($el.text() && $el.text().trim().replace(regex, '')) ||
+      ($el.val() && $el.val().trim().replace(regex, '')) ||
+      String( fallback || lastResort );
+}
+

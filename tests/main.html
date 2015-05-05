@@ -80,11 +80,12 @@
                   productId: '.productId', 
                   productPrice: '.productValue'
               },
+             'default': '1.00',
               page: {
                   params: { page: 'basket' },
                   urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
               },
-              'regex': null
+              'regex': /[^0-9,\.]/g
           },
           orderValue: {
               selector: '.orderValue',

@@ -97,7 +97,18 @@ function createCompletePagePixel(data) {
 }
 
 
-// Add the ROS to the site when not on completion or product page. 
+/**
+ * 
+ * PIXEL CREATION SECTION 
+ * 
+ * [:TODO] - All the pixel creation methods should require the same parameters
+ */
+
+/**
+ * Creation of the ROS pixel
+ * 
+ * @param {object} config - object with the configuration of the site.
+ */
 function createROSPixel (config) {
   var srcIb, srcSecure;
   
@@ -110,6 +121,10 @@ function createROSPixel (config) {
   logROS('ROS Pixel added to the site.');
 }
 
+/**
+ * 
+ * [:TODO] - merge with createROSPixel if possible. Flag to diferenciate DBM or no.
+ */
 function createDbmROSPixel (config) {
   var params = {
     src: config.dbm.src,
@@ -124,8 +139,29 @@ function createDbmROSPixel (config) {
   logROS('DBM ROS Pixel added to the site.');
 }
 
-// Still to be implemented
+/**
+ * 
+ * [:TODO] - what are we using this function for? can't be used inside createROSPixel??
+ */
+function rosPages(config) {
+  if (config.ros) {
+    logROS('Page qualifies for ROS');
+    createROSPixel(config);
+  }
+  
+  if( config.dbm.ros && config.dbm.cat.ros) {
+    logROS('Page qualifies for Doubleclick Bid Manager ROS');
+    createDbmROSPixel(config);
+  }
+  return false;
+}
 
+
+/**
+ * Creation of the Product page pixel
+ * 
+ * @param {object} productPageObj - object with the configuration of the product page.
+ */
 function buildProductPagePixel (productPageObj) {
   // when default is provided we should fallback to it if not then 
   // don't place a pixel on this page.
@@ -161,7 +197,11 @@ function buildProductPagePixel (productPageObj) {
   logPP('Product Page Pixel added to the site.');
 }
 
-
+/**
+ * Creation of the Basket page pixel
+ * 
+ * @param {object} idList - list of IDs of the products in the basket
+ */
 function buildBasketPagePixel (idList) {
   var journeyCode = settings.genie.journeyCode;
   if(!idList) { return; }
@@ -185,7 +225,9 @@ var subscribers = {
   complete: function(msg, data) {createCompletePagePixel(data);}
 };
 
-// LISTENERS
+/**
+ * LISTENERS
+ */
 var listeners = {
   value: PubSub.subscribe('page.value', subscribers.value),
   id: PubSub.subscribe('page.id', subscribers.id),
@@ -193,25 +235,6 @@ var listeners = {
   basket: PubSub.subscribe('page.basket', subscribers.basket),
   complete: PubSub.subscribe('page.complete', subscribers.complete)
 };
-
-
-
-
-
-function rosPages(config) {
-  if (config.ros) {
-    logROS('Page qualifies for ROS');
-    createROSPixel(config);
-  }
-  
-  if( config.dbm.ros && config.dbm.cat.ros) {
-    logROS('Page qualifies for Doubleclick Bid Manager ROS');
-    createDbmROSPixel(config);
-  }
-  return false;
-}
-
-
 
 
 module.exports = {
@@ -237,8 +260,10 @@ module.exports = {
   }
 };
 
-
-// Export this regex into another file.
+/**
+ * 
+ *[:TODO] Exported to .utils/CheckElements. Remove when approved.
+ */
 function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
   regex = type(regex, 'regexp') ? regex : new RegExp('', 'g');
   return ($el.text() && $el.text().trim().replace(regex, '')) ||
@@ -247,9 +272,9 @@ function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
 }
 
 
-
-/*
- * Obtain the falue from the current page if this is the relevant page.
+/**
+ * 
+ *[:TODO] Exported to .utils/CheckElements. Remove when approved.
  */
 function getVal ( obj, noFallback ) {
   var $el = $(obj.selector),
@@ -284,9 +309,9 @@ function createBasketInformation(config) {
   
 }
 
-/*
- * Find the OrderValue from the page when this is the relevant page.
- */
+/**
+  * Find the OrderValue from the page when this is the relevant page.
+  */
 function checkForOrderValueSelector(orderValueObject) {
   var dynamically = (orderValueObject.updates && orderValueObject.urls.length) ? ' - DYNAMAICALLY': '';
   var check = (orderValueObject.updates && orderValueObject.urls.length) ? checkElement.checkUpdates : checkElement.check;
@@ -312,33 +337,25 @@ function checkPageObject(obj) {
   });
 }
 
-
-function storeValue(val, valName) {
-  logOV('Storing ' + valName + ' as ' + val);
-  store.set(namespace+valName, val);
-}
-
-
 // If order value should be called from the complete page - then run this instead. 
 function orderValueOnCompletePage(orderValueObject) {}
 
-function getValue(valName) {
-  logOV('Obtaining from storage ' + valName);
-  return store.get(namespace + valName);
-}
 
 
-
-// Basket page stuff
-
-
-// Create a list of product names from an element.
-// Blue%20Bag|Red%20Shoes|Green%20Coat
+/**
+  * Create a list of product names from an element. Blue%20Bag|Red%20Shoes|Green%20Coat
+  *
+  * @param {element} $el - jQuery selector for an element of the domain (basket item)
+  * @param {int} len - length of the expression
+  */
 function idListCallback($el, len) {
   var idList = '';
   $el.each(function (idx, el) {
     var val = checkElement.getValOrText($(el));
-    
+   
+   /*Patch to use the Regex. If new version of getvalortext we need the object here, like at the top*/
+   //var val = checkElement.getValOrText($(el),config.basketPages);
+   
     // run through basket regex here. Using `regexReplacementFromElement`
     val = encodeURIComponent(val);
     idList += val + (idx < (len - 1) ? '|' : '');
@@ -347,11 +364,17 @@ function idListCallback($el, len) {
 }
 
 
-// Item string to generate a string that looks like
-// PROD1:7.99|PROD2:4.99|PROD3:12.99
+
+/**
+  * Item string. generate a string of product prices that looks like PROD1:7.99|PROD2:4.99|PROD3:12.99
+  *
+  * @param {element} $el - jQuery selector for an element of the domain (basket item)
+  * @param {int} len - length of the expression
+  */
 function itemStringCallback($el, len) {
   var itemString = '';
   $el.each(function (idx, el) {
+   
     var val = checkElement.getValOrText($(el));
     val = masks.currency(val);
     itemString += 'PROD' + (idx + 1) + ':' + val + (idx < (len - 1) ? '|' : '');
@@ -360,9 +383,14 @@ function itemStringCallback($el, len) {
 }
 
 
-// This function allows us to create a string from the basket page using the 
-// function passed in as a second parameter. 
-// [:TODO] Regex check needs to be perfomed
+
+/**
+  * Creation of a string from the basket page usind the callback function.
+  *
+  * @param {element} $el - jQuery selector for an element of the domain (basket item)
+  * @param {function} fn - function to create the string required.
+  * [:TODO] Regex check needs to be perfomed
+  */
 function createBasketString($el, fn) {
   if(!$el || !$el.length || !fn ) {return '';}
   
@@ -371,3 +399,30 @@ function createBasketString($el, fn) {
   return fn($el, len); // return the value generated from the callback function  
 }
 
+
+
+/**
+ * 
+ * OTHER FUNCTIONS 
+ * 
+ */
+
+
+/**
+ * Store and retrieve values from localStorage. using file ./utils/store.js
+ * 
+ * @param {int/str} val - value to store
+ * @param {str} valName - name of the value to store
+ * 
+ * [:TODO] the correct order is valName, val.
+ * [:TODO] Names should be changed to -> get/setValStorage()
+ */
+function storeValue(val, valName) {
+  logOV('Storing ' + valName + ' as ' + val);
+  store.set(namespace+valName, val);
+}
+
+function getValue(valName) {
+  logOV('Obtaining from storage ' + valName);
+  return store.get(namespace + valName);
+}
