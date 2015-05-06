@@ -32,6 +32,90 @@ var ITEMSTRING = 'itemString';
 var idFromCompletePage = pages.id.fromCompletePage();
 var valueFromCompletePage = pages.value.fromCompletePage();
 
+
+/**
+ * 
+ * MAIN LOGIC.
+ * 
+ * Esporting and Running 
+ */
+
+module.exports = {
+  start: function(config) {
+    var complete, orderVal, basket, product;
+    
+    rosPages(config);
+    // Are we on the order value page or orderIdPage?
+    orderVal = pages.value.run();
+    var orderId = pages.id.run();
+    
+    // Are we on the complete page?
+    complete = pages.complete.run();
+    
+    // basket = basketPages(config);
+    
+    if (!complete) {
+      basket = pages.basket.run();
+    }
+    
+    if (!complete && !basket ) { product = pages.product.run(); }
+    
+  }
+};
+
+
+/**
+ * 
+ * RUN FUNCTION. Main method of the pixel creation.
+ * 
+ * @param {Array[Page]} pageObjects - Array with number of pages that need creation of pixel.
+ */
+/*
+ * 
+ * EXAMPLE OF HOW WOULD IT LOOK.
+ * 
+ * WHY we create the pixels on the listeners and subscribers?
+ * but then why do we create the ROS pixel on the start() function?
+ * Can this be unified?
+ * 
+ */
+function run(pageObjects){
+ 
+  for(var page in pageObjects){
+   
+    switch(page.pageType) {
+      case 'product':
+          
+         log('Product Page');
+      
+          break;
+      case 'basket':
+      
+          log('Basket Page');
+      
+          break;      
+     case 'complete':
+          
+          log('Complete Page');
+      
+          break;
+      case 'login_reg':
+          code block
+          break;
+      case 'category:
+          code block
+          break;
+      case 'other':
+          code block
+          break;
+      default:
+          // We could guarantee some configuration in case something ghoes wrong.
+          ;
+    } 
+  } 
+}
+
+
 // PIXELS
 
 function createCompletePagePixel(data) {
@@ -109,7 +193,7 @@ function createCompletePagePixel(data) {
  * 
  * @param {object} config - object with the configuration of the site.
  */
-function createROSPixel (config) {
+function createROSPixel(config) {
   var srcIb, srcSecure;
   
   srcIb = pixelSrc.ros(config.segmentIds);
@@ -217,6 +301,9 @@ function buildBasketPagePixel (idList) {
 }
 
 
+/**
+ * LISTENERS
+ */
 var subscribers = {
   value: function(msg, data) {checkForOrderValueSelector(data);},
   id: function(msg, data) {checkPageObject(data);},
@@ -225,9 +312,7 @@ var subscribers = {
   complete: function(msg, data) {createCompletePagePixel(data);}
 };
 
-/**
- * LISTENERS
- */
+
 var listeners = {
   value: PubSub.subscribe('page.value', subscribers.value),
   id: PubSub.subscribe('page.id', subscribers.id),
@@ -236,29 +321,6 @@ var listeners = {
   complete: PubSub.subscribe('page.complete', subscribers.complete)
 };
 
-
-module.exports = {
-  start: function(config) {
-    var complete, orderVal, basket, product;
-    
-    rosPages(config);
-    // Are we on the order value page or orderIdPage?
-    orderVal = pages.value.run();
-    var orderId = pages.id.run();
-    
-    // Are we on the complete page?
-    complete = pages.complete.run();
-    
-    // basket = basketPages(config);
-    
-    if (!complete) {
-      basket = pages.basket.run();
-    }
-    
-    if (!complete && !basket ) { product = pages.product.run(); }
-    
-  }
-};
 
 /**
  * 
@@ -276,7 +338,7 @@ function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
  * 
  *[:TODO] Exported to .utils/CheckElements. Remove when approved.
  */
-function getVal ( obj, noFallback ) {
+function getVal(obj, noFallback) {
   var $el = $(obj.selector),
       timestamp = (new Date()).getTime();
   

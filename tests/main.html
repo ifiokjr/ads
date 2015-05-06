@@ -106,13 +106,26 @@
                   urls: [ 'ranger-quiet.codio.io/tests/*'  ]                  
               },  
 
-              dynamicIdentifier: { 
+              dynamicIdentifier: [{ 
                   selector: '#dynamicId',
                   criteria: 'contains',
                   value: 'Complete Page'
-              }
+                  and: [{}]
+              }, 
+             {},
+             ]
           }
       }
+     
+//      pages: [
+//        {id: 1, type: 'basketPage', linkedDataElement: [1,2,3]},
+       
+//        {}
+//      ], 
+       
+//      data: [
+//        {id: type: 'orderId', }
+//      ]
      
      setTimeout(function() {
        $('#dynamicId').text('This is the Complete Page');
@@ -127,3 +140,5 @@
     </script> -->
   </body>
 </html>
+
+
