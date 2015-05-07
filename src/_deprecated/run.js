@@ -37,15 +37,18 @@ var valueFromCompletePage = pages.value.fromCompletePage();
  * 
  * MAIN LOGIC.
  * 
- * Esporting and Running 
+ * Exporting and Running 
  */
 
 module.exports = {
   start: function(config) {
     var complete, orderVal, basket, product;
     
+    
+    // ROS needs to appear on every page. 
     rosPages(config);
     // Are we on the order value page or orderIdPage?
+    
     orderVal = pages.value.run();
     var orderId = pages.id.run();
     
@@ -92,6 +95,7 @@ function run(pageObjects){
       case 'basket':
       
           log('Basket Page');
+          pages.basket.run();
       
           break;      
      case 'complete':
@@ -100,13 +104,13 @@ function run(pageObjects){
       
           break;
       case 'login_reg':
-          code block
+          // code block
           break;
-      case 'category:
-          code block
+      case 'category':
+          // code block
           break;
       case 'other':
-          code block
+          // code block
           break;
       default:
           // We could guarantee some configuration in case something ghoes wrong.
@@ -311,6 +315,7 @@ var subscribers = {
   basket: function(msg, data) {createBasketInformation(data);},
   complete: function(msg, data) {createCompletePagePixel(data);}
 };
+
 
 
 var listeners = {
