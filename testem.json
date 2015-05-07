@@ -2,7 +2,8 @@
   "framework": "mocha",
   "serve_files": ["./tests/compiledTests.js"],
   "src_files": [
-    "./src/**.js", 
+    "./src/*.js",
+    "./src/*/*.js",
     "./tests/unit/*.test.js",
     "./tests/unit/config.js"
   ],

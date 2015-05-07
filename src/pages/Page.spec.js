@@ -2,7 +2,7 @@
 * Testing the page specification
 */
 
-var Page = require('./page');
+var Page = require('./Page');
 
 var pageObj, config;
 
@@ -12,7 +12,6 @@ beforeEach(function() {
 
 describe('Page Class', function() {
   it('should have an id which is the number 2', function() {
-    console.log(pageObj);
     expect(pageObj.id).to.be.a('number');
     expect(pageObj.id).to.equal(2);
   });
