@@ -106,10 +106,18 @@ veAds: {
       }],
       sharedParams = [{}]    
     },
-    integrations:{},
-    dataElements:[{
+    dataElementIds:[1,2]
+  }],
+  
+  /*
+   * Elements objects to be captured on one or different pages, double bounded with the page objects.
+   * types available are ['ve', 'flex', '']
+   *
+   */
+  dataElements:[{
       id: 1,
       name: 'Product Code',
+      pages: [2]
       selector: '#productBox .pName',
       regex: '',
       defaultVal: 'pName',
@@ -118,15 +126,15 @@ veAds: {
     },{
       id: 2,
       name: 'Unit Price',
+      pages: [2]
       selector: '#productBox .price',
       regex: '[0-9]',
       defaultVal: 1.00,
       mask,: 'currency',
       dynamicIdentifiers: ???????    
-    }]
-  }],
-
-
+    }],    
+    
+    
   /*
    * Responsibvle for the pixel that is placed on the correct page.
    * types available are ['ve', 'flex', '']
