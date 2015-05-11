@@ -2,7 +2,7 @@
 * Testing the page specification
 */
 
-var Page = require('./page');
+var Page = require('./Page');
 
 var pageObj, config;
 
@@ -13,6 +13,7 @@ beforeEach(function() {
 
 //ID is a number
 describe('Page Class', function() {
+
 
   it('It should be an instance of Page', function() {
 
