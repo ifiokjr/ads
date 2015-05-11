@@ -44,47 +44,24 @@ PageAddress.prototype.setGlobalParams(params){
   this.sharedParams = params;
 }
 
-
-/**
- * 
- * DataElement class. Defines the structure of each element to capture on each page object.
- * 
- * @param {String} name - name of the element to capture
- * @param {String} storageName - if the element is in localStorage, the name it will be stored with
- * @param {String} selector - selector of the desired dom element
- * @param {{String, String}} regex {exclude, include} - regular expression to be applied using exclusion or inclusion.
- * @param {String/Number} defaultVal - in case of not capturing the element, default value.
- * @param {String} mask - if we deal with the value captured in a specific way. Ex: currency.
- * @param {Array[String] dynamicIdentifiers - If we're in a single form situation, we need to obtain this elements when matching the dynamic identifier.
- */
-var DataElement = function(pname, pstorageName, pselector, pregex, pdefaultVal, pmask, pdynamicIdentifiers){
- 
-  this.name = pname;
-  this.storageName = pstorageName;
-  this.selector = pselector;
-  this.regex = pregex;
-  this.defaultVal = pdefaultVal;
-  this.mask = pmask;
-  this.dynamicIdentifiers = pdynamicIdentifiers;
-}
-
-
 /**
  * 
  * Page class. Configuration of individual page where a pixel (or more than 1) needs to be placed
- * 
+ * git add 
  * @param {Number} id - this is a number containing the unique id
+ * @param {String} name - this is a string containing the name of the page
  * @param {pageTypeElements} ppageType - one of the closed type of pages.
- * @param {Array[DataElement]} dataElements - Elements containing the data to capture and it's values.
+ * @param {Array[number]} dataElements - Ids of the expected DataElements to be checked on this page. Double binding.
  * @param {PageAddress} ppageAddress - object of the class containing the addresses and the parameters
  */
 var Page = function(config){
- /*var Page = function(pid, ppageType,/*pselector,pdefaultVal,pregex,*/ppageAddress, pintegrations, pdataElements){*/
+ /*var Page = function(pid, ppageType,pselector,pdefaultVal,pregex,ppageAddress, pintegrations, pdataElements){*/
  
   this.id = config.id;
   this.name = config.name;                                                                                                                   
   this.pageType = config.pageType;
+  this.dataElementIds = config.pdataElementIds;
   this.addresses = config.ppageAddress;
-  this.integrations = config.pintegrations;
-  this.dataElements = config.pdataElements;
 }
+
+module.exports = Page

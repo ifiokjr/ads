@@ -11,7 +11,7 @@ beforeEach(function() {
   pageObj = new Page(pageConfig);
 });
 
-//ID is a number
+
 describe('Page Class', function() {
 
 
@@ -26,6 +26,7 @@ describe('Page Class', function() {
     expect(pageObj.id).to.equal(2);
   
     expect(pageObj.name).to.be.a('string');
+    expect(pageObj.name).to.equal('Product Page');
   });
   
  //Config passed in
@@ -77,12 +78,26 @@ describe('Page Class', function() {
            expect(pageObj.addresses.adress[ii].url).to.be.a('string');
          }
       });
+   
+      it('Page should be related to at least 1 DataElement, and the Id has to be a number', function () {
+
+         var elemLen = pageObj.dataElementIds.length;
+      
+         assert(Array.isArray[pageObj.dataElementIds]);
+         expect(elemLen).to.be.above(0);
+
+         for(var ii=0;ii<addLen;ii++){
+
+           assert.isObject(pageObj.dataElementIds[ii]);
+           expect(pageObj.dataElementIds[ii]).to.be.a('number');
+         }
+      });
    });
  /*
    describe('Integration', function(){
    });  
  */
-   describe('DataElement', function(){
+   /*describe('DataElement', function(){
 
      it('Page.dataElements should be an array', function () {
 
@@ -102,7 +117,7 @@ describe('Page Class', function() {
          expect(pageObj.dataElements[ii].selector).to.be.a('string');
          expect(pageObj.dataElements[ii].regex).to.be.a('string');
        }
-      });  
+      });*/  
    });
 });
 
