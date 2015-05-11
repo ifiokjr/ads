@@ -91,37 +91,39 @@ veAds: {
       'awesome.com/*/cart/'
     ]
   }, {
+  
+  //OBJECT BY JOSE
     id: 2,
-    name: 'Complete Page',
-    type: 'complete', // A page where the relevant integration conversion pixels are added.
-
-    inclusionUrls: [{
-        url: 'awesome.com/thank-you(/)',
-        params: {
-          orderId: ':orderId'
-        } // named parameter can be obtained from a data object
-      },
-      'awesome.com/*/cart/'
-    ],
-
-    exclusionUrls: [ // sometimes there are pages that should only
-
-
-    ],
-
-    // Array of `OR` identifiers.
-    // Each object can have an object embedded to the `and:` property
-    dynamicIdentifiers: [{
-        id: 1,
-        and: 3
-      }, // Requires identifier 1 and identifier 3 to be present
-      // OR
-      {
-        id: 5,
-        and: null
-      } // Requires identifier 5 only.
-    ]
-
+    name: 'Product Page',
+    pageType: 'product', 
+    adresses:{
+      address : [{
+        url:'http://dummyplace.com/*/',
+        params:[{'session':'mysession'}]
+      },{
+        url:'http://dummyplace.com/*/',
+        params:[{'session':'mysession'}]       
+      }],
+      sharedParams = [{}]    
+    },
+    integrations:{},
+    dataElements:[{
+      id: 1,
+      name: 'Product Code',
+      selector: '#productBox .pName',
+      regex: '',
+      defaultVal: 'pName',
+      mask,: '',
+      dynamicIdentifiers: ???????    
+    },{
+      id: 2,
+      name: 'Unit Price',
+      selector: '#productBox .price',
+      regex: '[0-9]',
+      defaultVal: 1.00,
+      mask,: 'currency',
+      dynamicIdentifiers: ???????    
+    }]
   }],
 
 

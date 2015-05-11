@@ -78,11 +78,13 @@ var DataElement = function(pname, pstorageName, pselector, pregex, pdefaultVal, 
  * @param {Array[DataElement]} dataElements - Elements containing the data to capture and it's values.
  * @param {PageAddress} ppageAddress - object of the class containing the addresses and the parameters
  */
-var Page = function(pid, ppageType,/*pselector,pdefaultVal,pregex,*/ppageAddress, pintegrations, pdataElements){
+var Page = function(config){
+ /*var Page = function(pid, ppageType,/*pselector,pdefaultVal,pregex,*/ppageAddress, pintegrations, pdataElements){*/
  
-  this.id = pid;
-  this.pageType = ppageType;
-  this.addresses = ppageAddress;
-  this.integrations = pintegrations;
-  this.dataElements = pdataElements;
+  this.id = config.id;
+  this.name = config.name;                                                                                                                   
+  this.pageType = config.pageType;
+  this.addresses = config.ppageAddress;
+  this.integrations = config.pintegrations;
+  this.dataElements = config.pdataElements;
 }

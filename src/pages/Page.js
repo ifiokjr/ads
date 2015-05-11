@@ -9,15 +9,13 @@
  */
 
 function Page(config) {
-//   this.type = config.type;
+
   this.id = config.id;
+  this.pageType = config.pageType;
+  this.addresses = config.ppageAddress;
+  this.integrations = config.pintegrations;
+  this.dataElements = config.pdataElements;
 }
-
-
-
-
-
-
 
 
 
