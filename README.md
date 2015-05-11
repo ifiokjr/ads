@@ -32,7 +32,7 @@ Make sure that node.js is installed.
 
 At the command line type:
 
-`npm install -g testem gulp browserify`
+`npm install -g testem gulp browserify phantomjs`
 `npm install`
 
 And finally run the tests
