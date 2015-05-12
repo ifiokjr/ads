@@ -36,9 +36,9 @@ describe('Page Class', function() {
   });
   
 
-  it('with incorrect type should result in an error', function() {
+  it.skip('with incorrect type should result in an error', function() {
     var pageTypes = [ 'product', 'basket', 'conversion', 'custom', 'ros', 'category' ];
-    fail();
+    helpers.fail();
   });
   
   
