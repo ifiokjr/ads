@@ -70,11 +70,11 @@ veAds: {
    * The page types available are listed below.
    * @information
    *  - **basket**:
-   *  - **confirmation**: where conversion pixels are placed
+   *  - **conversion**: where conversion pixels are placed
    *  - **custom**: for implementing a custom tag based on the integration attached to it or purely capturing data.
    *  - **product**:
    *  - **category**
-   *  - ****
+   *  - **ros**: This page is auto generated and includes any page that is on the site.
    *  - ****
    */
   pages: [{

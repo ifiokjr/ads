@@ -12,9 +12,9 @@ function Page(config) {
  
   this.id = config.id;
   this.name = config.name;                                                                                                                   
-  this.pageType = config.pageType;
+  this.type = config.type;
   this.dataElementIds = config.pdataElementIds;
   this.addresses = config.ppageAddress;
 }
 
-//module.exports = Page
+module.exports = Page
