@@ -1,3 +1,7 @@
+/**
+ * Configuration module for the tests, run before any tests are run
+ */
+
 global.chai = require('chai');
 // chai.should();
 
@@ -6,6 +10,8 @@ global.expect = chai.expect;
 global.sinon = require('sinon');
 global.VEjQuery = global.jQuery = require('jquery');
 
+
+global.fail = require('./helpers').fail;
 
 // CHAI plugins
 var sinonChai = require('sinon-chai');
@@ -22,7 +28,7 @@ chai.use(chaiThings);
 global.pageConfig = {
     id: 2,
     name: 'Complete Page',
-    type: 'complete',
+    type: 'conversion',
     inclusionUrls: [{
         url: 'awesome.com/thank-you(/)',
         params: {
@@ -31,7 +37,8 @@ global.pageConfig = {
       },
       'awesome.com/*/cart/'
     ],
-    exclusionUrls: [ 
+    exclusionUrls: [
+      
     ],
     dynamicIdentifiers: [{
         id: 1,
