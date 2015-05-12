@@ -9,14 +9,34 @@ var toString = Object.prototype.toString;
 
 module.exports = {
   
-  
+  parseURL: parseURL,
   type: type
   
 };
 
   
 
-
+/**
+ * Return the correct URL and then expect it to work. 
+ * 
+ */ 
+function parseURL( url ) {
+  var a = document.createElement('a');
+  a.href = url;
+  
+  return {
+    element: a,
+    href: a.href,
+    host: a.host,
+    port: '0' === a.port || '' === a.port ? '' : a.port,
+    hash: a.hash,
+    hostname: a.hostname,
+    pathname: a.pathname.charAt(0) !== '/' ? '/' + a.pathname : a.pathname,
+    protocol: !a.protocol || ':' === a.protocol ? 'https:' : a.protocol,
+    search: a.search,
+    query: a.search.slice(1) // Nice utility for pre-stripping out the `?`
+  };
+}
   
  /**
  * Return the type of `val` or a boolean comparision.
@@ -27,7 +47,7 @@ module.exports = {
  * 
  * @api public
  */
-function type(val, testType) {
+function type( val, testType ) {
   switch(toString.call(val)) {
     case '[object Date]':
       return testType ? testType === 'date' : 'date';

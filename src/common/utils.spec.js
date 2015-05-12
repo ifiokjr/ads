@@ -8,7 +8,29 @@ var $ = require( 'jquery' );
 
 
 describe( 'utils', function( ) {
-
+  
+  
+  describe( 'parseURL', function( ) {
+    var url = 'https://awesome.com/awesome?test=me#hash';
+    var urlObj;
+    
+    beforeEach( function( ) {
+      urlObj = utils.parseURL(url);
+    });
+    
+    
+    it( 'should return an object with same structure as window.location', function( ) {
+      expect(urlObj.href).to.equal(url);
+      expect(urlObj.hostname).to.equal('awesome.com');
+      expect(urlObj.protocol).to.equal('https:');
+      expect(urlObj.host).to.equal('awesome.com');
+      expect(urlObj.pathname).to.equal('/awesome');
+      expect(urlObj.search).to.equal('?test=me');
+      expect(urlObj.hash).to.equal('#hash');
+      expect(urlObj.query).to.equal('test=me'); // Nice utility for pre-stripping out the `?`
+    });
+  });
+  
   
   describe( 'type', function( ) {
     var obj = { object: { a:'a' }, string: 'string', number: 100, nan: 0/0, 'null':null,
