@@ -1,3 +1,7 @@
+/**
+ * Configuration module for the tests, run before any tests are run
+ */
+
 global.chai = require('chai');
 // chai.should();
 
@@ -6,6 +10,8 @@ global.expect = chai.expect;
 global.sinon = require('sinon');
 global.VEjQuery = global.jQuery = require('jquery');
 
+
+helpers = require('./helpers');
 
 // CHAI plugins
 var sinonChai = require('sinon-chai');
@@ -21,37 +27,28 @@ chai.use(chaiThings);
 // This is used for the page tests. 
 global.pageConfig = {
     id: 2,
-    name: 'Product Page',
-    pageType: 'product', 
-    adresses:{
-      address : [{
-        url:'http://dummyplace.com/*/',
-        params:[{'session':'mysession'}]
-      },{
-        url:'http://dummyplace.com/*/',
-        params:[{'session':'mysession'}]       
-      }],
-      sharedParams = [{}]    
-    },
-    dataElementIds:[1,2]
-  };
+    name: 'Complete Page',
+    type: 'conversion',
+    inclusionUrls: [{
+        url: 'awesome.com/thank-you(/)',
+        params: {
+          orderId: ':orderId'
+        } // named parameter can be obtained from a data object
+      },
+      'awesome.com/*/cart/'
+    ],
+    exclusionUrls: [
+      
+    ],
+    dynamicIdentifiers: [{
+        id: 1,
+        and: 3
+      }, // Requires identifier 1 and identifier 3 to be present
+      // OR
+      {
+        id: 5,
+        and: null
+      } // Requires identifier 5 only.
+    ]
 
- global.dataElements = [{
-    id: 1,
-    name: 'Product Code',
-    pages: [2],
-    selector: '#productBox .pName',
-    regex: '',
-    defaultVal: 'pName',
-    mask,: '',
-    dynamicIdentifiers: ''//Don't know which shape will it have    
-   },
-   {id: 2,
-    name: 'Unit Price',
-    pages: [2],
-    selector: '#productBox .price',
-    regex: '[0-9]',
-    defaultVal: 1.00,
-    mask,: 'currency',
-    dynamicIdentifiers: ''    
-  }];
+  };
