@@ -16,19 +16,19 @@ simpleStorage = {
   set: function( key, val ) {
     return window[method].setItem( key, val );
   },
-  
+
   get: function ( key ) {
     return window[method].getItem( key );
   },
-  
+
   remove: function( key ) {
     return window[method].removeItem( key );
   },
-  
+
   clear: function( ) {
     return window[method].clear();
   },
-  
+
   SUPPORT: 'simple'
 };
 
@@ -48,7 +48,7 @@ function supportStorage(method) {
 
 
 if(window.JSON && type(window.JSON.parse, 'function') && type(window.JSON.stringify, 'function')) {
-  store = require('store');
+  store = require('../store');
   storage = store.enabled ? store : noStorage;
 } else {
   storage = (STORAGE_SUPPORTED || (STORAGE_SUPPORTED = supportStorage(method))) ? simpleStorage : noStorage;
