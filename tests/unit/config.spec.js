@@ -11,7 +11,7 @@ global.sinon = require('sinon');
 global.VEjQuery = global.jQuery = require('jquery');
 
 
-helpers = require('./helpers');
+global.helpers = require('./helpers');
 
 // CHAI plugins
 var sinonChai = require('sinon-chai');

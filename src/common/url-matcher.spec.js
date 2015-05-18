@@ -45,7 +45,7 @@ describe( 'URLMatcher', function( ) {
   
   
   
-  it( 'should update the currentURL attribute when the page URL updates (without refreshing)', function( ) {
+  it.skip( 'should update the currentURL attribute when the page URL updates (without refreshing)', function( ) {
     helpers.fail('needs implementing');
   });
   

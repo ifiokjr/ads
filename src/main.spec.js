@@ -8,16 +8,18 @@ var Main = require('./main');
 describe('Main Runner', function() {
   
   beforeEach(function() {
+    this.validObj = helpers.obj();
     this.spy = sinon.spy();
-    this.main = new Main();
+    this.main = new Main(this.validObj);
   });
   
-  it('should be run with new and zero arguments', function() {
+  it('should be instantiated with valid arguments', function() {
     expect(this.main).to.be.an.instanceof(Main);
   });
   
+  
   it('should contain an `async` run method which is preferred', function() {
-    var spy = sinon.spy(main, 'async');
+    var spy = sinon.spy(this.main, 'async');
     this.main.run(); // non-blocking
     expect(spy).to.have.been.calledOnce;
   });
@@ -32,7 +34,7 @@ describe('Main Runner', function() {
   });
   
   
-  it('should instatiate the page objects', function() {
+  it('should properly create the page objects', function() {
     helpers.fail();
   });
 });
