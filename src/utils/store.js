@@ -48,7 +48,7 @@ function supportStorage(method) {
 
 
 if(window.JSON && type(window.JSON.parse, 'function') && type(window.JSON.stringify, 'function')) {
-  store = require('store');
+  store = require('../store');
   storage = store.enabled ? store : noStorage;
 } else {
   storage = (STORAGE_SUPPORTED || (STORAGE_SUPPORTED = supportStorage(method))) ? simpleStorage : noStorage;
