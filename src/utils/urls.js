@@ -1,4 +1,4 @@
-var urlPattern = require('url-pattern'),
+var urlPattern = require('./url-pattern'),
     log = require('debug')('urls'),
     $ = require('./jq');
 
