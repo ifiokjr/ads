@@ -1,16 +1,25 @@
 /**
 * Useful utilities that will be used throughout the codebase. 
-* @ module
+* @ module `common
 */
 
 
-// toString ref.
+/**
+ * `toString` reference.
+ * Store for later usage
+ */ 
 var toString = Object.prototype.toString;
+
+
 
 module.exports = {
   
   parseURL: parseURL,
-  type: type
+  
+  type: type,
+  
+  objectLength: objectLength
+  
   
 };
 
@@ -19,7 +28,8 @@ module.exports = {
 /**
  * Return the correct URL and then expect it to work. 
  * 
- */ 
+ */
+
 function parseURL( url ) {
   var a = document.createElement('a');
   a.href = url;
@@ -37,6 +47,7 @@ function parseURL( url ) {
     query: a.search.slice(1) // Nice utility for pre-stripping out the `?`
   };
 }
+
   
  /**
  * Return the type of `val` or a boolean comparision.
@@ -47,6 +58,7 @@ function parseURL( url ) {
  * 
  * @api public
  */
+
 function type( val, testType ) {
   switch(toString.call(val)) {
     case '[object Date]':
@@ -67,3 +79,67 @@ function type( val, testType ) {
   val = val.valueOf ? val.valueOf() : Object.prototype.valueOf.apply(val);
   return testType ? testType === typeof val : typeof val;
 };
+
+
+/**
+ * Return the length of the current object
+ * 
+ * @param {Object} obj - the object to be measured. 
+ * 
+ * @return {Number} - returns the length of the objects own elements
+ * 
+ * @api public
+ */
+
+function objectLength( obj ) {
+  var len = 0,
+      key;
+  for ( key in obj ) {
+    if ( obj.hasOwnProperty(key) ) { len++; }
+  }
+  
+  return len;
+}
+
+
+/**
+ * Generate search object
+ * 
+ * @param {String} searchString - parameters passed into the URL
+ */
+
+function convertSearchToObject( searchString ) {
+  if (searchString === '' || searchString === '?') { return {}; }
+  var queries, ii, searchObject = {}, split;
+  queries = searchString.replace(/^\?/, '').split('&');
+  for(ii = 0; ii < queries.length; ii++) {
+    split = queries[ii].split('=');
+    searchObject[split[0]] = split[1];
+  }
+  return searchObject;
+}
+
+
+/**
+ * @function
+ * 
+ * @description
+ * Remove unwanted elements from a URL
+ * 
+ * @param {String} dirtyURL - parameters passed into the URL
+ */
+
+function cleanURL(dirtyURL) {
+  try {
+    var url = (dirtyURL + '').toLowerCase();
+    url = url.replace(/http[s]?:\/\//, '');
+    url = url.replace('#', '?');
+    url = url.replace(';', '?');
+    if( url.substr(0, 4) === 'www.' ) {
+      url = url.replace('www.', '');
+    }
+    return url;
+  } catch(err) {
+    return '';
+  }
+}

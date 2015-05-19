@@ -65,5 +65,24 @@ describe( 'utils', function( ) {
     
   });
   
+  describe( 'jQuery', function( ) {
+    
+    it( 'should make jQuery available even when VEjQuery isn\'t available', function( ) {
+      var jq = require('./jq');
+      expect( jq ).to.exist;
+      expect( jq('body') ).to.exist;
+    });
+  });
+  
+  describe( 'object size', function( ) {
+    
+    var obj = {1: 'one', two: 'awesome', yo: 'three', quatre: 4};
+    
+    it( 'should properly measure the size of an object', function( ) {
+      expect( utils.objectLength(obj) ).to.equal(4);
+    });
+  });
   
 });
+
+

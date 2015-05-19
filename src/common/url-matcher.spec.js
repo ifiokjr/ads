@@ -4,7 +4,7 @@
 
 var utils = require('./utils');
 
-var URLMatcher = require('./url-matcher');
+var Matcher = require('./url-matcher');
 
 var TEST_URL = 'awesome.com/*/:id/(optional)/(:optional)/**';
 var PAGE_URL = 'https://awesome.com/help';
@@ -14,13 +14,13 @@ var PAGE_URL = 'https://awesome.com/help';
 var dummyWindowLocation = utils.parseURL(PAGE_URL);
 
 
-describe( 'URLMatcher', function( ) {
+describe( 'Matcher', function( ) {
   
   var stub, matcherObj, config;
   
   beforeEach( function( ) {
-    stub = sinon.stub(URLMatcher.prototype, '_getPageURL', function( ) { return dummyWindowLocation; });
-    matcherObj = new URLMatcher( TEST_URL, {'orderId': '*'} );
+    stub = sinon.stub(Matcher.prototype, '_getPageURL', function( ) { return dummyWindowLocation; });
+    matcherObj = new Matcher( TEST_URL, {'orderId': '*'} );
     console.log(stub);
   });
   
@@ -29,7 +29,7 @@ describe( 'URLMatcher', function( ) {
   });
   
   it( 'should be able to instantiate objects', function( ) {
-    expect( matcherObj ).to.be.an.instanceof( URLMatcher );
+    expect( matcherObj ).to.be.an.instanceof( Matcher );
   });
   
   
@@ -37,16 +37,6 @@ describe( 'URLMatcher', function( ) {
     expect(matcherObj.pageURL).to.be.a('string');
   });
   
-  
-  it( 'should have the current Page URL as the pageURL attribute', function( ) {
-    expect( matcherObj.pageURL ).to.equal( 'awesome.com/help' );
-  });
-  
-  
-  
-  
-  it.skip( 'should update the currentURL attribute when the page URL updates (without refreshing)', function( ) {
-    helpers.fail('needs implementing');
-  });
-  
+    
+    
 });

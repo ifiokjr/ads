@@ -1,6 +1,0 @@
-/**
- * 
- * Integration Class
- * 
- * 
- */
