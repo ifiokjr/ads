@@ -5,7 +5,7 @@ debug.enable('*');
 
 log('Launching application');
 require('./main');
-},{"./main":8,"debug":2}],2:[function(require,module,exports){
+},{"./main":7,"debug":2}],2:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -29,7 +29,7 @@ var storage;
 if (typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined')
   storage = chrome.storage.local;
 else
-  storage = window.localStorage;
+  storage = localstorage();
 
 /**
  * Colors.
@@ -164,6 +164,23 @@ function load() {
  */
 
 exports.enable(load());
+
+/**
+ * Localstorage attempts to return the localstorage.
+ *
+ * This is necessary because safari throws
+ * when a user disables cookies/localstorage
+ * and you attempt to access it.
+ *
+ * @return {LocalStorage}
+ * @api private
+ */
+
+function localstorage(){
+  try {
+    return window.localStorage;
+  } catch (e) {}
+}
 
 },{"./debug":3}],3:[function(require,module,exports){
 
@@ -405,13 +422,15 @@ module.exports = function(val, options){
  */
 
 function parse(str) {
-  var match = /^((?:\d+)?\.?\d+) *(ms|seconds?|s|minutes?|m|hours?|h|days?|d|years?|y)?$/i.exec(str);
+  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
   if (!match) return;
   var n = parseFloat(match[1]);
   var type = (match[2] || 'ms').toLowerCase();
   switch (type) {
     case 'years':
     case 'year':
+    case 'yrs':
+    case 'yr':
     case 'y':
       return n * y;
     case 'days':
@@ -420,16 +439,26 @@ function parse(str) {
       return n * d;
     case 'hours':
     case 'hour':
+    case 'hrs':
+    case 'hr':
     case 'h':
       return n * h;
     case 'minutes':
     case 'minute':
+    case 'mins':
+    case 'min':
     case 'm':
       return n * m;
     case 'seconds':
     case 'second':
+    case 'secs':
+    case 'sec':
     case 's':
       return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
     case 'ms':
       return n;
   }
@@ -478,292 +507,151 @@ function plural(ms, n, name) {
 }
 
 },{}],5:[function(require,module,exports){
-;(function(win){
-	var store = {},
-		doc = win.document,
-		localStorageName = 'localStorage',
-		scriptTag = 'script',
-		storage
-
-	store.disabled = false
-	store.version = '1.3.17'
-	store.set = function(key, value) {}
-	store.get = function(key, defaultVal) {}
-	store.has = function(key) { return store.get(key) !== undefined }
-	store.remove = function(key) {}
-	store.clear = function() {}
-	store.transact = function(key, defaultVal, transactionFn) {
-		if (transactionFn == null) {
-			transactionFn = defaultVal
-			defaultVal = null
-		}
-		if (defaultVal == null) {
-			defaultVal = {}
-		}
-		var val = store.get(key, defaultVal)
-		transactionFn(val)
-		store.set(key, val)
-	}
-	store.getAll = function() {}
-	store.forEach = function() {}
-
-	store.serialize = function(value) {
-		return JSON.stringify(value)
-	}
-	store.deserialize = function(value) {
-		if (typeof value != 'string') { return undefined }
-		try { return JSON.parse(value) }
-		catch(e) { return value || undefined }
-	}
-
-	// Functions to encapsulate questionable FireFox 3.6.13 behavior
-	// when about.config::dom.storage.enabled === false
-	// See https://github.com/marcuswestin/store.js/issues#issue/13
-	function isLocalStorageNameSupported() {
-		try { return (localStorageName in win && win[localStorageName]) }
-		catch(err) { return false }
-	}
-
-	if (isLocalStorageNameSupported()) {
-		storage = win[localStorageName]
-		store.set = function(key, val) {
-			if (val === undefined) { return store.remove(key) }
-			storage.setItem(key, store.serialize(val))
-			return val
-		}
-		store.get = function(key, defaultVal) {
-			var val = store.deserialize(storage.getItem(key))
-			return (val === undefined ? defaultVal : val)
-		}
-		store.remove = function(key) { storage.removeItem(key) }
-		store.clear = function() { storage.clear() }
-		store.getAll = function() {
-			var ret = {}
-			store.forEach(function(key, val) {
-				ret[key] = val
-			})
-			return ret
-		}
-		store.forEach = function(callback) {
-			for (var i=0; i<storage.length; i++) {
-				var key = storage.key(i)
-				callback(key, store.get(key))
-			}
-		}
-	} else if (doc.documentElement.addBehavior) {
-		var storageOwner,
-			storageContainer
-		// Since #userData storage applies only to specific paths, we need to
-		// somehow link our data to a specific path.  We choose /favicon.ico
-		// as a pretty safe option, since all browsers already make a request to
-		// this URL anyway and being a 404 will not hurt us here.  We wrap an
-		// iframe pointing to the favicon in an ActiveXObject(htmlfile) object
-		// (see: http://msdn.microsoft.com/en-us/library/aa752574(v=VS.85).aspx)
-		// since the iframe access rules appear to allow direct access and
-		// manipulation of the document element, even for a 404 page.  This
-		// document can be used instead of the current document (which would
-		// have been limited to the current path) to perform #userData storage.
-		try {
-			storageContainer = new ActiveXObject('htmlfile')
-			storageContainer.open()
-			storageContainer.write('<'+scriptTag+'>document.w=window</'+scriptTag+'><iframe src="/favicon.ico"></iframe>')
-			storageContainer.close()
-			storageOwner = storageContainer.w.frames[0].document
-			storage = storageOwner.createElement('div')
-		} catch(e) {
-			// somehow ActiveXObject instantiation failed (perhaps some special
-			// security settings or otherwse), fall back to per-path storage
-			storage = doc.createElement('div')
-			storageOwner = doc.body
-		}
-		var withIEStorage = function(storeFunction) {
-			return function() {
-				var args = Array.prototype.slice.call(arguments, 0)
-				args.unshift(storage)
-				// See http://msdn.microsoft.com/en-us/library/ms531081(v=VS.85).aspx
-				// and http://msdn.microsoft.com/en-us/library/ms531424(v=VS.85).aspx
-				storageOwner.appendChild(storage)
-				storage.addBehavior('#default#userData')
-				storage.load(localStorageName)
-				var result = storeFunction.apply(store, args)
-				storageOwner.removeChild(storage)
-				return result
-			}
-		}
-
-		// In IE7, keys cannot start with a digit or contain certain chars.
-		// See https://github.com/marcuswestin/store.js/issues/40
-		// See https://github.com/marcuswestin/store.js/issues/83
-		var forbiddenCharsRegex = new RegExp("[!\"#$%&'()*+,/\\\\:;<=>?@[\\]^`{|}~]", "g")
-		function ieKeyFix(key) {
-			return key.replace(/^d/, '___$&').replace(forbiddenCharsRegex, '___')
-		}
-		store.set = withIEStorage(function(storage, key, val) {
-			key = ieKeyFix(key)
-			if (val === undefined) { return store.remove(key) }
-			storage.setAttribute(key, store.serialize(val))
-			storage.save(localStorageName)
-			return val
-		})
-		store.get = withIEStorage(function(storage, key, defaultVal) {
-			key = ieKeyFix(key)
-			var val = store.deserialize(storage.getAttribute(key))
-			return (val === undefined ? defaultVal : val)
-		})
-		store.remove = withIEStorage(function(storage, key) {
-			key = ieKeyFix(key)
-			storage.removeAttribute(key)
-			storage.save(localStorageName)
-		})
-		store.clear = withIEStorage(function(storage) {
-			var attributes = storage.XMLDocument.documentElement.attributes
-			storage.load(localStorageName)
-			for (var i=0, attr; attr=attributes[i]; i++) {
-				storage.removeAttribute(attr.name)
-			}
-			storage.save(localStorageName)
-		})
-		store.getAll = function(storage) {
-			var ret = {}
-			store.forEach(function(key, val) {
-				ret[key] = val
-			})
-			return ret
-		}
-		store.forEach = withIEStorage(function(storage, callback) {
-			var attributes = storage.XMLDocument.documentElement.attributes
-			for (var i=0, attr; attr=attributes[i]; ++i) {
-				callback(attr.name, store.deserialize(storage.getAttribute(attr.name)))
-			}
-		})
-	}
-
-	try {
-		var testKey = '__storejs__'
-		store.set(testKey, testKey)
-		if (store.get(testKey) != testKey) { store.disabled = true }
-		store.remove(testKey)
-	} catch(e) {
-		store.disabled = true
-	}
-	store.enabled = !store.disabled
-
-	if (typeof module != 'undefined' && module.exports && this.module !== module) { module.exports = store }
-	else if (typeof define === 'function' && define.amd) { define(store) }
-	else { win.store = store }
-
-})(Function('return this')());
-
-},{}],6:[function(require,module,exports){
-// Generated by CoffeeScript 1.7.1
-var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-
-module.exports = {
-  PatternPrototype: {
-    match: function(url) {
-      var bound, captured, i, match, name, value, _i, _len;
-      match = this.regex.exec(url);
-      if (match == null) {
-        return null;
-      }
-      captured = match.slice(1);
-      if (this.isRegex) {
-        return captured;
-      }
-      bound = {};
-      for (i = _i = 0, _len = captured.length; _i < _len; i = ++_i) {
-        value = captured[i];
-        name = this.names[i];
-        if (value == null) {
-          continue;
-        }
-        if (name === '_') {
-          if (bound._ == null) {
-            bound._ = [];
-          }
-          bound._.push(value);
-        } else {
-          bound[name] = value;
-        }
-      }
-      return bound;
+// Generated by CoffeeScript 1.9.2
+(function(root, factory) {
+  if (('function' === typeof define) && (define.amd != null)) {
+    return define([], factory);
+  } else if (typeof exports !== "undefined" && exports !== null) {
+    return module.exports = factory();
+  } else {
+    return root.UrlPattern = factory();
+  }
+})(this, function() {
+  var UrlPattern, alphanumericRegex;
+  UrlPattern = function(arg) {
+    if (arg instanceof UrlPattern) {
+      this.isRegex = arg.isRegex;
+      this.regex = arg.regex;
+      this.names = arg.names;
+      return this;
     }
-  },
-  newPattern: function(arg, separator) {
-    var isRegex, pattern, regexString;
-    if (separator == null) {
-      separator = '/';
-    }
-    isRegex = arg instanceof RegExp;
-    if (!(('string' === typeof arg) || isRegex)) {
+    this.isRegex = arg instanceof RegExp;
+    if (!(('string' === typeof arg) || this.isRegex)) {
       throw new TypeError('argument must be a regex or a string');
     }
-    [':', '*'].forEach(function(forbidden) {
-      if (separator === forbidden) {
-        throw new Error("separator can't be " + forbidden);
-      }
-    });
-    pattern = Object.create(module.exports.PatternPrototype);
-    pattern.isRegex = isRegex;
-    pattern.regex = isRegex ? arg : (regexString = module.exports.toRegexString(arg, separator), new RegExp(regexString));
-    if (!isRegex) {
-      pattern.names = module.exports.getNames(arg, separator);
+    if (this.isRegex) {
+      this.regex = arg;
+    } else {
+      this.compile(arg);
     }
-    return pattern;
-  },
-  escapeForRegex: function(string) {
+    return this;
+  };
+  UrlPattern.prototype.match = function(url) {
+    var bound, captured, i, j, len, match, name, value;
+    match = this.regex.exec(url);
+    if (match == null) {
+      return null;
+    }
+    captured = match.slice(1);
+    if (this.isRegex) {
+      return captured;
+    }
+    bound = {};
+    for (i = j = 0, len = captured.length; j < len; i = ++j) {
+      value = captured[i];
+      name = this.names[i];
+      if (value == null) {
+        continue;
+      }
+      if (bound[name] != null) {
+        if (!Array.isArray(bound[name])) {
+          bound[name] = [bound[name]];
+        }
+        bound[name].push(value);
+      } else {
+        bound[name] = value;
+      }
+    }
+    return bound;
+  };
+  alphanumericRegex = new RegExp('^[a-zA-Z0-9]+$');
+  UrlPattern.prototype.isAlphanumeric = function(string) {
+    return alphanumericRegex.test(string);
+  };
+  UrlPattern.prototype.escapeForRegex = function(string) {
     return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-  },
-  getNames: function(arg, separator) {
-    var escapedSeparator, name, names, regex, results;
-    if (separator == null) {
-      separator = '/';
-    }
-    if (arg instanceof RegExp) {
-      return [];
-    }
-    escapedSeparator = module.exports.escapeForRegex(separator);
-    regex = new RegExp("((:?:[^" + escapedSeparator + "\(\)]+)|(?:[\*]))", 'g');
+  };
+  UrlPattern.prototype.compile = function(string) {
+    var char, enter, index, leave, length, mode, names, openParens, regexString, sliceBegin, that;
     names = [];
-    results = regex.exec(arg);
-    while (results != null) {
-      name = results[1].slice(1);
-      if (name === '_') {
-        throw new TypeError(":_ can't be used as a pattern name in pattern " + arg);
+    regexString = '^';
+    mode = '?';
+    sliceBegin = 0;
+    openParens = 0;
+    that = this;
+    index = -1;
+    leave = function() {
+      switch (mode) {
+        case 'variable':
+          if ((index - sliceBegin) < 2) {
+            throw new Error("`:` must be followed by at least one alphanumeric character that is the variable name at " + index);
+          }
+          names.push(string.slice(sliceBegin + 1, index));
+          regexString += "([a-zA-Z0-9]+)";
+          break;
+        case 'static':
+          regexString += that.escapeForRegex(string.slice(sliceBegin, index));
       }
-      if (__indexOf.call(names, name) >= 0) {
-        throw new TypeError("duplicate pattern name :" + name + " in pattern " + arg);
+      return mode = '?';
+    };
+    enter = function(nextMode) {
+      if (nextMode === mode) {
+        return;
       }
-      names.push(name || '_');
-      results = regex.exec(arg);
+      leave();
+      sliceBegin = index;
+      return mode = nextMode;
+    };
+    length = string.length;
+    while (++index < length) {
+      char = string.charAt(index);
+      if (char === ':') {
+        if (mode === 'variable') {
+          throw new Error("cannot start variable right after variable at " + index);
+        }
+        enter('variable');
+      } else if (char === '(') {
+        leave();
+        openParens++;
+        regexString += '(?:';
+      } else if (char === ')') {
+        leave();
+        openParens--;
+        if (openParens < 0) {
+          throw new Error("did not expect ) at " + index);
+        }
+        regexString += ')?';
+      } else if (char === '*') {
+        leave();
+        regexString += '(.*?)';
+        names.push('_');
+      } else {
+        switch (mode) {
+          case 'variable':
+            if (!this.isAlphanumeric(char)) {
+              enter('static');
+            }
+            break;
+          case '?':
+            enter('static');
+        }
+      }
     }
-    return names;
-  },
-  escapeSeparators: function(string, separator) {
-    var escapedSeparator, regex;
-    if (separator == null) {
-      separator = '/';
+    if (openParens > 0) {
+      throw new Error("unclosed parentheses at " + index);
     }
-    escapedSeparator = module.exports.escapeForRegex(separator);
-    regex = new RegExp(escapedSeparator, 'g');
-    return string.replace(regex, escapedSeparator);
-  },
-  toRegexString: function(string, separator) {
-    var escapedSeparator, stringWithEscapedSeparators;
-    if (separator == null) {
-      separator = '/';
-    }
-    stringWithEscapedSeparators = module.exports.escapeSeparators(string, separator);
-    stringWithEscapedSeparators = stringWithEscapedSeparators.replace(/\((.*?)\)/g, '(?:$1)?').replace(/\*/g, '(.*?)');
-    escapedSeparator = module.exports.escapeForRegex(separator);
-    module.exports.getNames(string, separator).forEach(function(name) {
-      return stringWithEscapedSeparators = stringWithEscapedSeparators.replace(':' + name, "([^\\" + separator + "]+)");
-    });
-    return "^" + stringWithEscapedSeparators + "$";
-  }
-};
+    leave();
+    regexString += '$';
+    this.names = names;
+    return this.regex = new RegExp(regexString);
+  };
+  UrlPattern.newPattern = function() {
+    throw Error('`urlPattern.newPattern` is no longer supported.  Use `new Pattern` instead.');
+  };
+  return UrlPattern;
+});
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // Check if GDMHandler should be called. 
 var type = require('./utils/type'),
   log = require('debug')('GDM Handler');
@@ -791,7 +679,7 @@ module.exports = {
     launchGDM(config.flexId);
   }
 };
-},{"./utils/type":21,"debug":2}],8:[function(require,module,exports){
+},{"./utils/type":21,"debug":2}],7:[function(require,module,exports){
 // Load Polyfills
 var log = require('debug')('main');
 
@@ -813,7 +701,7 @@ log('running main code');
 // Now we run the Genie specific tags. 
 run.start(settings.genie);
 
-},{"./gdmhandler":7,"./run":11,"./settings":12,"./utils/polyfills":19,"debug":2}],9:[function(require,module,exports){
+},{"./gdmhandler":6,"./run":10,"./settings":11,"./utils/polyfills":19,"debug":2}],8:[function(require,module,exports){
 var PubSub = require('./pubsub-js'),
   checkElement = require('./utils/checkElements'),
   type = require('./utils/type'),
@@ -934,7 +822,7 @@ module.exports = {
   id: new Page(pageObject.orderId, settings.orderId  ),
   complete: new Page(pageObject.completePage, settings.completePage)
 };
-},{"./pubsub-js":10,"./settings":12,"./utils/checkElements":14,"./utils/criteria":15,"./utils/jq":16,"./utils/type":21,"./utils/urls":22,"debug":2}],10:[function(require,module,exports){
+},{"./pubsub-js":9,"./settings":11,"./utils/checkElements":14,"./utils/criteria":15,"./utils/jq":16,"./utils/type":21,"./utils/urls":22,"debug":2}],9:[function(require,module,exports){
 'use strict';
 
 
@@ -1151,7 +1039,7 @@ PubSub.unsubscribe = function(value){
 };
 
 module.exports = PubSub;
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*
  * Set up all the tags and pixels for VeGenie to work properly. 
  * 
@@ -1526,7 +1414,7 @@ function createBasketString($el, fn) {
 }
 
 
-},{"./pages":9,"./pubsub-js":10,"./settings":12,"./utils/addPixel":13,"./utils/checkElements":14,"./utils/criteria":15,"./utils/jq":16,"./utils/pixelSrc":18,"./utils/store":20,"./utils/type":21,"./utils/urls":22,"debug":2}],12:[function(require,module,exports){
+},{"./pages":8,"./pubsub-js":9,"./settings":11,"./utils/addPixel":13,"./utils/checkElements":14,"./utils/criteria":15,"./utils/jq":16,"./utils/pixelSrc":18,"./utils/store":20,"./utils/type":21,"./utils/urls":22,"debug":2}],11:[function(require,module,exports){
 /*
  *
  * This module is what determine the settings
@@ -1561,6 +1449,181 @@ module.exports = {
   namespace: 'veapps.' + (rawSettings.flexId || '') + (rawSettings.journeyCode || '') + '.GDM.',
   version: [1,3,1]
 };
+},{}],12:[function(require,module,exports){
+;(function(win){
+	var store = {},
+		doc = win.document,
+		localStorageName = 'localStorage',
+		scriptTag = 'script',
+		storage
+
+	store.disabled = false
+	store.version = '1.3.17'
+	store.set = function(key, value) {}
+	store.get = function(key, defaultVal) {}
+	store.has = function(key) { return store.get(key) !== undefined }
+	store.remove = function(key) {}
+	store.clear = function() {}
+	store.transact = function(key, defaultVal, transactionFn) {
+		if (transactionFn == null) {
+			transactionFn = defaultVal
+			defaultVal = null
+		}
+		if (defaultVal == null) {
+			defaultVal = {}
+		}
+		var val = store.get(key, defaultVal)
+		transactionFn(val)
+		store.set(key, val)
+	}
+	store.getAll = function() {}
+	store.forEach = function() {}
+
+	store.serialize = function(value) {
+		return JSON.stringify(value)
+	}
+	store.deserialize = function(value) {
+		if (typeof value != 'string') { return undefined }
+		try { return JSON.parse(value) }
+		catch(e) { return value || undefined }
+	}
+
+	// Functions to encapsulate questionable FireFox 3.6.13 behavior
+	// when about.config::dom.storage.enabled === false
+	// See https://github.com/marcuswestin/store.js/issues#issue/13
+	function isLocalStorageNameSupported() {
+		try { return (localStorageName in win && win[localStorageName]) }
+		catch(err) { return false }
+	}
+
+	if (isLocalStorageNameSupported()) {
+		storage = win[localStorageName]
+		store.set = function(key, val) {
+			if (val === undefined) { return store.remove(key) }
+			storage.setItem(key, store.serialize(val))
+			return val
+		}
+		store.get = function(key, defaultVal) {
+			var val = store.deserialize(storage.getItem(key))
+			return (val === undefined ? defaultVal : val)
+		}
+		store.remove = function(key) { storage.removeItem(key) }
+		store.clear = function() { storage.clear() }
+		store.getAll = function() {
+			var ret = {}
+			store.forEach(function(key, val) {
+				ret[key] = val
+			})
+			return ret
+		}
+		store.forEach = function(callback) {
+			for (var i=0; i<storage.length; i++) {
+				var key = storage.key(i)
+				callback(key, store.get(key))
+			}
+		}
+	} else if (doc.documentElement.addBehavior) {
+		var storageOwner,
+			storageContainer
+		// Since #userData storage applies only to specific paths, we need to
+		// somehow link our data to a specific path.  We choose /favicon.ico
+		// as a pretty safe option, since all browsers already make a request to
+		// this URL anyway and being a 404 will not hurt us here.  We wrap an
+		// iframe pointing to the favicon in an ActiveXObject(htmlfile) object
+		// (see: http://msdn.microsoft.com/en-us/library/aa752574(v=VS.85).aspx)
+		// since the iframe access rules appear to allow direct access and
+		// manipulation of the document element, even for a 404 page.  This
+		// document can be used instead of the current document (which would
+		// have been limited to the current path) to perform #userData storage.
+		try {
+			storageContainer = new ActiveXObject('htmlfile')
+			storageContainer.open()
+			storageContainer.write('<'+scriptTag+'>document.w=window</'+scriptTag+'><iframe src="/favicon.ico"></iframe>')
+			storageContainer.close()
+			storageOwner = storageContainer.w.frames[0].document
+			storage = storageOwner.createElement('div')
+		} catch(e) {
+			// somehow ActiveXObject instantiation failed (perhaps some special
+			// security settings or otherwse), fall back to per-path storage
+			storage = doc.createElement('div')
+			storageOwner = doc.body
+		}
+		var withIEStorage = function(storeFunction) {
+			return function() {
+				var args = Array.prototype.slice.call(arguments, 0)
+				args.unshift(storage)
+				// See http://msdn.microsoft.com/en-us/library/ms531081(v=VS.85).aspx
+				// and http://msdn.microsoft.com/en-us/library/ms531424(v=VS.85).aspx
+				storageOwner.appendChild(storage)
+				storage.addBehavior('#default#userData')
+				storage.load(localStorageName)
+				var result = storeFunction.apply(store, args)
+				storageOwner.removeChild(storage)
+				return result
+			}
+		}
+
+		// In IE7, keys cannot start with a digit or contain certain chars.
+		// See https://github.com/marcuswestin/store.js/issues/40
+		// See https://github.com/marcuswestin/store.js/issues/83
+		var forbiddenCharsRegex = new RegExp("[!\"#$%&'()*+,/\\\\:;<=>?@[\\]^`{|}~]", "g")
+		function ieKeyFix(key) {
+			return key.replace(/^d/, '___$&').replace(forbiddenCharsRegex, '___')
+		}
+		store.set = withIEStorage(function(storage, key, val) {
+			key = ieKeyFix(key)
+			if (val === undefined) { return store.remove(key) }
+			storage.setAttribute(key, store.serialize(val))
+			storage.save(localStorageName)
+			return val
+		})
+		store.get = withIEStorage(function(storage, key, defaultVal) {
+			key = ieKeyFix(key)
+			var val = store.deserialize(storage.getAttribute(key))
+			return (val === undefined ? defaultVal : val)
+		})
+		store.remove = withIEStorage(function(storage, key) {
+			key = ieKeyFix(key)
+			storage.removeAttribute(key)
+			storage.save(localStorageName)
+		})
+		store.clear = withIEStorage(function(storage) {
+			var attributes = storage.XMLDocument.documentElement.attributes
+			storage.load(localStorageName)
+			for (var i=0, attr; attr=attributes[i]; i++) {
+				storage.removeAttribute(attr.name)
+			}
+			storage.save(localStorageName)
+		})
+		store.getAll = function(storage) {
+			var ret = {}
+			store.forEach(function(key, val) {
+				ret[key] = val
+			})
+			return ret
+		}
+		store.forEach = withIEStorage(function(storage, callback) {
+			var attributes = storage.XMLDocument.documentElement.attributes
+			for (var i=0, attr; attr=attributes[i]; ++i) {
+				callback(attr.name, store.deserialize(storage.getAttribute(attr.name)))
+			}
+		})
+	}
+
+	try {
+		var testKey = '__storejs__'
+		store.set(testKey, testKey)
+		if (store.get(testKey) != testKey) { store.disabled = true }
+		store.remove(testKey)
+	} catch(e) {
+		store.disabled = true
+	}
+	store.enabled = !store.disabled
+
+	module.exports = store;
+
+})(Function('return this')());
+
 },{}],13:[function(require,module,exports){
 // Add a pixel to the page. 
 // 
@@ -2035,7 +2098,7 @@ function supportStorage(method) {
 
 
 if(window.JSON && type(window.JSON.parse, 'function') && type(window.JSON.stringify, 'function')) {
-  store = require('store');
+  store = require('../store');
   storage = store.enabled ? store : noStorage;
 } else {
   storage = (STORAGE_SUPPORTED || (STORAGE_SUPPORTED = supportStorage(method))) ? simpleStorage : noStorage;
@@ -2043,7 +2106,7 @@ if(window.JSON && type(window.JSON.parse, 'function') && type(window.JSON.string
 
 
 module.exports = storage;
-},{"./type":21,"store":5}],21:[function(require,module,exports){
+},{"../store":12,"./type":21}],21:[function(require,module,exports){
 /**
  * toString ref.
  */
@@ -2153,4 +2216,4 @@ module.exports = {
   }
   
 };
-},{"./jq":16,"debug":2,"url-pattern":6}]},{},[1]);
+},{"./jq":16,"debug":2,"url-pattern":5}]},{},[1]);
