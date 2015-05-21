@@ -9,7 +9,8 @@
 'use strict';
 
 var utils = require('./utils'),
-    $ = require('./jq');
+    $ = require('./jq'),
+    matcher;
 
 
 /**
@@ -18,11 +19,7 @@ var utils = require('./utils'),
 
 var MATCH_PROPERTY = '__MATCH__'; // Determines whether a URL matches
 
-/**
- * Exports `Matcher`
- */
 
-module.exports = Matcher;
 
 
 /**
@@ -67,8 +64,11 @@ function Matcher( pageURL ) {
  */
 
 Matcher.prototype._getPageURL = function( ) {
-  this.locationObj = this.locationObj || utils.parseURL( window.location.href );
-  return this.locationObj;
+  if ( this.locationObj ) {
+    return this.locationObj;
+  } else {
+    return this.locationObj = utils.parseURL( window.location.href );
+  }
 };
 
 
@@ -273,11 +273,11 @@ Matcher.prototype.checkParamMatches = function( params ) {
 
 Matcher.prototype._getNamedParameters = function ( pattern ) {
   var regex, names, results, name;
-  regex = new RegExp( '((:?:[^\\/\(\)]+)|(?:[\*]))', 'g' );
+  regex = new RegExp( '((:?:[^\\/\(\)]+)|(?:[\*])|(?:[\*\*]))', 'g' );
   names = [ ];
   
   results = regex.exec( pattern );
-  
+
   /*
    * Loop through until results is null.
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec#Example:_Finding_successive_matches
@@ -291,7 +291,7 @@ Matcher.prototype._getNamedParameters = function ( pattern ) {
       throw new TypeError( ':_ can\'t be used as a pattern name in pattern: ' + pattern );
     }
     
-    if ( names.indeOf(name) >= -1 ) {
+    if ( $.inArray(name, names) > -1 ) {
       throw new TypeError( 'duplicate pattern name :' + name + ' in pattern: ' + pattern );
     }
     
@@ -301,6 +301,15 @@ Matcher.prototype._getNamedParameters = function ( pattern ) {
     
   return names;
 };
+
+
+/**
+ * Exports `Matcher`
+ */
+
+module.exports = matcher = new Matcher();
+matcher.MATCH_PROPERTY = MATCH_PROPERTY;
+matcher.Matcher = Matcher;
 
 
 /**

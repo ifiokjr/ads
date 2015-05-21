@@ -16,5 +16,6 @@
   "before_tests": "./node_modules/.bin/browserify ./tests/unit/config.spec.js ./src/*/*.spec.js ./src/*.spec.js -o ./tests/compiledTests.js",
   "on_exit": "rm ./tests/compiledTests.js",
   "launch_in_dev": ["phantomjs"], 
-  "host": "0.0.0.0"
+  "host": "0.0.0.0",
+  "debug": true
 }
