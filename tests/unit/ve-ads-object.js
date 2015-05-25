@@ -2,7 +2,7 @@
  * Valid 'veAds'
  */
 
-var  validVeAds = {
+var validVeAds = {
   
   /**
    * This sets some global VeAds configurations settings.
@@ -20,7 +20,6 @@ var  validVeAds = {
     
     avoidDomManipulations: false
   },
-  
   
   /**
    * The new version of our code is page-centric.
@@ -45,22 +44,17 @@ var  validVeAds = {
       url: 'awesome.com/cart(/)',
       params: {}
     }, 'awesome.com/*/cart/']
-  },
-  {
+  }, {
     id: 2,
     name: 'Complete Page',
     type: 'conversion',
     inclusionUrls: [{
-        url: 'awesome.com/thank-you(/)',
-        params: {
-          orderId: ':orderId'
-        } // named parameter can be obtained from a data object
-      },
-      'awesome.com/checkout/complete/'
-    ],
-    exclusionUrls: [
-      
-    ],
+      url: 'awesome.com/thank-you(/)',
+      params: {
+        orderId: ':orderId'
+      } // named parameter can be obtained from a data object
+    }, 'awesome.com/checkout/complete/'],
+    exclusionUrls: [],
     dynamicIdentifiers: [{
         id: 1,
         and: 3
@@ -71,15 +65,25 @@ var  validVeAds = {
         and: null
       } // Requires identifier 5 only.
     ]
-
+  }, {
+    id: 3,
+    name: 'Custom Page',
+    type: 'custom',
+    inclusionUrls: [],
+    exclusionUrls: [],
+    dynamicIdentifiers: []
+  }, {
+    id: 4,
+    name: 'Product Page',
+    type: 'product',
+    inclusionUrls: [],
+    exclusionUrls: [],
+    dynamicIdentifiers: []
   }],
-  
-  
   /*
    * Responsible for the pixel that is placed on the correct page.
    * types available are ['ve', 'flex', 'dbm', 'appNexus']
    */
-  
   pixels: [{
     id: 1,
     name: 'Main Products Integration',
@@ -97,15 +101,12 @@ var  validVeAds = {
     tagHTML: '<img src="https://g.co/klj?fd=7878&cat=ladf">', // The tag that will be dropped on every matched page.
     tagSrc: ''
   }],
-  
-  
   /*
    * Responsible for collecting relevant data from DOM selectors, JavaScript variables,
-   * localStorage. Linked to a page and can be required. 
-   * Run using a getter and setter methodology. 
-   * Pixels, get, while Pages, set. 
+   * localStorage. Linked to a page and can be required.
+   * Run using a getter and setter methodology.
+   * Pixels, get, while Pages, set.
    */
-  
   dataElements: [{
     id: 1,
     name: 'Order Value One',
@@ -118,13 +119,10 @@ var  validVeAds = {
     },
     mask: 'number' // [ 'number', 'currency', '' ]
   }],
-  
-  
   /*
    * Used to set up pages to only be active when a certain data element has some given value
    *
    */
-  
   dynamicIdentifiers: [{
     name: '',
     id: 1,
@@ -133,3 +131,5 @@ var  validVeAds = {
     criteria: []
   }]
 };
+
+module.exports = validVeAds;

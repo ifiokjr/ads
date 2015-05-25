@@ -31,9 +31,26 @@ var urlUpdate = function urlUpdate( str ) {
  * Generate the VeAds Object (can be overridden)
  */
 
-generateVeAdsObject = function veAdsObject( obj ) {
+generateVeAdsObject = function generateVeAdsObject( obj ) {
   obj = obj || {};
-  return _.chain( _.cloneDeep(validVeAds) ).extend( obj ).value( );
+  return $.extend({}, veAdsObj, obj);
+};
+
+
+/**
+ * set window veAdsObject
+ */
+
+setGlobalVeAdsObj = function setGlobalVeAdsObj( obj ) {
+  ((window.veTagData = window.veTagData || {}).settings = {}).veAds = obj;
+};
+
+/**
+ * unset window veAdsObject to an empty object
+ */
+
+unsetGlobalVeAdsObj = function unsetGlobalVeAdsObj( ) {
+  window.veTagData = {};
 };
 
 
@@ -44,5 +61,7 @@ generateVeAdsObject = function veAdsObject( obj ) {
 module.exports = {
   fail: fail,
   urlUpdate: urlUpdate,
-  obj: generateVeAdsObject
+  obj: generateVeAdsObject,
+  setGlobalVeAdsObj: setGlobalVeAdsObj,
+  unsetGlobalVeAdsObj: unsetGlobalVeAdsObj
 };

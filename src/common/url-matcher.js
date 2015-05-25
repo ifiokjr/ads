@@ -28,8 +28,8 @@ var MATCH_PROPERTY = '__MATCH__'; // Determines whether a URL matches
 
 var optionalParam = /\((.*?)\)/g;
 var namedParam    = /(\(\?)?:\w+/g;
-var splatParam    = /\*[^\/]/g;
-var doubleSplatParam = /\*\*/g; // when used, should be used alone
+var splatParam    = /[*]{1}/g;
+var doubleSplatParam = /[*]{2}/g; // when used, should be used alone
 var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
 
 
@@ -118,8 +118,10 @@ Matcher.prototype._patternToRegex = function( pattern ) {
     .replace(namedParam, function(match, optional) {
       return optional ? match : '([^/?]+)';
     })
-    .replace(doubleSplatParam, '([^?]*?)')
-    .replace(splatParam, '([^/?]*?)');
+    .replace(doubleSplatParam, '([^?]+|[^?]?)') // greedy match!
+    .replace(splatParam, '([^\\/?]*?)'); // .*? non-greed match http://forums.phpfreaks.com/topic/265751-how-does-it-work/
+    
+  console.log(pattern);
   
   return new RegExp('^' + pattern + '(?:\\?([\\s\\S]*))?$');
 };
@@ -337,7 +339,9 @@ function convertSearchToObject( searchString ) {
  * @function
  * 
  * @description
- * remove unwanted elements from a URL
+ * remove unwanted items from a URL
+ * takes `https://www.awesome.com/hello/my`
+ * outputs => `awesome.com/hello/my`
  * 
  * @param {String} dirtyURL - parameters passed into the URL
  */

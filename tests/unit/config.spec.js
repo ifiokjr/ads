@@ -8,10 +8,12 @@ global.chai = require('chai');
 global.expect = chai.expect;
 
 global.sinon = require('sinon');
-global.VEjQuery = global.jQuery = require('jquery');
+global.VEjQuery = global.jQuery = $ = require('jquery');
 
 
 global.helpers = require('./helpers');
+
+global._ = require('lodash');
 
 // CHAI plugins
 var sinonChai = require('sinon-chai');

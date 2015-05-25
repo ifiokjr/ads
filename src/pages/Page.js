@@ -1,4 +1,13 @@
 /**
+ * @module ./Page
+ * Expose `Page` Class.
+ */
+
+module.exports = Page
+
+
+
+/**
  * 
  * Represents a Page class within the VeAds object. 
  * 
@@ -8,13 +17,7 @@
  * @param {object} config - takes in an object with configuration attached
  */
 
-function Page(config) {
- 
-  this.id = config.id;
-  this.name = config.name;                                                                                                                   
-  this.type = config.type;
-  this.dataElementIds = config.pdataElementIds;
-  this.addresses = config.ppageAddress;
+function Page( config ) {
+  
 }
 
-module.exports = Page
