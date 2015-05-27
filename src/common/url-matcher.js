@@ -1,3 +1,6 @@
+'use strict';
+
+
 /** 
  * @module common/url-matcher 
  * 
@@ -120,9 +123,7 @@ Matcher.prototype._patternToRegex = function( pattern ) {
     })
     .replace(doubleSplatParam, '([^?]+|[^?]?)') // greedy match!
     .replace(splatParam, '([^\\/?]*?)'); // .*? non-greed match http://forums.phpfreaks.com/topic/265751-how-does-it-work/
-    
-  console.log(pattern);
-  
+      
   return new RegExp('^' + pattern + '(?:\\?([\\s\\S]*))?$');
 };
 
@@ -139,7 +140,7 @@ Matcher.prototype._patternToRegex = function( pattern ) {
  * @params {String|Object} pattern - a url pattern or object with a params pattern as well
  * patter can be an object with properties params, url, hash.
  * 
- * :TODO add a way of matching explicitly zero parameters
+ * :TODO add a way of matching explicitly zero parameters (maybe params should default to null set to `{}` when strictly no params)
  */
 
 Matcher.prototype.match = function( pattern ) {

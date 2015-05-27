@@ -3,100 +3,92 @@
  */
 
 
-var Page = require('./Page');
-var pageObj, config;
+var Page = require( './Page' ),
+    matcher = require('../common/url-matcher'),
+    
+    pageObj, config, fn;
 
 
-describe('Page Class', function() {
+describe( 'Page Class', function( ) {
   
-  beforeEach(function() {
-    pageObj = new Page(pageConfig);
+  beforeEach(function( ) {
+    config = helpers.obj( ).pages[1];
+    pageObj = new Page( config );
+    fn = function( ) {};
   });
   
   
-  it('it should be an instance of Page', function() {
+  it( 'it should be an instance of Page', function( ) {
     expect(pageObj).to.be.an.instanceof(Page);
   });
   
   
-  it('should have an id which is the number 2 and a name', function() {
-    expect(pageObj.id).to.be.a('number');
-    expect(pageObj.id).to.equal(2);
-    expect(pageObj.name).to.be.a('string');
-    expect(pageObj.name).to.equal('Complete Page');
+  it( 'should throw an error if called without an obj', function( ) {
+    fn = function( ) { new Page( ); };
+    expect(fn).to.throw(Error);
+    fn = function( ) { new Page('failing string'); };
+    expect(fn).to.throw( /need to be called with a configuration object/ );
   });
   
   
-  it('should throw an error if the config object is not passed in', function() {
-    var fn = function() {
-      new Page();
-    };
-    expect(fn).to.
-    throw(Error);
-  });
-  
+  it( 'should store the configuration object to page', function( ) {
+    expect( pageObj.config ).to.equal( config ); // The only actual important one
+    expect( pageObj.urls ).to.equal( config.urls );
+    expect( pageObj.type ).to.equal( config.type );
+    expect( pageObj.dynamicIdentifiers ).to.equal( config.dynamicIdentifiers );
+    expect( pageObj.name ).to.equal( config.name );
 
-  it.skip('with incorrect type should result in an error', function() {
-    var pageTypes = [ 'product', 'basket', 'conversion', 'custom', 'ros', 'category' ];
-    helpers.fail();
   });
   
   
-  // Added skips to these tests until we can work through how this object should behave. 
-  describe.skip('PageAddress', function() {
+  it( 'should store matching URLs in an array', function( ) {
+    expect( pageObj.matchingURLs ).to.be.an( 'array' );
+  });
+  
+  
+  it( 'should have emitter methods', function( ) {
+    expect( pageObj ).to.have.property( 'on' );
+    expect( pageObj ).to.have.property( 'once' );
+    expect( pageObj ).to.have.property( 'off' );
+    expect( pageObj ).to.have.property( 'emit' );
+  });
+  
+  
+  it( 'should check through all urls', function( ) {
+    var spy = sinon.spy(matcher, 'match');
+    var page = new Page( config );
     
-    
-    it('should have at least 1 address object', function() {
-      expect(pageObj.addresses).to.be.an.instanceof(PageAddress);
+    $.each(config.urls, function( index, url) {
+      expect( spy ).to.have.been.calledWith( url );
     });
+
+  });
+
+  
+  it( 'should emit `fail` when the current page doesn\'t match', function( ) {
+    var spy = sinon.spy(Page.prototype, 'emit');
+    var page = new Page( config );
+    expect( spy ).to.have.been.calledWith('fail');
+  });
+  
+  
+  it( 'should emit `success` and page id once the current page has been matched', function( ) {
+    var spy = sinon.spy(Page.prototype, 'emit');
+    config.dynamicIdentifiers = [ ];
+    config.urls = ['**'];
+    var page = new Page( config );
+    console.log(page, spy);
+    expect( spy ).to.have.been.calledWith('success');
+  });
+
+  
+  describe( '#dynamicallyIdentify', function( ) {
     
-    
-    it('should have at least 1 address with values inside', function() {
-      var addLen = pageObj.addresses.adress.length;
-      assert(Array.isArray[pageObj.addresses.adress]);
-      expect(addLen).to.be.above(0);
-      for(var ii = 0; ii < addLen; ii++) {
-        assert.isObject(pageObj.addresses.adress[ii]);
-        expect(pageObj.addresses.adress[ii].url).to.be.a('string');
-      }
-    });
-    
-    
-    it('should be related to at least 1 DataElement, and the Id has to be a number', function() {
-      var elemLen = pageObj.dataElementIds.length;
-      assert(Array.isArray[pageObj.dataElementIds]);
-      expect(elemLen).to.be.above(0);
-      
-      for(var ii = 0; ii < addLen; ii++) {
-        assert.isObject(pageObj.dataElementIds[ii]);
-        expect(pageObj.dataElementIds[ii]).to.be.a('number');
-      }
+    it( 'should run asynchronously', function( ) {
+      helpers.fail(); // Implement after working out data element API.
     });
   });
   
-  /*
-   describe('Integration', function(){
-   });  
- */
-  /*describe('DataElement', function(){
-
-     it('Page.dataElements should be an array', function () {
-
-       assert(Array.isArray[pageObj.dataElements]);
-     });     
-    
-     it('Page should have at least 1 DataElement object with values inside', function () {
-
-       var elemLen = pageObj.dataElements.length;
-
-       expect(elemLen).to.be.above(0);
-
-       for(var ii=0;ii<addLen;ii++){
-
-         expect(pageObj.dataElements[ii]).to.be.an.instanceof(DataElement);
-         expect(pageObj.dataElements[ii].name).to.be.a('string');
-         expect(pageObj.dataElements[ii].selector).to.be.a('string');
-         expect(pageObj.dataElements[ii].regex).to.be.a('string');
-       }
-      });*/
+  
+  
 });

@@ -31,9 +31,9 @@ var urlUpdate = function urlUpdate( str ) {
  * Generate the VeAds Object (can be overridden)
  */
 
-generateVeAdsObject = function generateVeAdsObject( obj ) {
+var generateVeAdsObject = function generateVeAdsObject( obj ) {
   obj = obj || {};
-  return $.extend({}, veAdsObj, obj);
+  return $.extend( {}, veAdsObj, obj);
 };
 
 

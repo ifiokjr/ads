@@ -3,7 +3,8 @@
  */
 
 var utils = require('./common/utils'),
-    Page = require('./pages/Page');
+    Page = require('./pages/Page'),
+    settings = require('./settings');
 
 
 /**
@@ -12,7 +13,7 @@ var utils = require('./common/utils'),
  */
 
 module.exports = Main;
-Main.PAGE_PROPERTY = 'pageObject';
+
 
 /**
  * Page Type ID's. Useful for sorting
@@ -89,7 +90,8 @@ Main.prototype.runChecks = function( ) {
   if ( !this.testJSON() ) {
     this.jsonAvailable = false;
     this.jsonPromise = $.getScript('https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js');
-  } else {
+  }
+  else {
     this.jsonAvailable = true;
   }
   
@@ -110,10 +112,10 @@ Main.prototype.instantiatePages = function( ) {
   _this.veAdsConfig.pages.sort(pageSort); // Sort the pages according to type.
   
   $.each( _this.veAdsConfig.pages, function( index, pageObj ) {
-    if ( pageObj[Main.PAGE_PROPERTY] ) return; // Only generate instance if none currently exists
+    if ( pageObj[settings.MAIN_PAGE_PROPERTY] ) return; // Only generate instance if none currently exists
     
-    var page = new Page( ); // CHECK: This may need certain parameters
-    pageObj[Main.PAGE_PROPERTY] = page;
+    var page = new Page( pageObj ); // CHECK: This may need certain parameters
+    pageObj[settings.MAIN_PAGE_PROPERTY] = page;
   });
 };
 

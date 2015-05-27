@@ -4,8 +4,7 @@
   "src_files": [
     "./src/*.js",
     "./src/*/*.js",
-    "./tests/unit/*.test.js",
-    "./tests/unit/config.js"
+    "./tests/unit/*.js"    
   ],
   "launchers": {
     "Node": {
@@ -17,5 +16,5 @@
   "on_exit": "rm ./tests/compiledTests.js",
   "launch_in_dev": ["phantomjs"], 
   "host": "0.0.0.0",
-  "debug": true
+  "debug": false
 }

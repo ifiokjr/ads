@@ -3,7 +3,7 @@
  */
 
 global.chai = require('chai');
-// chai.should();
+chai.should();
 
 global.expect = chai.expect;
 

@@ -4,6 +4,7 @@
  */
 
 var Main = require( './main' ),
+    settings = require('./settings'),
     Page = require( './pages/Page' );
 
 describe( 'Main Runner', function( ) {
@@ -92,7 +93,7 @@ describe( 'Main Runner', function( ) {
     
     it( 'should store a copy of the instantiated page on each member of the pages object', function( ) {
       $.each( _main.veAdsConfig.pages, function( index, pageObj ) {
-        expect( pageObj[Main.PAGE_PROPERTY] ).to.be.an.instanceof( Page );
+        expect( pageObj[settings.MAIN_PAGE_PROPERTY] ).to.be.an.instanceof( Page );
       });
     });
     

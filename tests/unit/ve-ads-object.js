@@ -43,21 +43,23 @@ var validVeAds = {
     urls: [{
       url: 'awesome.com/cart(/)',
       params: {}
-    }, 'awesome.com/*/cart/']
+    }, 'awesome.com/*/cart/'],
+    dynamicIdentifiers: []
   }, {
     id: 2,
     name: 'Complete Page',
     type: 'conversion',
-    inclusionUrls: [{
+    urls: [{
       url: 'awesome.com/thank-you(/)',
       params: {
         orderId: ':orderId'
       } // named parameter can be obtained from a data object
     }, 'awesome.com/checkout/complete/'],
-    exclusionUrls: [],
-    dynamicIdentifiers: [{
-        id: 1,
-        and: 3
+    
+    dynamicIdentifiers: [{ 
+          selector: '#dynamicId',
+          criteria: 'contains',
+          value: ['Complete Page']
       }, // Requires identifier 1 and identifier 3 to be present
       // OR
       {
@@ -76,8 +78,7 @@ var validVeAds = {
     id: 4,
     name: 'Product Page',
     type: 'product',
-    inclusionUrls: [],
-    exclusionUrls: [],
+    urls: [],
     dynamicIdentifiers: []
   }],
   /*

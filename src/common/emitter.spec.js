@@ -2,7 +2,7 @@
  * Emitter Testsuite
  */
 
-var Emitter = require('./Emitter');
+var Emitter = require('./emitter');
 
 function Custom() {
   Emitter.call(this)
