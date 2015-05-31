@@ -1,4 +1,4 @@
-// Check to see if element exists if not keep checking every second until it is found. 
+// Check to see if element exists if not keep checking every second until it is found.
 var log = require('debug')('checkElement'),
     type = require('./type'),
     $ = require('./jq');
@@ -20,12 +20,12 @@ function interval(ms, maxRetries, fn) {
 
 function checkElement(selector, successFn) {
   var $el, found = false;
-  
-  
-  
+
+
+
   if ( type(successFn, 'function') ) {
-  
-    // when not immediately found behave in an asynchronous way. 
+
+    // when not immediately found behave in an asynchronous way.
     var calledInterval = interval(null, null, function() {
       if( found === true ) {
         clearInterval(calledInterval);
@@ -42,8 +42,8 @@ function checkElement(selector, successFn) {
       return false;
     });
   }
-  
-  
+
+
   $el = $(selector);
   if($el.length) {
     found = true;
@@ -56,18 +56,18 @@ function checkElement(selector, successFn) {
     }
   }
   return $el;
-  
-  
+
+
 }
 
 module.exports = {
-  
+
   check: function( selector, successFn ) {
     log('Element is being checked');
     return checkElement(selector, successFn);
   },
-  
-  // Keep checking in case an element updates. 
+
+  // Keep checking in case an element updates.
   // Should only be called once the element is present.
   // Checks occur every two seconds.
   checkUpdates: function( selector, oldVal, changedFn) {
@@ -75,46 +75,46 @@ module.exports = {
       changedFn = oldVal;
       oldVal = '';
     }
-    
+
     var stop, $el, newVal;
     var calledInterval = interval(500, 2000, function() {
       $el = $(selector);
       newVal = getValOrText($el);
       if(!type(newVal, 'nan') && !type(newVal, 'null') &&
          !type(newVal, 'undefined') && (newVal !== oldVal) ) {
-        
+
         oldVal = newVal;
         stop = changedFn($el, newVal);
-        
+
         if( stop ) {
           clearInterval( calledInterval );
           return true;
         }
-        
+
       }
     });
   },
-  
+
   getValOrText: getValOrText
- 
-  
+
+
 };
 
 
 /** NEW VERSION. REGEX. the parameters should change to obj and noFallback. ideal merging with getVal()
 function getValOrText($el,obj) {
   if ( type($el, 'string') ) { $el = $($el); }
- 
+
    //It can be an ID or a Price. Alphanumeric, can't just set default like in getVal()
    var val, timestamp = (new Date()).getTime();
-   
-   if (!$el.length){ 
-   
+
+   if (!$el.length){
+
      if($el.val() && $el.val().trim()){ val = regexReplacementFromElement( $el, obj.regex, obj['default'], timestamp) ;}
      else { val = $el.text() && $el.text().trim() }
-   
+
    }else val = '';
- 
+
   return val;
 }*/
 
@@ -134,17 +134,17 @@ function getValOrText($el) {
 function getVal ( obj, noFallback ) {
   var $el = $(obj.selector),
       timestamp = (new Date()).getTime();
-  
+
   if (!$el.length) { return noFallback ? '' : obj['default'] || timestamp; }
-  
+
   var val = regexReplacementFromElement( $el, obj.regex, obj['default'], timestamp);
-     
+
   return encodeURIComponent(val);
 }
 
 
 /**
- * 
+ *
  * Checks value captured with an expression and transforms it with regex.
  *
  * @param {element} $el - domain element with a value or text
@@ -158,4 +158,3 @@ function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
       ($el.val() && $el.val().trim().replace(regex, '')) ||
       String( fallback || lastResort );
 }
-

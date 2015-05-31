@@ -4,7 +4,7 @@
   "src_files": [
     "./src/*.js",
     "./src/*/*.js",
-    "./tests/unit/*.js"    
+    "./tests/unit/*.js"
   ],
   "launchers": {
     "Node": {
@@ -12,9 +12,9 @@
       "protocol": "tap"
     }
   },
-  "before_tests": "./node_modules/.bin/browserify ./tests/unit/config.spec.js ./src/*/*.spec.js ./src/*.spec.js -o ./tests/compiledTests.js",
+  "before_tests": "./node_modules/.bin/browserify -t stringify ./tests/unit/config.spec.js ./src/*/*.spec.js ./src/*.spec.js -o ./tests/compiledTests.js",
   "on_exit": "rm ./tests/compiledTests.js",
-  "launch_in_dev": ["phantomjs"], 
+  "launch_in_dev": ["phantomjs"],
   "host": "0.0.0.0",
   "debug": false
 }

@@ -3,13 +3,22 @@
 */
 
 module.exports = {
-  
-  
-  /**
-   * Constants
-   */
-  
-  DEFAULT_PAGE_TYPE: 'custom', // page that we default to.
-  MAIN_PAGE_PROPERTY: 'pageObject' // property to store instantiated page.
-};
 
+
+  /**
+   * Page Constants
+   */
+
+  DEFAULT_PAGE_TYPE: 'custom', // page that we default to.
+  MAIN_PAGE_PROPERTY: 'pageObject', // property to store instantiated page.
+
+
+  /**
+   * Element Constants
+   */
+
+  ELEMENT_MS: 500, // milliseconds between checks
+  ELEMENT_MAX_RETRIES: 1000, // Maximum number of retries
+
+
+};

@@ -1,10 +1,11 @@
 /**
  * @module Helper functions used in the unit tests
- * 
+ *
  */
 
-var _ = require('lodash'),
-    veAdsObj = require('./ve-ads-object');
+var _ = require( 'lodash' ),
+    veAdsObj = require( './ve-ads-object' ),
+    fixtures = require( '../fixtures' );
 
 
 /**
@@ -33,7 +34,7 @@ var urlUpdate = function urlUpdate( str ) {
 
 var generateVeAdsObject = function generateVeAdsObject( obj ) {
   obj = obj || {};
-  return $.extend( {}, veAdsObj, obj);
+  return _.extend( _.clone(veAdsObj, true), obj );
 };
 
 
@@ -54,6 +55,32 @@ unsetGlobalVeAdsObj = function unsetGlobalVeAdsObj( ) {
 };
 
 
+
+/**
+ * Add one of the fixtures to the DOM - used in a beforeEach handler
+ * Paired with clearDOM function
+
+ * @param {String} fixture - property taken from the fixtures obj
+ *
+ * @returns {jQueryElement} - the created element;
+ */
+
+var addToDOM = function( fixture ) {
+  var $el = $( '<div id="fixtures">' );
+  $el.css( { display: 'none', visibility: 'hidden' } );
+  $( 'body' ).append( $el );
+
+  $el.html( fixtures[fixture] );
+  return $el;
+};
+
+
+
+var clearDOM = function( ) {
+  $( '#fixtures' ).remove( );
+};
+
+
 /**
  * Expose `helpers`
  */
@@ -63,5 +90,7 @@ module.exports = {
   urlUpdate: urlUpdate,
   obj: generateVeAdsObject,
   setGlobalVeAdsObj: setGlobalVeAdsObj,
-  unsetGlobalVeAdsObj: unsetGlobalVeAdsObj
+  unsetGlobalVeAdsObj: unsetGlobalVeAdsObj,
+  addToDOM: addToDOM,
+  clearDOM: clearDOM
 };

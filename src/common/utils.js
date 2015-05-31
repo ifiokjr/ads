@@ -1,5 +1,5 @@
 /**
-* Useful utilities that will be used throughout the codebase. 
+* Useful utilities that will be used throughout the codebase.
 * @ module `common
 */
 
@@ -7,33 +7,34 @@
 /**
  * `toString` reference.
  * Store for later usage
- */ 
+ */
 var toString = Object.prototype.toString;
 
 
 
 module.exports = {
-  
+
   parseURL: parseURL,
-  
+
   type: type,
-  
-  objectLength: objectLength
-  
-  
+
+  objectLength: objectLength,
+
+  whenAny: whenAny
+
 };
 
-  
+
 
 /**
- * Return the correct URL and then expect it to work. 
- * 
+ * Return the correct URL and then expect it to work.
+ *
  */
 
 function parseURL( url ) {
   var a = document.createElement('a');
   a.href = url;
-  
+
   return {
     element: a,
     href: a.href,
@@ -48,14 +49,14 @@ function parseURL( url ) {
   };
 }
 
-  
+
  /**
  * Return the type of `val` or a boolean comparision.
  *
- * @param {Mixed} val - the element being tested against. 
+ * @param {Mixed} val - the element being tested against.
  * @param {string} testType[optional] - if passed in then th function returns a boolean
  * @return {Boolean | string} - returns a boolean if 2 parameters are passed in, otherwise returns a string
- * 
+ *
  * @api public
  */
 
@@ -83,11 +84,11 @@ function type( val, testType ) {
 
 /**
  * Return the length of the current object
- * 
- * @param {Object} obj - the object to be measured. 
- * 
+ *
+ * @param {Object} obj - the object to be measured.
+ *
  * @return {Number} - returns the length of the objects own elements
- * 
+ *
  * @api public
  */
 
@@ -97,14 +98,14 @@ function objectLength( obj ) {
   for ( key in obj ) {
     if ( obj.hasOwnProperty(key) ) { len++; }
   }
-  
+
   return len;
 }
 
 
 /**
  * Generate search object
- * 
+ *
  * @param {String} searchString - parameters passed into the URL
  */
 
@@ -122,10 +123,10 @@ function convertSearchToObject( searchString ) {
 
 /**
  * @function
- * 
+ *
  * @description
  * Remove unwanted elements from a URL
- * 
+ *
  * @param {String} dirtyURL - parameters passed into the URL
  */
 
@@ -142,4 +143,35 @@ function cleanURL(dirtyURL) {
   } catch(err) {
     return '';
   }
+}
+
+
+/**
+ * @api public
+ *
+ * Resolves when an array of promises are completed,
+ * only stop when context argument is edited
+ *
+ * @param {Array} promiseArray - an array or promises to look through.
+ * @param {Promise|Optional} [promise1, promise2, ...] - promise arguments
+ *
+ * @returns {jQueryPromise} -  promise notifies whenever element val or text changes.
+ */
+
+function whenAny( promiseArray ) {
+  var finish = $.Deferred( );
+
+  if ( arguments.length > 1 ) {
+    promiseArray = Array.prototype.slice.call( arguments );
+  }
+
+  $.each( promiseArray, function( index, promise ) {
+
+    promise.done( function( ) {
+      var args = [].slice.call( arguments );
+      finish.resolve.apply(finish, args )
+    });
+  });
+
+  return finish.promise( );
 }

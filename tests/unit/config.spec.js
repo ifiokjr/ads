@@ -14,6 +14,8 @@ global.VEjQuery = global.jQuery = $ = require('jquery');
 global.helpers = require('./helpers');
 
 global._ = require('lodash');
+global.fixtures = require('js-fixtures');
+fixtures.path = '/tests/fixtures'
 
 // CHAI plugins
 var sinonChai = require('sinon-chai');
@@ -26,7 +28,7 @@ chai.use(chaiThings);
 
 
 
-// This is used for the page tests. 
+// This is used for the page tests.
 global.pageConfig = {
     id: 2,
     name: 'Complete Page',
@@ -40,7 +42,7 @@ global.pageConfig = {
       'awesome.com/*/cart/'
     ],
     exclusionUrls: [
-      
+
     ],
     dynamicIdentifiers: [{
         id: 1,

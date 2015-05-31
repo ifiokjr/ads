@@ -3,24 +3,24 @@
  */
 
 var validVeAds = {
-  
+
   /**
    * This sets some global VeAds configurations settings.
    * Since there are likely to be additional features that crop up, this is subject to change
    */
-  
+
   config: {
     timeStamp: 'Wed May 06 2015 16:36:48 GMT+1000 (AUS Eastern Standard Time)',
     version: '2.0.1',
-    
+
     /**
      * Rather than inserting img pixels into the DOM it's possible to generate
      *the same request using JavaScript. This is much more performant.
      */
-    
+
     avoidDomManipulations: false
   },
-  
+
   /**
    * The new version of our code is page-centric.
    * The page types available are listed below.
@@ -33,7 +33,7 @@ var validVeAds = {
    *  - **ros**: This page is auto generated and includes any page that is on the site.
    *  - ****
    */
-  
+
   pages: [{
     id: 1,
     name: 'Basket Page', // The name can be anything. It just helps to debug and provide meaningful messages, rather than dealing with IDs'
@@ -55,16 +55,17 @@ var validVeAds = {
         orderId: ':orderId'
       } // named parameter can be obtained from a data object
     }, 'awesome.com/checkout/complete/'],
-    
-    dynamicIdentifiers: [{ 
-          selector: '#dynamicId',
+
+    dynamicIdentifiers: [{
+          selector: '#progress',
           criteria: 'contains',
-          value: ['Complete Page']
+          values: ['Complete Page']
       }, // Requires identifier 1 and identifier 3 to be present
       // OR
       {
-        id: 5,
-        and: null
+        selector: '#awesome',
+        criteria: 'contains',
+        values: ['Yo']
       } // Requires identifier 5 only.
     ]
   }, {
