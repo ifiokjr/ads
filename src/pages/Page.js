@@ -36,7 +36,7 @@ function Page( config ) {
   this.matchingURLs = [ ];
 
   this.dynamic = this._checkDynamic( ); // Boolean
-  this.checkURLs();
+  // this.checkURLs(); // Only check urls at the right time
 }
 
 

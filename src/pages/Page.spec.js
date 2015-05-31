@@ -66,26 +66,27 @@ describe( 'Page Class', function( ) {
 
   
   it( 'should emit `fail` when the current page doesn\'t match', function( ) {
-    var spy = sinon.spy(Page.prototype, 'emit');
+    var spy = sinon.spy(Page.prototype, 'emit' );
     var page = new Page( config );
-    expect( spy ).to.have.been.calledWith('fail');
+    expect( spy ).to.have.been.calledWith( 'fail' );
+    spy.restore( );
   });
   
   
   it( 'should emit `success` and page id once the current page has been matched', function( ) {
-    var spy = sinon.spy(Page.prototype, 'emit');
+    var spy = sinon.spy( Page.prototype, 'emit' );
     config.dynamicIdentifiers = [ ];
-    config.urls = ['**'];
+    config.urls = ['**']; // Match everything
     var page = new Page( config );
-    console.log(page, spy);
-    expect( spy ).to.have.been.calledWith('success');
+    expect( spy ).to.have.been.calledWith( 'success' );
+    spy.restore( );
   });
 
   
-  describe( '#dynamicallyIdentify', function( ) {
+  describe( 'Dynamic Identifiers', function( ) {
     
-    it( 'should run asynchronously', function( ) {
-      helpers.fail(); // Implement after working out data element API.
+    it( 'should identify when dynamic identifiers are available', function( ) {
+      expect( pageObj ).to.be.true;
     });
   });
   

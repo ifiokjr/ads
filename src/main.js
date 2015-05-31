@@ -120,7 +120,19 @@ Main.prototype.instantiatePages = function( ) {
 };
 
 
+/**
+ * @method setupPageListener
+ * @public
+ * 
+ *  Pages have been instantiated
+ */
 
+
+
+
+/**
+ * Used to sort pages pages based on `pageTypeOrder` index 
+ */
 
 function pageSort(a, b) {
   return pageTypeOrder[a.type] - pageTypeOrder[b.type];
