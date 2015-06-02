@@ -146,11 +146,19 @@ describe( 'Page Class', function( ) {
 
 
     // TODO: properly implement these tests
-    describe( 'runDynamics', function( ) {
+    describe( '#runDynamics', function( ) {
 
 
-      it( 'should do some cool stuff', function( done ){
+      it( 'correctly run with both a string for values and and array', function( done ){
         helpers.fail( );
+      });
+
+      it( 'should not run where no selector is provided', function( ){
+
+      });
+
+      it('description', function () {
+
       });
 
       it( 'should check the element value on every progress', function( done ) {
