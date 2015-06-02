@@ -1,5 +1,8 @@
 {
   "curly": true,
+  "es3": true,
+  "strict": true,
+  "expr": true,
   "eqeqeq": true,
   "immed": true,
   "newcap": true,
@@ -11,8 +14,18 @@
   "quotmark": "single",
   "trailing": true,
   "browserify": true,
+  "mocha": true,
+  "jquery": true,
+  "browser": true,
   "globals": {
     "angular": true,
-    "_": true
+    "_": false,
+    "describe": false,
+    "it": false,
+    "beforeEach": false,
+    "afterEach": false,
+    "expect": false,
+    "sinon": false,
+    "helpers": true
   }
 }
