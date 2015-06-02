@@ -166,7 +166,7 @@ Page.prototype.storeConfig = function( config ) {
     throw new Error( 'Must be provided with a valid type' );
   }
 
-  this.config = config;
+  this.config = config; // Just in case we ever need to look back here.
 
   this.id = config.id;
   this.urls = config.urls ||  [];

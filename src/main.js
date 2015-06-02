@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Module Dependencies
  */
@@ -123,14 +125,15 @@ Main.prototype.instantiatePages = function( ) {
 
 /**
  * @method setupPageListener
- * @public
+ * @api public
  *
- *  Pages have been instantiated
+ *  Pages have been instantiated so add listeners to them.
  */
 
  Main.prototype.setupPageListener = function( ) {
    var _this = this;
 };
+
 
 /**
  * Used to sort pages pages based on `pageTypeOrder` index
@@ -139,3 +142,31 @@ Main.prototype.instantiatePages = function( ) {
 function pageSort(a, b) {
   return pageTypeOrder[a.type] - pageTypeOrder[b.type];
 }
+
+
+/**
+ * @method runPageElements
+ *
+ * This may need to have a different name as it's responsible for setting all
+ * data on the current page, before they may need to be used in any pixels that
+ * the page displays.
+ *
+ * @param  {PageObject} page the page object that will need to be checked
+ */
+
+Main.prototype.runPageElements = function (page) {
+
+};
+
+/**
+ * @method runPagePixels
+ *
+ * Based on the page that is passed into this object apply some styles to
+ *
+ * @param  {PageObject} page - used to determine which pixels are running on this type or override.id
+ * @return {[type]}      [description]
+ */
+
+Main.prototype.runPagePixels = function (page) {
+  return;
+};
