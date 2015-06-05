@@ -146,23 +146,23 @@ describe( 'Page Class', function( ) {
 
 
     // TODO: properly implement these tests
-    describe( '#runDynamics', function( ) {
+    describe.skip( '#runDynamics', function( ) {
 
 
       it( 'correctly run with both a string for values and and array', function( done ){
-        helpers.fail( );
+        sinon.assert.fail( 'Test not implemented' );
       });
 
       it( 'should not run where no selector is provided', function( ){
-
+        sinon.assert.fail( 'Test not implemented' );
       });
 
       it('description', function () {
-
+        sinon.assert.fail( 'Test not implemented' );
       });
 
       it( 'should check the element value on every progress', function( done ) {
-        helpers.fail( 'What!' );
+        sinon.assert.fail( 'Test not implemented' );
       });
     });
 
