@@ -20,8 +20,11 @@ var elements;
 
 module.exports = elements = {
   instantCheck: instantCheck,
+
   dynamicCheck: dynamicCheck,
+
   progressCheck: progressCheck,
+  
   obtainValue: obtainValue
 
 };
@@ -38,9 +41,9 @@ module.exports = elements = {
  */
 
 function obtainValue( $el ) {
-  if ( utils.type($el, 'string') ) $el = $( $el );
+  if ( utils.type($el, 'string') ) { $el = $( $el ); }
 
-  if ( !$el.length ) return '';
+  if ( !$el.length ) { return ''; }
 
   if ( $el.val( ) ) {
     return $.trim( $el.val( ) );
@@ -71,8 +74,7 @@ function interval( cb ) {
   var calledInterval = setInterval( function() {
     var stopRunning = cb( );
     runTimes++;
-    if ( stopRunning || (maxRetries && runTimes >= maxRetries) ) {
-      console.info(' removing interval', calledInterval );
+    if ( stopRunning || (maxRetries && (runTimes >= maxRetries)) ) {
       clearInterval( calledInterval );
     }
   }, ms );
@@ -163,8 +165,8 @@ function progressCheck( selector ) {
 
     $el = instantCheck( selector );
     obj.value = obtainValue( $el );
-    if ( !utils.type(obj.value, 'nan') && !utils.type(obj.value, 'undefined')
-         && !utils.type(obj.value, 'null') &&  (oldVal !== obj.value) ) {
+    if ( !utils.type(obj.value, 'nan') && !utils.type(obj.value, 'undefined') &&
+        !utils.type(obj.value, 'null') &&  (oldVal !== obj.value) ) {
 
       oldVal = obj.value;
       deferred.notify( $el, obj );

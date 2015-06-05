@@ -119,7 +119,7 @@ describe( 'utils', function( ) {
 
 
 
-    it( 'should never resolve when nothing to resolve', function( done ) {
+    it( 'should never resolve when there is nothing to resolve', function( done ) {
       // console.log(p1, p2, p3);
       utils.whenAny( promiseArray.slice(1) )
       .done( function( ) {
@@ -129,6 +129,79 @@ describe( 'utils', function( ) {
 
       setTimeout( done, 10 );
     });
-  })
+  });
+
+
+  describe( '#getScript', function ( ) {
+    var stub, value, url = 'https://awesome.com' ;
+
+    beforeEach( function( ) {
+      stub = sinon.stub( jQuery, 'ajax', function() { return [].slice.call(arguments); } );
+      value = utils.getScript( url );
+    });
+
+    afterEach( function( ) {
+      stub.restore( );
+    });
+
+    it('should call the jQuery Ajax Function', function () {
+      expect( stub ).to.have.been.calledOnce;
+    });
+
+    it( 'should be called with the correct arguments', function() {
+      var testObj = { type: 'GET', url: url, data: null, success: undefined,
+                      dataType: 'script', cache: true };
+      expect( value[0] ).to.eql( testObj );
+    });
+
+  });
+
+  // Sends out network request rather than manipulating the DOM in anyway.
+  describe( '#getImage', function ( ) {
+    var originalImage, pixel, stub
+        src = 'https://www.google.com.au/images/srpr/logo11w.png';
+
+    beforeEach( function( ) {
+      if(!utils.type(Image, 'function')){
+        originalImage = window.Image;
+        stub = sinon.stub();
+        window.Image = stub;
+      } else {
+        stub = sinon.stub(window, 'Image');
+      }
+
+      pixel = utils.getImage( src );
+    });
+
+    afterEach( function( ) {
+      if(!utils.type(Image, 'function')){
+        window.Image = originalImage;
+      } else {
+        stub.restore();
+      }
+    });
+
+    it('should make a call to the image constructor', function ( ) {
+      expect( window.Image ).to.have.been.calledOnce;
+    });
+
+
+    it('should return a thennable jQuery promise', function ( ) {
+      expect( pixel.then ).to.be.a( 'function' );
+      expect( pixel.done ).to.be.a( 'function' );
+    });
+
+    // :TODO - non-critical this should be fixed to know for certain that image
+    // pixel is being called.
+    it.skip('should be resolved once \'GET\' request is sent', function (done) {
+      window.Image = originalImage;
+      console.log(window.Image);
+      pixel.then(function( ){
+        expect( arguments.length ).to.equal( 0 );
+        done( );
+      });
+    });
+
+  });
 
 });

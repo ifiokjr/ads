@@ -1,16 +1,28 @@
+'use strict';
+
 /**
 * Useful utilities that will be used throughout the codebase.
-* @ module `common
+* @module `common`
+*
+* Pixel and script creation.
 */
 
+
+var $ = require( './jq' );
 
 /**
  * `toString` reference.
  * Store for later usage
  */
+
 var toString = Object.prototype.toString;
 
 
+
+
+/**
+ * Exports methods defined below
+ */
 
 module.exports = {
 
@@ -20,7 +32,13 @@ module.exports = {
 
   objectLength: objectLength,
 
-  whenAny: whenAny
+  whenAny: whenAny,
+
+  // Scripts and Image pixels
+
+  getScript: getScript,
+
+  getImage: getImage
 
 };
 
@@ -73,13 +91,13 @@ function type( val, testType ) {
     case '[object Error]':
       return testType ? testType === 'error' : 'error';
   }
-  if(val === null) return testType ? testType === 'null' : 'null';
-  if(val === undefined) return testType ? testType === 'undefined' : 'undefined';
-  if(val !== val) return testType ? testType === 'nan' : 'nan';
-  if(val && val.nodeType === 1) return testType ? testType === 'element' : 'element';
+  if(val === null) { return testType ? testType === 'null' : 'null'; }
+  if(val === undefined) { return testType ? testType === 'undefined' : 'undefined'; }
+  if(val !== val) { return testType ? testType === 'nan' : 'nan'; }
+  if(val && val.nodeType === 1) { return testType ? testType === 'element' : 'element'; }
   val = val.valueOf ? val.valueOf() : Object.prototype.valueOf.apply(val);
   return testType ? testType === typeof val : typeof val;
-};
+}
 
 
 /**
@@ -175,3 +193,54 @@ function whenAny( promiseArray ) {
 
   return finish.promise( );
 }
+
+
+
+/**
+ * A wrapper around the inbuilt jQuery getScript function
+ * Here we just force caching to be turned on.
+ *
+ * @param  {String} src - The URL to obtain our script from
+ *
+ * @return {jQueryPromise}     A jQuery promise with .done and .then methods.
+ */
+
+function getScript( src, cb ) {
+  return $.ajax( {
+		type: 'GET',
+		url: src,
+		data: null,
+		success: cb,
+		dataType: 'script',
+    cache: true
+  });
+}
+
+
+/**
+ * Rather than adding a pixel to the DOM we take advantage of the infamous
+ * `web bug` (beacon) to generate a transparent `GET` request for an image
+ * pixel.
+ *
+ * Much more performant
+ *
+ * @param  {String} src - pixel URL
+ * @return {jQueryPromise}     A promise with `.done` and `.then` methods
+ *                             for chaining.
+ */
+
+function getImage( src ) {
+  var image = new Image(1, 1),
+      deferred = $.Deferred( );
+
+  image.onload = function() {
+    console.log('YAY!!')
+    deferred.resolve( );
+  };
+
+  image.src = src;
+
+  return deferred.promise( );
+}
+
+global.getImage = getImage;
