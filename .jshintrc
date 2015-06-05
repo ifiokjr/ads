@@ -15,7 +15,6 @@
   "trailing": true,
   "browserify": true,
   "mocha": true,
-  "jquery": true,
   "browser": true,
   "globals": {
     "angular": true,
