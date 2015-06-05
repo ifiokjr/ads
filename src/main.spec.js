@@ -26,7 +26,7 @@ describe( 'Main Runner', function( ) {
   });
 
   it( 'should be instantiated without arguments', function( ) {
-    expect(main).to.be.an.instanceof(Main);
+    expect( main ).to.be.an.instanceof( Main );
   });
 
   it( 'should have a property called `veAdsConfig`', function( ) {
@@ -63,12 +63,12 @@ describe( 'Main Runner', function( ) {
 
     it( 'should store a jQuery promise `jsonPromise` that can be called later in the code', function( ) {
       expect( _main.jsonPromise ).to.have.property('then');
-      expect( _main.jsonAvailable ).to.be.false;
+      expect( _main.jsonAvailable ).to.equal( false );
     });
 
     it( 'should set `jsonAvailable` to true when json in the browser', function( ) {
-      expect( main.jsonAvailable ).to.be.true;
-      expect( main.jsonPromise ).to.be.undefined;
+      expect( main.jsonAvailable ).to.equal( true );
+      expect( main.jsonPromise ).to.equal( undefined );
     });
 
   });
@@ -101,8 +101,8 @@ describe( 'Main Runner', function( ) {
 
     it( 'should sort each of the pages in the order that they will run', function( ) {
       // use underscore pluck
-      var sortedIdArray = _.pluck(_main.veAdsConfig.pages, 'id');
-      expect( sortedIdArray ).to.eql([2,4,1,3]);
+      var sortedIdArray = _.pluck( _main.veAdsConfig.pages, 'id' );
+      expect( sortedIdArray ).to.eql( [2,4,1,3] );
     });
 
 
@@ -112,16 +112,16 @@ describe( 'Main Runner', function( ) {
 
 
   describe( '#setupPageListener', function( ) {
-    var page, pageConfig, dataSpy, pixelSpy;
+    var page, pageConfig, dataSpy, pixelSpy, shutdownSpy;
 
 
     beforeEach( function( ) {
       pageConfig = helpers.obj( ).pages[1];
       page = new Page( pageConfig );
-      dataSpy = sinon.spy( main, 'runPageElements' );
+      dataSpy = sinon.spy( main, 'setPageElements' );
       pixelSpy = sinon.spy( main, 'runPagePixels' );
-      shutdownSpy = sinon.spy( Page.prototype, 'shutdown' );
-      main.setupPageListener( page );
+      shutdownSpy = sinon.spy( Page.prototype, 'off' );
+      main.setupPageListeners( page );
     });
 
 
@@ -132,7 +132,7 @@ describe( 'Main Runner', function( ) {
     });
 
 
-    it( 'should ensure `runPageElements` is called when `success` is emitted', function () {
+    it( 'should ensure `setPageElements` is called when `success` is emitted', function () {
       page.emit( 'success' );
       expect( dataSpy ).to.have.been.calledWith( page );
     });
@@ -144,9 +144,10 @@ describe( 'Main Runner', function( ) {
     });
 
 
-    it( 'should call `page.shutdown()` when fail is passed through', function () {
+    it( 'should call `page.off( )` when fail is passed through', function () {
       page.emit( 'fail' );
-      expect( shutdownSpy ).to.have.been.calledOnce;
+      expect( shutdownSpy ).to.have.been.called;
+      expect( shutdownSpy ).to.have.been.calledWithExactly();
     });
 
 
@@ -155,13 +156,24 @@ describe( 'Main Runner', function( ) {
       expect( dataSpy ).to.have.been.calledOnce;
       page.emit( 'success' );
       expect( dataSpy ).to.have.been.calledOnce;
+      expect( pixelSpy ).to.have.been.calledOnce;
       page.emit( 'fail' );
-      expect( shutdownSpy ).to.not.have.been.called;
+      expect( shutdownSpy ).to.have.been.calledWith( 'fail' );
     });
 
+  });
 
-    it('description', function () {
 
+  describe('#setPageElements', function () {
+    var page, pageConfig;
+
+    beforeEach( function( ) {
+      pageConfig = helpers.obj( ).pages[1];
+      page = new Page( pageConfig );
+    });
+
+    it('should create data elements', function () {
+      expect.fail('Not implemented');
     });
   });
 
