@@ -22,7 +22,7 @@ var validVeAds = {
     // A random alphanumeric string of characters, used to namespace storage
     // Can be changed in order to clear all stored elements for future updates
 
-    uuid: 'lkajsdflkajsdflkjasdf72387',
+    uuid: 'abcd5678',
 
 
     /*
@@ -34,18 +34,18 @@ var validVeAds = {
   },
 
 
-  /*\
-  |*| The new version of our code is page-centric.
-  |*| The page types available are listed below.
-  |*|
-  |*|  - **basket**: grabbing
-  |*|  - **conversion**: where conversion pixels are placed
-  |*|  - **custom**: for implementing a custom tag based on the integration attached to it or purely capturing data.
-  |*|  - **product**:
-  |*|  - **category**:
-  |*|  - **ros**: This page is auto generated and includes any page that is on the site.
-  |*|
-  \*/
+  /**\
+  |**| The new version of our code is page-centric.
+  |**| The page types available are listed below.
+  |**|
+  |**|  - **basket**: grabbing
+  |**|  - **conversion**: where conversion pixels are placed
+  |**|  - **custom**: for implementing a custom tag based on the integration attached to it or purely capturing data.
+  |**|  - **product**:
+  |**|  - **category**:
+  |**|  - **ros**: This page is auto generated and includes any page that is on the site.
+  |**|
+  \**/
 
   pages: [
     {
@@ -85,7 +85,7 @@ var validVeAds = {
         'awesome.com/*/cart/'
       ],
 
-      dynamicIdentifiers: [ ],
+      dynamicIdentifiers: [ ]
     },
 
     {
@@ -155,25 +155,25 @@ var validVeAds = {
   ],
 
 
-  /*\
-  |*|
-  |*|  Responsible for the pixel that is placed on the correct page.
-  |*|  types available are ['ve', 'flex', 'dbm', 'appNexus']
-  |*|
-  |*|  - **ve**: pixel for retargeting it has pixels for pages: [product, conversion, basket, category]
-  |*|         hardcoded: journeyCode
-  |*|  - **flex**: gathering audience data - pixels for pages [ros]
-  |*|        hardcoded: flexId
-  |*|  - **dbm**: running double click campaigns: pixels for pages [ros, conversion]
-  |*|         hardcoded: cat, src
-  |*|  - **appNexus**: running segment pixels pixels for pages [ros, product, conversion]
-  |*|         hardcoded: segmentRos, segmentProduct, segmentConversion, conversionId
-  |*|  - **customROS**: a custom pixel that can be set up for pages [ros]
-  |*|         hardcoded: type [img, script], src
-  |*|  - **customConversion**: custom pixel for pages [conversion]
-  |*|         harcoded: type[img,script], src
-  |*|
-  \*/
+  /**\
+  |**|
+  |**|  Responsible for the pixel that is placed on the correct page.
+  |**|  types available are ['ve', 'flex', 'dbm', 'appNexus']
+  |**|
+  |**|  - **ve**: pixel for retargeting it has pixels for pages: [product, conversion, basket, category]
+  |**|         hardcoded: journeyCode
+  |**|  - **flex**: gathering audience data - pixels for pages [ros]
+  |**|        hardcoded: flexId
+  |**|  - **dbm**: running double click campaigns: pixels for pages [ros, conversion]
+  |**|         hardcoded: cat, src
+  |**|  - **appNexus**: running segment pixels pixels for pages [ros, product, conversion]
+  |**|         hardcoded: segmentRos, segmentProduct, segmentConversion, conversionId
+  |**|  - **customROS**: a custom pixel that can be set up for pages [ros]
+  |**|         hardcoded: type [img, script], src
+  |**|  - **customConversion**: custom pixel for pages [conversion]
+  |**|         harcoded: type[img,script], src
+  |**|
+  \**/
 
   pixels: [
 
@@ -241,7 +241,7 @@ var validVeAds = {
       config: {
         flexId: '123456' // Used to call in the flex tracking script
       },
-      overrides: {},
+      overrides: {}
     },
 
     {
@@ -285,7 +285,7 @@ var validVeAds = {
         src: 'https://trackingpixels.com/i/?know=what&you=bought'
       },
       overrides: {}
-    },
+    }
   ],
 
 
@@ -301,13 +301,14 @@ var validVeAds = {
   |**|  - **productId**: single value
   |**|  - **idList**: list value
   |**|  - **itemString**: list value
-  |**|  - **currency**: uses the mappings extensively
+  |**|  - **currency**: single value uses the mappings extensively
   |**|
   |**|  @property {Number} id - if this is ever changed you will need to reset the uuid
   |**|  @property {String} name - convenience property for human readability
-  |**|  @property {String} type -
+  |**|  @property {String} type - the type used
   |**|  @property {Array} pages - the pages which this element will be active on
   |**|  @property {Object} regex - more information available below
+  |**|  @property {}
   |**|  @property {Object} mapping - more documentation to come :TODO
   |**|  @property {Object} capture - everything to
   |**|
@@ -342,8 +343,11 @@ var validVeAds = {
       },
 
 
+      mask: 'currency', // [number, alphanumeric, currency, symbol, nothing]
+
       /**
-       * The value is replaced by the key. These are run last.
+       * The key is replaced by the value. This transformation is run
+       * last.
        *
        * @type {Object}
        * @property {String} [CUSTOM] - user defined
@@ -354,24 +358,27 @@ var validVeAds = {
         'AUD': '$'
       },
 
+
+
       /**
        * Configuration for what is being captured on the site.
        *
        * @type {Object}
        *
-       * @property {String} type - options [ selector, globalVariable, dataLayer, dataLayerReverse ]
+       * @property {String} type - options [ selector, globalVariable, dataLayer, dataLayerReverse, url ]
        * @property {Boolean} useMappings - can be set to transform values via mappings
        */
       capture: {
         type: 'selector',
         useMappings: false,
         mappingCriteria: 'contains', // [contains, equal]
-        element: '#awesome' // depends on capture.type ( either jQuery selector or globalVariable)
+        element: '#awesome', // depends on capture.type ( either jQuery selector or globalVariable)
+        keepChecking: false // will return as soon as it resolves
       }
 
     }
 
-  ],
+  ]
 };
 
 module.exports = validVeAds;
