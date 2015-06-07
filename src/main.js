@@ -7,6 +7,7 @@
 var utils = require('./common/utils'),
     $ = require( './common/jq' ),
     Page = require('./pages/Page'),
+    store = require( './storage/store' ),
     DataElement = require('./data/DataElement'),
     settings = require('./settings');
 
@@ -133,11 +134,14 @@ Main.prototype.instantiatePages = function( ) {
  */
 
  Main.prototype.setupPageListeners = function( page ) {
-  var _this = this;
+  // var _this = this;
 
   // Bind to this using cross browser $.proxy instead of Function.prototype.Bind
   page.once( 'success', $.proxy(this.setPageElements, this, page) );
 
+
+  // Currently is a potential for race conditions here. What if we runPagePixels
+  // before some of the data becomes available.
   page.once( 'success', $.proxy(this.runPagePixels, this, page) );
 
   page.once( 'fail', $.proxy(page.off, page) );
@@ -146,10 +150,36 @@ Main.prototype.instantiatePages = function( ) {
 
 
 /**
+ * @method setupDataListeners
+ *
+ * Data Element has been instantiated and set so now listen for storage messages
+ *
+ * @param  {DataElement} dataElement - The dataElement being listened to.
+ */
+
+Main.prototype.setupDataListeners = function ( dataElement ) {
+  dataElement.once('set', $.proxy(this.storeValue, dataElement.value, dataElement.key));
+};
+
+
+/**
+ * @method storeValue
+ *
+ * store the value.
+ *
+ * @param  {String} value - Value to be saved between pages
+ * @param  {String} key   - Key used to reference the value between pages
+ */
+Main.prototype.storeValue = function (value, key) {
+  store.set(key, value);
+};
+
+
+/**
  * Used to sort pages pages based on `pageTypeOrder` index
  */
 
-function pageSort(a, b) {
+function pageSort ( a, b ) {
   return pageTypeOrder[a.type] - pageTypeOrder[b.type];
 }
 
@@ -178,8 +208,8 @@ Main.prototype.setPageElements = function ( page ) {
       return;
     }
 
-    if ( utils.type(dataElementConfig, 'array') && dataElementConfig.length &&
-         $.inArray(page.id, dataElementConfig.pages) ) {
+    if ( utils.type(dataElementConfig.pages, 'array') && dataElementConfig.pages.length &&
+         ($.inArray(page.id, dataElementConfig.pages) > -1) ) {
 
       dataElementObject = new DataElement( dataElementConfig, page );
 
@@ -197,10 +227,33 @@ Main.prototype.setPageElements = function ( page ) {
  *
  * Implements the pixels onto the current page.
  *
- * @param  {PageObject} page - used to determine which pixels are running on this type or override.id
- * @return {[type]}      [description]
+ * TODO: Think about whether we need to defer this running.
+ *
+ * @param  {Page} page - used to determine which pixels are running on this type or override.id
  */
 
 Main.prototype.runPagePixels = function ( page ) {
-  return;
+
+  // 1. Find all the pixels that run on this page.
+
+  $.each(this.veAdsConfig.pixels, function( index, dataElementConfig ) {
+    var dataElementObject;
+
+    // Data Element has already been set
+    if ( dataElementConfig[settings.MAIN_DATA_ELEMENT] ) {
+      return;
+    }
+
+    if ( utils.type(dataElementConfig.pages, 'array') && dataElementConfig.pages.length &&
+         ($.inArray(page.id, dataElementConfig.pages) > -1) ) {
+
+      dataElementObject = new DataElement( dataElementConfig, page );
+
+      dataElementConfig[settings.MAIN_DATA_ELEMENT] = dataElementObject; // Store it, to avoid duplicates
+
+      dataElementObject.setData( ); // Obtain and store the data to cookies or localStorage
+    }
+
+  });
+
 };
