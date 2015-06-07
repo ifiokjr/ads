@@ -162,6 +162,7 @@ var validVeAds = {
   |**|
   |**|  - **ve**: pixel for retargeting it has pixels for pages: [product, conversion, basket, category]
   |**|         hardcoded: journeyCode
+  |**|         
   |**|  - **flex**: gathering audience data - pixels for pages [ros]
   |**|        hardcoded: flexId
   |**|  - **dbm**: running double click campaigns: pixels for pages [ros, conversion]
@@ -278,7 +279,7 @@ var validVeAds = {
     },
 
     {
-      id: 5,
+      id: 6,
       type: 'customConversion',
       config: {
         type: 'script', // options: ['script'|'img']
@@ -373,7 +374,7 @@ var validVeAds = {
         useMappings: false,
         mappingCriteria: 'contains', // [contains, equal]
         element: '#awesome', // depends on capture.type ( either jQuery selector or globalVariable)
-        keepChecking: false // will return as soon as it resolves
+        keepChecking: false // will return as soon as it resolves, only for selector
       }
 
     }

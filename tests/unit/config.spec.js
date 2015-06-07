@@ -27,32 +27,4 @@ chai.use(chaijQuery);
 chai.use(chaiThings);
 
 
-
-// This is used for the page tests.
-global.pageConfig = {
-    id: 2,
-    name: 'Complete Page',
-    type: 'conversion',
-    inclusionUrls: [{
-        url: 'awesome.com/thank-you(/)',
-        params: {
-          orderId: ':orderId'
-        } // named parameter can be obtained from a data object
-      },
-      'awesome.com/*/cart/'
-    ],
-    exclusionUrls: [
-
-    ],
-    dynamicIdentifiers: [{
-        id: 1,
-        and: 3
-      }, // Requires identifier 1 and identifier 3 to be present
-      // OR
-      {
-        id: 5,
-        and: null
-      } // Requires identifier 5 only.
-    ]
-
-  };
+// Include the debug module in tests and general work.
