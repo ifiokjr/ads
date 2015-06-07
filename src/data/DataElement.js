@@ -11,7 +11,8 @@ var utils = require( '../common/utils' ),
     capture = require( './capture' ),
     Emitter = require( '../common/emitter' ),
     store = require( '../storage/store' ),
-    settings = require( '../settings' );
+    settings = require( '../settings' ),
+    Page = require( '../pages/Page' );
 
 
 /**
@@ -45,9 +46,15 @@ var types = {
  * @param {Object} config tell the data element what it needs to capture
  */
 
-function DataElement(config) {
+function DataElement( config, page ) {
 
-  this.storeConfig( config );
+  if (page instanceof Page) {
+    this.page = page;
+    this.currentPage = true; // This is being captured from the current page.
+  }
+
+  page = page || {};
+  this.storeConfig( config, page );
 
 }
 
@@ -62,14 +69,17 @@ Emitter( DataElement.prototype );
  *
  */
 
-DataElement.prototype.storeConfig = function ( config ) {
+DataElement.prototype.storeConfig = function ( config, page ) {
   this.config = config;
 
-  this.key = this.generateKey();
+  this.key = this.generateKey(); // used for storage
+  this.type = config.type;
+  this.valueType = types[config.type]; // single or list
   this.id = config.id;
   this.capture = config.capture;
+  this.fallback = config.fallback; // the value to use if nothing else can be found.
 
-  this.key = this.generateKey();
+  this.urlData = page.matchingURLs || [{}];
 };
 
 
@@ -79,7 +89,7 @@ DataElement.prototype.storeConfig = function ( config ) {
  */
 DataElement.prototype.setData = function ( ) {
 
-  capture[this.capture.type]( this.config );
+  capture[this.capture.type]( this.config, this );
 
 };
 
@@ -94,14 +104,31 @@ DataElement.prototype.getData = function ( ) {
 };
 
 
-
+/**
+ * Generate a unique key
+ * @return {String} [description]
+ */
 DataElement.prototype.generateKey = function ( ) {
   return settings.fromObjectConfig('uuid') + this.type + this.id;
 };
 
 
+
 /**
- * Exports DataElement
+ * Make value quickly available to observers of this object.
+ *
+ * @param  {String|Array} value value from DOM
+ */
+
+DataElement.prototype.cacheValue = function( value ) {
+  this.lastUpdated = (new Date()).now(); // currently not used but available for optimisations
+  this.value = value;
+};
+
+
+
+/**
+ * Exports `DataElement`
  */
 
 module.exports = DataElement;

@@ -12,17 +12,19 @@
 
 
    describe('general setup', function () {
-     var element, config, getDataFn, fn;
+     var element, config, getDataFn, fn, validObj;
 
      beforeEach( function() {
-       config = helpers.obj( ).dataElements[1];
+       validObj = helpers.obj( );
+       helpers.setGlobalVeAdsObj( validObj );
+       config = validObj.dataElements[0];
        element = new DataElement( config );
-
+       fn = function() { new DataElement(); };
      });
 
 
      it( 'should be instantiated with a config object and function', function () {
-       expect( pixel ).to.be.an.instanceof( Pixel );
+       expect( element ).to.be.an.instanceof( DataElement );
      });
 
      it( 'should throw an error when no function passed in', function () {
@@ -31,11 +33,17 @@
 
 
      it( 'should have emitter methods', function( ) {
-       expect( pageObj ).to.have.property( 'on' );
-       expect( pageObj ).to.have.property( 'once' );
-       expect( pageObj ).to.have.property( 'off' );
-       expect( pageObj ).to.have.property( 'emit' );
+       expect( element ).to.have.property( 'on' );
+       expect( element ).to.have.property( 'once' );
+       expect( element ).to.have.property( 'off' );
+       expect( element ).to.have.property( 'emit' );
      });
+
+
+     it('should store all page properties on instantiation', function () {
+
+     });
+
 
    });
 
