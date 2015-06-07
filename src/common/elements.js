@@ -24,8 +24,10 @@ module.exports = elements = {
   dynamicCheck: dynamicCheck,
 
   progressCheck: progressCheck,
-  
-  obtainValue: obtainValue
+
+  obtainValue: obtainValue,
+
+  obtainValues: obtainValues
 
 };
 
@@ -41,15 +43,34 @@ module.exports = elements = {
  */
 
 function obtainValue( $el ) {
-  if ( utils.type($el, 'string') ) { $el = $( $el ); }
+  if ( !utils.type($el, 'jquery') ) { $el = $( $el ); }
+
 
   if ( !$el.length ) { return ''; }
+
+  $el = $el.first(); // only return value for the first object found from selector.
 
   if ( $el.val( ) ) {
     return $.trim( $el.val( ) );
   } else {
     return $.trim( $el.text( ) );
   }
+}
+
+
+/**
+ * Returns an array of values for each element that has been found.
+ * @param  {jQueryElement} $el - Element from which to extract values
+ * @return {[type]}     [description]
+ */
+function obtainValues( $el ) {
+  var values = [];
+
+
+  $el.each( function( index, el ) {
+    var value = obtainValue( el );
+    values.push( el );
+  });
 }
 
 
@@ -136,6 +157,8 @@ function dynamicCheck( selector ) {
  * Immediately check for the existence of the selector, notify on change,
  * only stop when context argument is edited
  *
+ * :FIXME - Currently only gets cleaned after udpate
+ *
  * @param {String} selector - the string used to check for element presence
  *
  * @returns {jQueryPromise} -  promise notifies whenever element val or text changes.
@@ -147,12 +170,27 @@ function progressCheck( selector ) {
       $el = instantCheck( selector ),
       deferred = $.Deferred( );
 
+  // it doen't feel right setting values.
+  obj.remove = function (success) {
+    if ( success ) { obj.complete = true; }
+    else { obj.fail = true; }
+  };
+
   if ( $el.length ) {
     obj.value = obtainValue( $el );
     deferred.notify( $el, obj );
   }
 
   interval( function( ) {
+    $el = instantCheck( selector );
+    obj.value = obtainValue( $el );
+    if ( !utils.type(obj.value, 'nan') && !utils.type(obj.value, 'undefined') &&
+        !utils.type(obj.value, 'null') &&  (oldVal !== obj.value) ) {
+
+      oldVal = obj.value;
+      deferred.notify( $el, obj );
+    }
+
     if ( obj.complete ) {
       deferred.resolve( $el );
       return true; // Clears the interval
@@ -163,14 +201,6 @@ function progressCheck( selector ) {
       return true; // Clears the interval
     }
 
-    $el = instantCheck( selector );
-    obj.value = obtainValue( $el );
-    if ( !utils.type(obj.value, 'nan') && !utils.type(obj.value, 'undefined') &&
-        !utils.type(obj.value, 'null') &&  (oldVal !== obj.value) ) {
-
-      oldVal = obj.value;
-      deferred.notify( $el, obj );
-    }
   });
 
   return deferred.promise( );

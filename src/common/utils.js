@@ -79,7 +79,7 @@ function parseURL( url ) {
  */
 
 function type( val, testType ) {
-  switch(toString.call(val)) {
+  switch( toString.call(val) ) {
     case '[object Date]':
       return testType ? testType === 'date' : 'date';
     case '[object RegExp]':
@@ -91,10 +91,12 @@ function type( val, testType ) {
     case '[object Error]':
       return testType ? testType === 'error' : 'error';
   }
-  if(val === null) { return testType ? testType === 'null' : 'null'; }
-  if(val === undefined) { return testType ? testType === 'undefined' : 'undefined'; }
-  if(val !== val) { return testType ? testType === 'nan' : 'nan'; }
-  if(val && val.nodeType === 1) { return testType ? testType === 'element' : 'element'; }
+
+  if( val === null ) { return testType ? testType === 'null' : 'null'; }
+  if( val === undefined ) { return testType ? testType === 'undefined' : 'undefined'; }
+  if( val !== val ) { return testType ? testType === 'nan' : 'nan'; }
+  if ( $ && (val instanceof $) ) {return testType ? testType === 'jquery' : 'jQuery'; }
+  if( val && val.nodeType === 1 ) { return testType ? testType === 'element' : 'element'; }
   val = val.valueOf ? val.valueOf() : Object.prototype.valueOf.apply(val);
   return testType ? testType === typeof val : typeof val;
 }
