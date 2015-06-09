@@ -8,7 +8,10 @@
  */
 
 
-var utils = require( '../common/utils' );
+var utils = require( '../common/utils' ),
+    pixelType = require( './type' ),
+    logger = require( '../common/debug' ),
+    $ = require( '../common/jq' );
 
 
 /**
@@ -21,16 +24,151 @@ var utils = require( '../common/utils' );
  * We check for the overrides object
  *
  * @param {Object} config - taken directly from the options for this pixel
- * @param {Function} getData - a function that allows for obtaining stored data.
+ * @param {Function} getDataElement - a function that allows for obtaining stored data.
  */
+
 function Pixel( config, getData ) {
-  if ( !utils.type(getData, 'function') ) {
-    throw new TypeError( 'A `getData` Function needs to be passed in.' );
-  } 
+  this.storeConfig( config );
+  this.logger();
 }
 
 
 
+/**
+ * @method run
+ *
+ * Called by the `main` object when a page with the correct type has been
+ * identified.
+ *
+ *
+ * @param  {Function} getData   The function used to retrieve the neccessary data
+ * @param  {String} pageType    The page type calling firing for this pixel
+ * @param  {Number} pageID      The unique page ID of the calling page
+ */
+
+Pixel.prototype.run = function (getData, pageType, pageID) {
+  this.pages.push( pageID );
+  this.data = this.collateData(this._pixel[pageType]['needs'], getData);
+  this.generatePixels( this.data, this.settings, pageType, pageID );
+};
+
+
+/**
+ * @method storeConfig
+ *
+ * Store all config when first instantiating this function
+ *
+ * @param  {Object} config Defined settings generated manually or through the tool
+ */
+
+Pixel.prototype.storeConfig = function ( config ) {
+  this.settings = config;
+  this.config = config.config;
+  this.id = config.id;
+  this.type = config.type;
+  this.name = config.name;
+  this.overrides = config.overrides;
+  this._pixel = pixelType[this.type];
+  this.pages = [];
+};
+
+
+/**
+ * @method logger
+ *
+ * Convenience method for generating a logging function scoped to this pixel
+ */
+
+Pixel.prototype.logger = function ( ) {
+  this.log = logger('pixel:' + this.type + ':' + this.id);
+};
+
+
+/**
+ * @method collateData
+ *
+ * Obtain the data from the storage via the `main` orchestrator
+ *
+ * @param  {Array}   requiredData  An array of all the dataElement types needed
+ * @param  {Function} fn           The function called to obtain all data from storage
+ */
+
+Pixel.prototype.collateData = function (requiredData, fn) {
+  this.log('Collating data for: ', requiredData);
+  return fn( requiredData, this );
+};
+
+
+/**
+ * Checks the Pixel overrides object
+ *
+ * @param  {String} pageType The type of page we're currently on
+ * @param  {Number} pageID   The ID of the current page
+ * @return {Boolean}         True if we should proceed. False if not.
+ */
+
+Pixel.prototype.checkOverrides = function (pageType, pageID) {
+  this.log( 'Checking for pixel OVERRIDES' );
+  if ( !this.overrides.active ) { return true; } // Don't worry - run as normal
+
+  // ROS is acceptable can
+  if ( this.overrides.ros && pageType === 'ros' ) { return true; }
+
+  if ( !this.overrides.pages.length ) { return true; } // no page overrides run as normal
+
+
+  if ( this.overrides.pages.length &&
+    $.inArray(pageID, this.overrides.pages) > -1 ) {
+    return true;
+  }
+
+  this.log( 'The pixel has been OVERRIDEN' );
+  return false;
+};
+
+
+/**
+ * @method generatePixels
+ *
+ * Responsible for placing the actual pixels needed on the page.
+ *
+ * Also makes a small sense check to be sure that there are actually functions that
+ * can be called here.
+ *
+ * @param  {Object} data        Dynamically generated data from dataElements
+ * @param  {Object} settings    The hardcoded settings directly from the tool
+ * @param  {String} pageType    The page type calling firing for this pixel
+ * @param  {Number} pageID      The unique page ID of the calling page
+ * @return {Null}
+ */
+Pixel.prototype.generatePixels = function ( data, settings, pageType, pageID ) {
+  var runners;
+
+  // Check whether we have any overrides
+  if ( !this.checkOverrides(pageType, pageID) ) {
+    this.log( 'Pixels will not be generated' );
+    return; // Don't do anything if page has been overriden
+  }
+
+
+  // Functions to be run
+  runners = (this._pixel[pageType] && this._pixel[pageType]['produces']) || [];
+  if ( !runners.length ) {
+    this.log( 'There are ZERO runners for this pageType:' + pageType );
+    return;
+  }
+
+  this.log( 'Generating Pixel(s) for: ' + this.name + 'with type: ' + this.type );
+
+  $.each(runners, function( index, runner ) {
+    var src = runner( data, settings );
+    if (src) {
+      utils.getImage( src );
+      this.log( 'Image pixel generated with `src`: ' + src );
+    }
+  });
+
+};
 
 
 /**

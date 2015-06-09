@@ -162,13 +162,13 @@ var validVeAds = {
   |**|
   |**|  - **ve**: pixel for retargeting it has pixels for pages: [product, conversion, basket, category]
   |**|         hardcoded: journeyCode
-  |**|         
+  |**|
   |**|  - **flex**: gathering audience data - pixels for pages [ros]
   |**|        hardcoded: flexId
   |**|  - **dbm**: running double click campaigns: pixels for pages [ros, conversion]
-  |**|         hardcoded: cat, src
+  |**|         hardcoded: catROS, catConversion, src
   |**|  - **appNexus**: running segment pixels pixels for pages [ros, product, conversion]
-  |**|         hardcoded: segmentRos, segmentProduct, segmentConversion, conversionId
+  |**|         hardcoded: segmentROS, segmentProduct, segmentConversion, conversionId
   |**|  - **customROS**: a custom pixel that can be set up for pages [ros]
   |**|         hardcoded: type [img, script], src
   |**|  - **customConversion**: custom pixel for pages [conversion]

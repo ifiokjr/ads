@@ -7,4 +7,11 @@
 
 module.exports = {
 
+  ve: require( './ve' ),
+  dbm: require( './dbm' ),
+  flex: require( './flex' ),
+  appNexus: require( './appNexus' ),
+  customROS: require( './customROS' ),
+  customConversion: require( './customConversion' )
+
 };

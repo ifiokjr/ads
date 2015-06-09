@@ -18,8 +18,8 @@ exports.humanize = require('ms');
  * The currently active debug mode names, and names to skip.
  */
 
-exports.names = [];
-exports.skips = [];
+exports.names = [ ];
+exports.skips = [ ];
 
 /**
  * Map of special "%n" handling functions, for the debug "format" argument.
