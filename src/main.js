@@ -62,12 +62,13 @@ var injectableROS = {
  */
 
 function Main( veAdsConfig ) {
-  this.log = debug( 'main' );
+  var _this = this;
+  this.log = debug( 've:main' );
   this.veAdsConfig = veAdsConfig || this.getVeAdsConfig( );
   this.runChecks( ) // Check for browser compatibility
 
   .then( function() {
-    this.instantiatePages( ); // Create all pages from the object
+    _this.instantiatePages( ); // Create all pages from the object
   });
 
 }
@@ -112,7 +113,7 @@ Main.prototype.testJSON = function( ) {
  */
 
 Main.prototype.runChecks = function( ) {
-  var deferred = $.Deferred; // set up a jQuery deferred
+  var deferred = $.Deferred( ); // set up a jQuery deferred
   if ( !this.testJSON() ) {
     this.log( 'NO JSON on this page, adding a script to the page.');
     this.jsonAvailable = false;
@@ -134,6 +135,26 @@ Main.prototype.runChecks = function( ) {
 
 
 /**
+ * Check that a property value resides within an array of objects
+ *
+ * @param  {Array} array     Array of objects
+ * @param  {String} property The property to check
+ * @param  {String} value    The value to test against
+ * @return {Boolean}         Result of the test
+ */
+function propertyValueInObjectArray(array, property, value) {
+  var answer = false;
+  $.each(array, function(index, object) {
+    if ( object[property] === value ){
+      answer = true;
+      return false;
+    }
+  });
+
+  return answer;
+}
+
+/**
  * @method instantiatePages
  * @public
  *
@@ -144,9 +165,14 @@ Main.prototype.runChecks = function( ) {
 Main.prototype.instantiatePages = function( ) {
   this.log( 'Instantiating PAGES' );
   var _this = this;
-  this.veAdsConfig.page.unshift(injectableROS); // Add ROS page to the front of the queue
+  this.log(this.veAdsConfig.pages, 1);
+
+  if ( !propertyValueInObjectArray(this.veAdsConfig.pages, 'type', 'ros') ){
+    this.veAdsConfig.pages.unshift(injectableROS); // Add ROS page to the front of the queue
+  }
   _this.veAdsConfig.pages.sort(pageSort); // Sort the pages according to type.
 
+  this.log(this.veAdsConfig.pages, 1);
   $.each( _this.veAdsConfig.pages, function( index, pageObj ) {
     if ( pageObj[settings.MAIN_PAGE_PROPERTY] ) { return 'continue'; } // Only generate instance if none currently exists
 
@@ -350,7 +376,7 @@ Main.prototype._obtainDataValue = function( elements, valueType ) {
 
   $.each(elements, function( index, element ) {
     var dataElement = element[settings.MAIN_DATA_ELEMENT] ||
-                    new DataElement( element );
+                    (element[settings.MAIN_DATA_ELEMENT] = new DataElement( element ) );
     if ( dataElement.valueType === 'single' && !currentValue ) {
       currentValue = dataElement.getValue() || _this.getValue(dataElement.key);
     } else {

@@ -106,13 +106,13 @@ Page.prototype.runDynamics = function( ) {
     if ( !identifier.selector || (identifier.criteria && !identifier.values) ) return;
 
 
-    promise = elements.progressCheck( indentifier.selector );
+    promise = elements.progressCheck( identifier.selector );
     promises.push( promise );
     // check current value against criteria each time.
     promise.progress( function( $el, obj ) {
 
-      $.each(indentifier.values, function( index, value ) {
-        if ( criteria[indentifier.criteria](obj.value, identifier.values) ) {
+      $.each(identifier.values, function( index, value ) {
+        if ( criteria[identifier.criteria](obj.value, identifier.values) ) {
           obj.complete = true; // Cause promise to be resolved.
         }
       });
@@ -126,7 +126,9 @@ Page.prototype.runDynamics = function( ) {
   // As soon as one dynamicIdentifier
   // TODO: Fix problem with ghost identifiers running long after resolution
   utils.whenAny( promises )
-  .done( _this.pageIdentified );
+  .done( function( $el ) {
+    _this.pageIdentified;
+  });
 };
 
 
@@ -143,7 +145,7 @@ Page.prototype.runDynamics = function( ) {
 Page.prototype.pageIdentified = function( $el ) {
   this.stopChecks = true; // Stops any other intervals from running;
   this.emit( 'success', this );
-}
+};
 
 
 /**

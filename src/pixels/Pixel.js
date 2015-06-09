@@ -80,7 +80,7 @@ Pixel.prototype.storeConfig = function ( config ) {
  */
 
 Pixel.prototype.logger = function ( ) {
-  this.log = logger('pixel:' + this.type + ':' + this.id);
+  this.log = logger('ve:pixel:' + this.type + ':' + this.id);
 };
 
 
@@ -142,7 +142,7 @@ Pixel.prototype.checkOverrides = function (pageType, pageID) {
  * @return {Null}
  */
 Pixel.prototype.generatePixels = function ( data, settings, pageType, pageID ) {
-  var runners;
+  var runners, _this = this;
 
   // Check whether we have any overrides
   if ( !this.checkOverrides(pageType, pageID) ) {
@@ -164,7 +164,7 @@ Pixel.prototype.generatePixels = function ( data, settings, pageType, pageID ) {
     var src = runner( data, settings );
     if (src) {
       utils.getImage( src );
-      this.log( 'Image pixel generated with `src`: ' + src );
+      _this.log( 'Image pixel generated with `src`: ' + src );
     }
   });
 

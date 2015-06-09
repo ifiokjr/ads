@@ -28,3 +28,4 @@ chai.use(chaiThings);
 
 
 // Include the debug module in tests and general work.
+global.debugVeAds = require('debug');
