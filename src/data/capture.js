@@ -10,7 +10,10 @@ var utils = require( '../common/utils' ),
     elements = require( '../common/elements' ),
     $ = require( '../common/jq' ),
     escapeRegExp = require('../common/url-matcher' ).escapeRegExp,
-    masks = require( '../common/masks' );
+    masks = require( '../common/masks' ),
+    log = require( '../common/debug' )('ve:capture');
+
+
 
 
 /**
@@ -163,13 +166,15 @@ function runMappings( value, mappings ) {
 
 function runTransformations( values, config ) {
   if ( utils.type(values, 'array') ) {
+    log('#runTransformations - running on an array of values');
     $.each(values, function( index, value ) {
       values[index] = transform( value );
     });
     return values;
   }
-
-  return transform(values);
+  
+  log('#runTransformations - single value type');
+  return transform(values, config);
 }
 
 /**
@@ -179,6 +184,7 @@ function runTransformations( values, config ) {
  * @return {String}        - Individual value that has been transformed
  */
 function transform( value, config ) {
+  log('#transform - running on value');
   value = runRegex( value, config.regex );
   value = runMasks( value, config.mask );
   value = runMappings( value, config.mappings );
@@ -217,6 +223,7 @@ var singleOrList = {
  * @param  {DataElement} dataElement - the dataElement being set.
  */
 function storeData( dataElement, value ) {
+  
   dataElement.cacheValue( value );
   dataElement.emit( 'store', value );
 }
@@ -260,22 +267,25 @@ function parseGlobals( valueString ) {
  */
 
 function selector( config, dataElement ) {
-
+  log('Running via DOM #selector', config, dataElement);
   var sel = config.capture.element,
       arrValue = [], value = '',
   fn = function ( $el, obj ) {
-    value = singleOrList[dataElement.valueType];
-    value = runTransformations(value);
+    log('#selector value found about to run transformations');
+    value = singleOrList[dataElement.valueType]($el);
+    value = runTransformations(value, config);
     storeData( dataElement, value );
   };
 
 
   // Very expensive, avoid using this!
   if ( config.capture.keepChecking && (dataElement.valueType !== 'list') ) {
-    elements.progressCheck( selector )
+    log('#selector keep checking active setting up progress check');
+    elements.progressCheck( sel )
     .progress( fn );
   } else {
-    elements.dynamicCheck( selector )
+    log('#selector keep checking NOT active simpler check for element ');
+    elements.dynamicCheck( sel )
     .then( fn );
   }
 }

@@ -22,9 +22,10 @@ module.exports = {
 
 
 function ros( data, config ) {
-  var random = (Math.Random() + '') * 10000000000000;
+  console.info(data, config);
+  var random = (Math.random() + '') * 10000000000000;
   return 'https://ad.doubleclick.net/ddm/activity/src=' + config.src +
-  ';type=invmedia;cat=' + config.catROS + 'iektney2;ord=' + random;
+  ';type=invmedia;cat=' + config.catROS + ';ord=' + random;
 }
 
 function conversion( data, config ) {

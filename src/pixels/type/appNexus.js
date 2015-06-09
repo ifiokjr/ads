@@ -4,17 +4,17 @@ module.exports = {
 
   product: {
     needs: ['productId'],
-    produces: []
+    produces: [product]
   },
 
   conversion: {
     needs: ['orderVal', 'orderId', 'currency'],
-    produces: []
+    produces: [conversion]
   },
 
   ros: {
     needs: [],
-    produces: []
+    produces: [ros]
   }
 
 };

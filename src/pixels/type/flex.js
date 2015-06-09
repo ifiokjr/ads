@@ -19,7 +19,7 @@ module.exports = {
  */
 
 function ros(data, config) {
-  var flexId = config.flexId;
+  var flexId = config.flexId, iatDev;
 
   (function(a) {
     var d = document,

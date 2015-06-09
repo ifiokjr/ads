@@ -29,6 +29,7 @@
     <div id="mocha"></div>
 <!--     <script src="../node_modules/mocha/mocha.js"></script> -->
     <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../build/custom-debug.js"></script>
 <!-- 
     <script src="../node_modules/sinon/pkg/sinon.js"></script>
     <script src="../node_modules/chai/chai.js"></script>
@@ -42,94 +43,329 @@
     <script>
      window.veTagData = {};
      veTagData.settings = {}
-     veTagData.settings.gdm = {
-          exclude: false,
-          ros: true,
-          flexId: '5032',
-          dbm: {
-            src: 'iamsrc',
-            cat: {
-              ros: 'iam-ros-cat',
-              conversion: 'iam-conversion-cat'
-            },
-            ros: true
-          },
-          completionId: 10000,
-          journeyCode: 'asdfasdf',
-          segmentIds: [100, 200, 300],
-          orderId: {
-              selector: '#orderId',
-              mask: '',
-              'regex': /[^0-9]/g,
-              page: {
-                  params: { },
-                  urls: [  ]
-              }
-          },
-          productPages: {
-              selector: '#pp',
-              'default': '000000',
-              page: {
-                  params: { page: 'product' },
-                  urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
-              },
-              'regex': null
-          }, 
-          basketPages: {
-              selectors: {
-                  productId: '.productId', 
-                  productPrice: '.productValue'
-              },
-             'default': '1.00',
-              page: {
-                  params: { page: 'basket' },
-                  urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
-              },
-              'regex': /[^0-9,\.]/g
-          },
-          orderValue: {
-              selector: '.orderValue',
-              'default': '1.00',
-               mask: '',
-              page: {
-                  params: {  },
-                  urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
-              },
-              updates: !!~document.URL.indexOf('updates') ? true : false,
-              'regex': /[^0-9,\.]/g
-          },
-       
-       
-          completePage: {
-              page: {
-                  params: { page: 'complete'  },
-                  urls: [ 'ranger-quiet.codio.io/tests/*'  ]                  
-              },  
-
-              dynamicIdentifier: { 
-                  selector: '#dynamicId',
-                  criteria: 'contains',
-                  value: 'Complete Page'
-              }
-          }
-      }
      
-//      pages: [
-//        {id: 1, type: 'basketPage', linkedDataElement: [1,2,3]},
+     veTagData.settings.veAds = {
+
+      config: {
+        timeStamp: 'Wed May 06 2015 16:36:48 GMT+1000 (AUS Eastern Standard Time)',
+        version: '2.0.0',
+        uuid: 'abcd5678',
+        storageAcrossProtocols: true,
+
+        avoidDOM: false
+      },
+      pages: [
+        {
+          id: 1,
+          name: 'Basket Page',
+          type: 'basket', // Page where the products in the basket are captured and placed within
+          urls: [
+            {
+              url: 'ranger-quiet.codio.io/tests/*',
+              params: {page: 'basket'}
+            },
+            'awesome.com/*/cart.html'
+          ],
+          dynamicIdentifiers: [ ]
+        },
+        {
+          id: 2,
+          name: 'Complete Page',
+          type: 'conversion',
+          urls: [
+            {
+              url: 'ranger-quiet.codio.io/tests/*',
+              params: {
+                orderId: ':orderId',
+                page: 'complete'
+              }
+            },
+          ],
+          dynamicIdentifiers: [
+            {
+              selector: '#dynamicId',
+              criteria: 'contains',
+              values: ['Complete Page', 'Página Completa']
+            },
+          ]
+        },
+
+        {
+          id: 3,
+          name: 'Custom Page',
+          type: 'custom',
+          urls: [],
+          dynamicIdentifiers: []
+        },
+
+        {
+          id: 4,
+          name: 'Product Page',
+          type: 'product',
+          urls: [],
+          dynamicIdentifiers: []
+        }
+      ],
+      pixels: [
+        {
+          id: 1,
+
+          name: 'Main Products Integration',
+
+          type: 've',
+
+          config: {
+            journeyCode: 'adsfasdf' // Identifies the website in our backend
+          },
+          overrides: {
+            active: false,
+            ros: true,
+            pages: [],
+            data: []
+          }
+        },
+
+        {
+          id: 2,
+          name: 'Flex Pixel',
+          type: 'flex',
+          config: {
+            flexId: '123456' // Used to call in the flex tracking script
+          },
+          overrides: {}
+        },
+
+        {
+          id: 3,
+          name: 'DBM Pixel',
+          type: 'dbm',
+          config: {
+            catROS: 'asdf',
+            catConversion: 'kjkjh',
+            src: 'fdas'
+          },
+          overrides: {}
+        },
+
+
+        {
+          id: 4,
+          name:'App Nexus Pixel',
+          type: 'appNexus',
+          config: {
+            segmentROS: '111111', // ROS pixel segments
+            segmentProduct: '222222', // Product pixel segemnts
+            segmentConversion: '333333', // Conversion pixel segments
+            conversionId: '654321' // Conversion pixel Id
+          },
+          overrides: {}
+        },
+
+        {
+          id: 5,
+          name: 'Custom ROS image pixel',
+          type: 'customROS',
+          config: {
+            type: 'img', // options: ['script'|'img']
+            src: 'https://trackingpixels.com/haha?i=can&see=you' // full url with protocol
+          },
+          overrides: {}
+        },
+
+        {
+          id: 6,
+          name: 'Custom conversion pixel', 
+          type: 'customConversion',
+          config: {
+            type: 'script', // options: ['script'|'img']
+            src: 'https://trackingpixels.com/i/?know=what&you=bought'
+          },
+          overrides: {}
+        }
+      ],
+      dataElements: [
+        {
+          id: 1,
+          name: 'Order Value',
+          type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+          pages: [ 2 ],
+          fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
+
+          regex: {
+            include: [  ], // Matches are run first
+            exclude: [  ] // Exclude whatever is matched here
+          },
+          mask: 'currency', // [number, alphanumeric, currency, symbol, nothing]
+          mapping: {
+//             'GBP': '',
+//             'AUD': '$'
+          },
+          capture: {
+            type: 'selector',
+            useMappings: false,
+            mappingCriteria: 'contains', // [contains, equal]
+            element: '.orderValue', // depends on capture.type ( either jQuery selector or globalVariable)
+            keepChecking: false // will return as soon as it resolves, only for selector
+          }
+
+        }
+        //,
+//         {
+//           id: 2,
+//           name: 'Order ID',
+//           type: 'orderId', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+//           pages: [ 1 ],
+//           fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
+
+//           regex: {
+//             include: [ ';kj;k' ], // Matches are run first
+//             exclude: [ '' ] // Exclude whatever is matched here
+//           },
+//           mask: 'currency', // [number, alphanumeric, currency, symbol, nothing]
+//           mapping: {
+//             'GBP': '',
+//             'AUD': '$'
+//           },
+//           capture: {
+//             type: 'selector',
+//             useMappings: false,
+//             mappingCriteria: 'contains', // [contains, equal]
+//             element: '#awesome', // depends on capture.type ( either jQuery selector or globalVariable)
+//             keepChecking: false // will return as soon as it resolves, only for selector
+//           }
+
+//         }, {
+//           id: 1,
+//           name: 'Order Value',
+//           type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+//           pages: [ 1 ],
+//           fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
+
+//           regex: {
+//             include: [ ';kj;k' ], // Matches are run first
+//             exclude: [ '' ] // Exclude whatever is matched here
+//           },
+//           mask: 'currency', // [number, alphanumeric, currency, symbol, nothing]
+//           mapping: {
+//             'GBP': '',
+//             'AUD': '$'
+//           },
+//           capture: {
+//             type: 'selector',
+//             useMappings: false,
+//             mappingCriteria: 'contains', // [contains, equal]
+//             element: '#awesome', // depends on capture.type ( either jQuery selector or globalVariable)
+//             keepChecking: false // will return as soon as it resolves, only for selector
+//           }
+
+//         },{
+//           id: 1,
+//           name: 'Order Value',
+//           type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+//           pages: [ 1 ],
+//           fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
+
+//           regex: {
+//             include: [ ';kj;k' ], // Matches are run first
+//             exclude: [ '' ] // Exclude whatever is matched here
+//           },
+//           mask: 'currency', // [number, alphanumeric, currency, symbol, nothing]
+//           mapping: {
+//             'GBP': '',
+//             'AUD': '$'
+//           },
+//           capture: {
+//             type: 'selector',
+//             useMappings: false,
+//             mappingCriteria: 'contains', // [contains, equal]
+//             element: '#awesome', // depends on capture.type ( either jQuery selector or globalVariable)
+//             keepChecking: false // will return as soon as it resolves, only for selector
+//           }
+
+//         }
+
+      ]
+    };
+
+     
+//      veTagData.settings.gdm = {
+//           exclude: false,
+//           ros: true,
+//           flexId: '5032',
+//           dbm: {
+//             src: 'iamsrc',
+//             cat: {
+//               ros: 'iam-ros-cat',
+//               conversion: 'iam-conversion-cat'
+//             },
+//             ros: true
+//           },
+//           completionId: 10000,
+//           journeyCode: 'asdfasdf',
+//           segmentIds: [100, 200, 300],
+//           orderId: {
+//               selector: '#orderId',
+//               mask: '',
+//               'regex': /[^0-9]/g,
+//               page: {
+//                   params: { },
+//                   urls: [  ]
+//               }
+//           },
+//           productPages: {
+//               selector: '#pp',
+//               'default': '000000',
+//               page: {
+//                   params: { page: 'product' },
+//                   urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
+//               },
+//               'regex': null
+//           }, 
+//           basketPages: {
+//               selectors: {
+//                   productId: '.productId', 
+//                   productPrice: '.productValue'
+//               },
+//              'default': '1.00',
+//               page: {
+//                   params: { page: 'basket' },
+//                   urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
+//               },
+//               'regex': /[^0-9,\.]/g
+//           },
+//           orderValue: {
+//               selector: '.orderValue',
+//               'default': '1.00',
+//                mask: '',
+//               page: {
+//                   params: {  },
+//                   urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
+//               },
+//               updates: !!~document.URL.indexOf('updates') ? true : false,
+//               'regex': /[^0-9,\.]/g
+//           },
        
-//        {}
-//      ], 
        
-//      data: [
-//        {id: type: 'orderId', }
-//      ]
+//           completePage: {
+//               page: {
+//                   params: { page: 'complete'  },
+//                   urls: [ 'ranger-quiet.codio.io/tests/*'  ]                  
+//               },  
+
+//               dynamicIdentifier: { 
+//                   selector: '#dynamicId',
+//                   criteria: 'contains',
+//                   value: 'Complete Page'
+//               }
+//           }
+//       }
      
      setTimeout(function() {
        $('#dynamicId').text('This is the Complete Page');
        $('.orderValue').text('$100.00');
      }, 5000);
     </script>
-    <script src="../build/gdm.dev-entry.js"></script>
+    <script src="../build/ve-ads-dev.js"></script>
 <!--     <script>mocha.setup('bdd')</script> -->
 <!--     <script src="integration/tests.js"></script> -->
 <!--     <script>

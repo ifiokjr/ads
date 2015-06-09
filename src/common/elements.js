@@ -9,7 +9,8 @@
 
 var settings = require( '../settings' ),
     $ = require( './jq' ),
-    utils = require( './utils' );
+    utils = require( './utils' ),
+    log = require( './debug' )('ve:elements');
 
 var elements;
 
@@ -169,7 +170,7 @@ function progressCheck( selector ) {
       oldVal = null,
       $el = instantCheck( selector ),
       deferred = $.Deferred( );
-
+  log( 'inside #progressCheck' );
   // it doen't feel right setting values.
   obj.remove = function (success) {
     if ( success ) { obj.complete = true; }
@@ -180,8 +181,19 @@ function progressCheck( selector ) {
     obj.value = obtainValue( $el );
     deferred.notify( $el, obj );
   }
+  
+  if ( obj.complete ) {
+    deferred.resolve( $el );
+    return true; // Clears the interval
+    }
+
+  if ( obj.fail ) {
+    deferred.reject( );
+    return true; // Clears the interval
+  }
 
   interval( function( ) {
+    log( 'inside #progressCheck interval', obj)
     $el = instantCheck( selector );
     obj.value = obtainValue( $el );
     if ( !utils.type(obj.value, 'nan') && !utils.type(obj.value, 'undefined') &&
@@ -190,7 +202,7 @@ function progressCheck( selector ) {
       oldVal = obj.value;
       deferred.notify( $el, obj );
     }
-
+    
     if ( obj.complete ) {
       deferred.resolve( $el );
       return true; // Clears the interval
@@ -200,6 +212,7 @@ function progressCheck( selector ) {
       deferred.reject( );
       return true; // Clears the interval
     }
+    
 
   });
 

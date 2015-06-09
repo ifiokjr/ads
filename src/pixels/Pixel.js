@@ -51,7 +51,7 @@ Emitter( Pixel.prototype );
 Pixel.prototype.run = function (getData, pageType, pageID) {
   this.pages.push( pageID );
   this.data = this.collateData(this._pixel[pageType]['needs'], getData);
-  this.generatePixels( this.data, this.settings, pageType, pageID );
+  this.generatePixels( this.data, this.config, pageType, pageID );
 };
 
 
@@ -138,12 +138,12 @@ Pixel.prototype.checkOverrides = function (pageType, pageID) {
  * can be called here.
  *
  * @param  {Object} data        Dynamically generated data from dataElements
- * @param  {Object} settings    The hardcoded settings directly from the tool
+ * @param  {Object} config      The hardcoded config object directly from the tool
  * @param  {String} pageType    The page type calling firing for this pixel
  * @param  {Number} pageID      The unique page ID of the calling page
  * @return {Null}
  */
-Pixel.prototype.generatePixels = function ( data, settings, pageType, pageID ) {
+Pixel.prototype.generatePixels = function ( data, config, pageType, pageID ) {
   var runners, _this = this;
 
   // Check whether we have any overrides
@@ -163,7 +163,8 @@ Pixel.prototype.generatePixels = function ( data, settings, pageType, pageID ) {
   this.log( 'Generating Pixel(s) for: ' + this.name + 'with type: ' + this.type );
 
   $.each(runners, function( index, runner ) {
-    var src = runner( data, settings );
+    var src = runner( data, config );
+
     if (src) {
       utils.getImage( src );
       _this.log( 'Image pixel generated with `src`: ' + src );

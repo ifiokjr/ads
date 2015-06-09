@@ -1,11 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-(function (global){
-global.debugVeAds = require( 'debug' ); // Make debug available by default when running tests
-
-require('./main');
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./main":16,"debug":2}],2:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -175,7 +168,7 @@ function localstorage(){
   } catch (e) {}
 }
 
-},{"./debug":3}],3:[function(require,module,exports){
+},{"./debug":2}],2:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -374,7 +367,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":4}],4:[function(require,module,exports){
+},{"ms":3}],3:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -501,7 +494,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 /**
@@ -607,7 +600,7 @@ module.exports = criteria = {
 
 };
 
-},{"./utils":12}],6:[function(require,module,exports){
+},{"./utils":11}],5:[function(require,module,exports){
 'use strict';
 
 /**
@@ -631,7 +624,7 @@ if ( window.debugVeAds && window.debugVeAds.enable ) {
 
 module.exports = window.debugVeAds || nestedNoop;
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 /**
@@ -643,7 +636,8 @@ module.exports = window.debugVeAds || nestedNoop;
 
 var settings = require( '../settings' ),
     $ = require( './jq' ),
-    utils = require( './utils' );
+    utils = require( './utils' ),
+    log = require( './debug' )('ve:elements');
 
 var elements;
 
@@ -803,7 +797,7 @@ function progressCheck( selector ) {
       oldVal = null,
       $el = instantCheck( selector ),
       deferred = $.Deferred( );
-
+  log( 'inside #progressCheck' );
   // it doen't feel right setting values.
   obj.remove = function (success) {
     if ( success ) { obj.complete = true; }
@@ -814,8 +808,19 @@ function progressCheck( selector ) {
     obj.value = obtainValue( $el );
     deferred.notify( $el, obj );
   }
+  
+  if ( obj.complete ) {
+    deferred.resolve( $el );
+    return true; // Clears the interval
+    }
+
+  if ( obj.fail ) {
+    deferred.reject( );
+    return true; // Clears the interval
+  }
 
   interval( function( ) {
+    log( 'inside #progressCheck interval', obj)
     $el = instantCheck( selector );
     obj.value = obtainValue( $el );
     if ( !utils.type(obj.value, 'nan') && !utils.type(obj.value, 'undefined') &&
@@ -824,7 +829,7 @@ function progressCheck( selector ) {
       oldVal = obj.value;
       deferred.notify( $el, obj );
     }
-
+    
     if ( obj.complete ) {
       deferred.resolve( $el );
       return true; // Clears the interval
@@ -834,13 +839,14 @@ function progressCheck( selector ) {
       deferred.reject( );
       return true; // Clears the interval
     }
+    
 
   });
 
   return deferred.promise( );
 }
 
-},{"../settings":26,"./jq":9,"./utils":12}],8:[function(require,module,exports){
+},{"../settings":26,"./debug":5,"./jq":8,"./utils":11}],7:[function(require,module,exports){
 'use strict';
 
 
@@ -1004,7 +1010,7 @@ Emitter.prototype.listeners = function(event){
 Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 
@@ -1013,7 +1019,7 @@ Emitter.prototype.hasListeners = function(event){
 */
 
 module.exports = window.VEjQuery || window.$;
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1064,7 +1070,7 @@ masks = {
 
 module.exports = masks;
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 
@@ -1226,8 +1232,8 @@ Matcher.prototype.match = function( pattern ) {
   }
 
   urlMatches = this.checkPatternMatches( obj.url );
+  console.log(urlMatches)
   paramMatches = this.checkParamMatches( obj.params );
-
   if ( urlMatches[ MATCH_PROPERTY ] && paramMatches[ MATCH_PROPERTY ] ) {
     return $.extend( { }, urlMatches, paramMatches );
   }
@@ -1287,35 +1293,37 @@ Matcher.prototype.checkPatternMatches = function( pattern, item ) {
  */
 
 Matcher.prototype.checkParamMatches = function( params ) {
-  var obj, dObj, bound = { }, _this = this;
+  var obj, decodedObj, bound = { }, _this = this;
 
   bound[ MATCH_PROPERTY ] = true; // default to matching
 
   if ( !utils.objectLength( params ) ) { return bound; }
 
   $.each( params, function(key, value) {
-    var dValue;
+    var decodedValue;
+
 
     key = String( key );
     value = String( value );
-    dValue = decodeURIComponent( value );
+    decodedValue = decodeURIComponent( value );
 
+    // debugger;
     if ( _this.searchObject[key] == null ) {
       bound[ MATCH_PROPERTY ] = false;
       return false; // Break out from jQuery loop
     }
 
-    obj = !_this.checkPatternMatches( value, _this.searchObject[key] );
-    dObj = !_this.checkPatternMatches( dValue, _this.searchObject[key] );
+    obj = _this.checkPatternMatches( value, _this.searchObject[key] );
+    decodedObj = _this.checkPatternMatches( decodedValue, _this.searchObject[key] );
 
     if ( obj[ MATCH_PROPERTY ] ) {
       $.extend( bound, obj );
-      return; // Continue jQuery loop
+      return 'continue'; // Continue jQuery loop
     }
 
-    else if ( dObj[ MATCH_PROPERTY ] ) {
-      $.extend( bound, dObj );
-      return; // Continue jQuery loop
+    else if ( decodedObj[ MATCH_PROPERTY ] ) {
+      $.extend( bound, decodedObj );
+      return 'continue'; // Continue jQuery loop
     }
 
     else {
@@ -1430,7 +1438,7 @@ function cleanURL(dirtyURL) {
   }
 }
 
-},{"./jq":9,"./utils":12}],12:[function(require,module,exports){
+},{"./jq":8,"./utils":11}],11:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1677,7 +1685,7 @@ function getImage( src ) {
   return deferred.promise( );
 }
 
-},{"./jq":9}],13:[function(require,module,exports){
+},{"./jq":8}],12:[function(require,module,exports){
 'use strict';
 
 /*************************************************************************************
@@ -1694,7 +1702,8 @@ var utils = require( '../common/utils' ),
     settings = require( '../settings' ),
     $ = require( '../common/jq' ),
     Page = require( '../pages/Page' ),
-    types = require( './types' );
+    types = require( './types' ),
+    debug = require( '../common/debug' );
 
 
 
@@ -1735,6 +1744,7 @@ function DataElement( config, page ) {
 
   page = page || {};
   this.storeConfig( config, page );
+  
 
 }
 
@@ -1760,15 +1770,25 @@ DataElement.prototype.storeConfig = function ( config, page ) {
   this.fallback = config.fallback; // the value to use if nothing else can be found.
 
   this.urlData = page.matchingURLs || [{}];
+  this.logger();
 };
 
+/**
+ * @method logger
+ * 
+ * Set up logging for this class
+ */
+
+DataElement.prototype.logger = function() {
+  this.log = debug('ve:data:' + this.type + ':' + this.id);
+}
 
 
 /**
  * Capture the element from the page
  */
 DataElement.prototype.setData = function ( ) {
-
+  this.log( 'About to set data with the following object', this.config )
   capture[this.capture.type]( this.config, this );
 
 };
@@ -1830,7 +1850,7 @@ DataElement.prototype.getFallback = function ( ) {
 
 module.exports = DataElement;
 
-},{"../common/emitter":8,"../common/jq":9,"../common/utils":12,"../pages/Page":17,"../settings":26,"../storage/store":27,"./capture":14,"./types":15}],14:[function(require,module,exports){
+},{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"../pages/Page":17,"../settings":26,"../storage/store":28,"./capture":13,"./types":14}],13:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1843,7 +1863,10 @@ var utils = require( '../common/utils' ),
     elements = require( '../common/elements' ),
     $ = require( '../common/jq' ),
     escapeRegExp = require('../common/url-matcher' ).escapeRegExp,
-    masks = require( '../common/masks' );
+    masks = require( '../common/masks' ),
+    log = require( '../common/debug' )('ve:capture');
+
+
 
 
 /**
@@ -1996,13 +2019,15 @@ function runMappings( value, mappings ) {
 
 function runTransformations( values, config ) {
   if ( utils.type(values, 'array') ) {
+    log('#runTransformations - running on an array of values');
     $.each(values, function( index, value ) {
       values[index] = transform( value );
     });
     return values;
   }
-
-  return transform(values);
+  
+  log('#runTransformations - single value type');
+  return transform(values, config);
 }
 
 /**
@@ -2012,6 +2037,7 @@ function runTransformations( values, config ) {
  * @return {String}        - Individual value that has been transformed
  */
 function transform( value, config ) {
+  log('#transform - running on value');
   value = runRegex( value, config.regex );
   value = runMasks( value, config.mask );
   value = runMappings( value, config.mappings );
@@ -2093,22 +2119,25 @@ function parseGlobals( valueString ) {
  */
 
 function selector( config, dataElement ) {
-
+  log('Running via DOM #selector', config, dataElement);
   var sel = config.capture.element,
       arrValue = [], value = '',
   fn = function ( $el, obj ) {
-    value = singleOrList[dataElement.valueType];
-    value = runTransformations(value);
+    log('#selector value found about to run transformations');
+    value = singleOrList[dataElement.valueType]($el);
+    value = runTransformations(value, config);
     storeData( dataElement, value );
   };
 
 
   // Very expensive, avoid using this!
   if ( config.capture.keepChecking && (dataElement.valueType !== 'list') ) {
-    elements.progressCheck( selector )
+    log('#selector keep checking active setting up progress check');
+    elements.progressCheck( sel )
     .progress( fn );
   } else {
-    elements.dynamicCheck( selector )
+    log('#selector keep checking NOT active simpler check for element ');
+    elements.dynamicCheck( sel )
     .then( fn );
   }
 }
@@ -2200,7 +2229,7 @@ function dataLayerReverse( config, dataElement ) {
   dataLayer( config, dataElement, true );
 }
 
-},{"../common/elements":7,"../common/jq":9,"../common/masks":10,"../common/url-matcher":11,"../common/utils":12}],15:[function(require,module,exports){
+},{"../common/debug":5,"../common/elements":6,"../common/jq":8,"../common/masks":9,"../common/url-matcher":10,"../common/utils":11}],14:[function(require,module,exports){
 /**
  * Type of dataElements and whether they store lists or single values.
  * @type {Object}
@@ -2224,7 +2253,13 @@ var types = {
 
 module.exports = types;
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
+(function (global){
+global.debugVeAds = require( 'debug' ); // Make debug available by default when running tests
+var Main = require( './main' );
+var main = new Main( );
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./main":16,"debug":1}],16:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2289,12 +2324,13 @@ var injectableROS = {
  */
 
 function Main( veAdsConfig ) {
-  this.log = debug( 'main' );
+  var _this = this;
+  this.log = debug( 've:main' );
   this.veAdsConfig = veAdsConfig || this.getVeAdsConfig( );
   this.runChecks( ) // Check for browser compatibility
 
   .then( function() {
-    this.instantiatePages( ); // Create all pages from the object
+    _this.instantiatePages( ); // Create all pages from the object
   });
 
 }
@@ -2339,7 +2375,7 @@ Main.prototype.testJSON = function( ) {
  */
 
 Main.prototype.runChecks = function( ) {
-  var deferred = $.Deferred; // set up a jQuery deferred
+  var deferred = $.Deferred( ); // set up a jQuery deferred
   if ( !this.testJSON() ) {
     this.log( 'NO JSON on this page, adding a script to the page.');
     this.jsonAvailable = false;
@@ -2361,6 +2397,26 @@ Main.prototype.runChecks = function( ) {
 
 
 /**
+ * Check that a property value resides within an array of objects
+ *
+ * @param  {Array} array     Array of objects
+ * @param  {String} property The property to check
+ * @param  {String} value    The value to test against
+ * @return {Boolean}         Result of the test
+ */
+function propertyValueInObjectArray(array, property, value) {
+  var answer = false;
+  $.each(array, function(index, object) {
+    if ( object[property] === value ){
+      answer = true;
+      return false;
+    }
+  });
+
+  return answer;
+}
+
+/**
  * @method instantiatePages
  * @public
  *
@@ -2371,14 +2427,19 @@ Main.prototype.runChecks = function( ) {
 Main.prototype.instantiatePages = function( ) {
   this.log( 'Instantiating PAGES' );
   var _this = this;
-  this.veAdsConfig.page.unshift(injectableROS); // Add ROS page to the front of the queue
-  _this.veAdsConfig.pages.sort(pageSort); // Sort the pages according to type.
 
+  if ( !propertyValueInObjectArray(this.veAdsConfig.pages, 'type', 'ros') ){
+    this.veAdsConfig.pages.unshift(injectableROS); // Add ROS page to the front of the queue
+  }
+  this.veAdsConfig.pages.sort(pageSort); // Sort the pages according to type.
+
+  this.log('Pages have been sorted into a running order', this.veAdsConfig.pages);
   $.each( _this.veAdsConfig.pages, function( index, pageObj ) {
     if ( pageObj[settings.MAIN_PAGE_PROPERTY] ) { return 'continue'; } // Only generate instance if none currently exists
 
     var page = new Page( pageObj ); // CHECK: This may need certain parameters
     pageObj[settings.MAIN_PAGE_PROPERTY] = page;
+    _this.setupPageListeners( page );
   });
 };
 
@@ -2402,6 +2463,9 @@ Main.prototype.setupPageListeners = function(page) {
   page.once('success', $.proxy(this.runPagePixels, this, page));
 
   page.once('fail', $.proxy(page.off, page));
+  
+  // Launch this
+  page.checkURLs();
 
 };
 
@@ -2577,7 +2641,7 @@ Main.prototype._obtainDataValue = function( elements, valueType ) {
 
   $.each(elements, function( index, element ) {
     var dataElement = element[settings.MAIN_DATA_ELEMENT] ||
-                    new DataElement( element );
+                    (element[settings.MAIN_DATA_ELEMENT] = new DataElement( element ) );
     if ( dataElement.valueType === 'single' && !currentValue ) {
       currentValue = dataElement.getValue() || _this.getValue(dataElement.key);
     } else {
@@ -2641,7 +2705,7 @@ function generateArrayOfMatchingTypes (objects, type) {
   return arr;
 }
 
-},{"./common/debug":6,"./common/jq":9,"./common/utils":12,"./data/DataElement":13,"./data/types":15,"./pages/Page":17,"./pixels/Pixel":18,"./pixels/type":24,"./settings":26,"./storage/store":27}],17:[function(require,module,exports){
+},{"./common/debug":5,"./common/jq":8,"./common/utils":11,"./data/DataElement":12,"./data/types":14,"./pages/Page":17,"./pixels/Pixel":18,"./pixels/type":24,"./settings":26,"./storage/store":28}],17:[function(require,module,exports){
 'use strict';
 
 
@@ -2657,8 +2721,8 @@ var utils = require( '../common/utils' ),
     $ = require( '../common/jq' ),
     settings = require( '../settings' ),
     elements = require( '../common/elements' ),
-    criteria = require( '../common/criteria' );
-
+    criteria = require( '../common/criteria' ),
+    debug = require( '../common/debug' );
 
 
 
@@ -2674,15 +2738,21 @@ var utils = require( '../common/utils' ),
  */
 
 function Page( config ) {
+  
+  //TODO: Avoid throwing errors here. 
   if ( !utils.type(config, 'object' ) ) {
     throw new Error ( 'Pages need to be called with a configuration object' );
   }
 
   this.storeConfig( config );
+  this.logger();
+  
   this.matchingURLs = [ ];
 
   this.dynamic = this._checkDynamic( ); // Boolean
   // this.checkURLs(); // Only check urls at the right time
+  
+  this.log('Page object created');
 }
 
 
@@ -2707,7 +2777,7 @@ Emitter( Page.prototype );
 
 Page.prototype.checkURLs = function( ) {
   var _this = this;
-
+  this.log('Checking through URLs');
   $.each(this.urls, function( index, url ) {
     var matches = matcher.match( url );
 
@@ -2725,6 +2795,7 @@ Page.prototype.checkURLs = function( ) {
     this.runDynamics( );
   } else {
     this.emit( 'fail' );
+    this.log( 'ZERO MATCHES for: ' + this.name );
   }
 
 };
@@ -2743,26 +2814,34 @@ Page.prototype.checkURLs = function( ) {
 Page.prototype.runDynamics = function( ) {
   var promises = [],
       _this = this;
-
+  
+  this.log('Dynamically testing');
   $.each( this.dynamicIdentifiers, function( index, identifier) {
     var promise;
     // Stop if there is no selector, or criteria without a value.
-    if ( !identifier.selector || (identifier.criteria && !identifier.values) ) return;
+    if ( !identifier.selector || (identifier.criteria && !identifier.values) ) {
+      _this.log( 'Dynamic Identifier: ' + index+ 1 + ' can\'t run', identifier );
+      return 'continue';
+    }
 
 
-    promise = elements.progressCheck( indentifier.selector );
+    promise = elements.progressCheck( identifier.selector );
     promises.push( promise );
     // check current value against criteria each time.
     promise.progress( function( $el, obj ) {
-
-      $.each(indentifier.values, function( index, value ) {
-        if ( criteria[indentifier.criteria](obj.value, identifier.values) ) {
-          obj.complete = true; // Cause promise to be resolved.
+      _this.log( 'Update in element value', $el, obj );
+      $.each( identifier.values, function( index, value ) {
+        _this.log('Checking agains: ' + value );
+        if ( criteria[identifier.criteria](value, obj.value) ) {
+          _this.log('Value has been found for: ' + obj.value );
+          obj.remove( true ); // Cause promise to be resolved.
+          return false; // Stop the iteration
         }
       });
 
-      if ( this.stopChecks ) {
-        obj.fail = true; // Cause promise to fail.
+      if ( _this.stopChecks ) {
+        _this.log( 'Another dynamic Identifier has already passed' );
+        obj.remove( ); // Cause promise to fail.
       }
     });
   });
@@ -2770,7 +2849,10 @@ Page.prototype.runDynamics = function( ) {
   // As soon as one dynamicIdentifier
   // TODO: Fix problem with ghost identifiers running long after resolution
   utils.whenAny( promises )
-  .done( _this.pageIdentified );
+  .done( function( $el ) {
+    
+    _this.pageIdentified( );
+  });
 };
 
 
@@ -2785,9 +2867,11 @@ Page.prototype.runDynamics = function( ) {
  */
 
 Page.prototype.pageIdentified = function( $el ) {
+  this.log( 'Page Matches for: ' + this.name, this.matchingURLs );
   this.stopChecks = true; // Stops any other intervals from running;
   this.emit( 'success', this );
-}
+  
+};
 
 
 /**
@@ -2820,6 +2904,15 @@ Page.prototype.storeConfig = function( config ) {
 };
 
 
+/**
+ * @method
+ * 
+ * Set up logger for this instance of page
+ */
+Page.prototype.logger = function() {
+  this.log = debug( 've:page:' + this.type +':' + this.id );
+};
+
 
 /**
  * @method
@@ -2840,7 +2933,7 @@ Page.prototype._checkDynamic = function(  ) {
 
 module.exports = Page;
 
-},{"../common/criteria":5,"../common/elements":7,"../common/emitter":8,"../common/jq":9,"../common/url-matcher":11,"../common/utils":12,"../settings":26}],18:[function(require,module,exports){
+},{"../common/criteria":4,"../common/debug":5,"../common/elements":6,"../common/emitter":7,"../common/jq":8,"../common/url-matcher":10,"../common/utils":11,"../settings":26}],18:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2852,6 +2945,7 @@ module.exports = Page;
 
 
 var utils = require( '../common/utils' ),
+    Emitter = require( '../common/emitter' ),
     pixelType = require( './type' ),
     logger = require( '../common/debug' ),
     $ = require( '../common/jq' );
@@ -2876,6 +2970,7 @@ function Pixel( config, getData ) {
 }
 
 
+Emitter( Pixel.prototype );
 
 /**
  * @method run
@@ -2892,7 +2987,7 @@ function Pixel( config, getData ) {
 Pixel.prototype.run = function (getData, pageType, pageID) {
   this.pages.push( pageID );
   this.data = this.collateData(this._pixel[pageType]['needs'], getData);
-  this.generatePixels( this.data, this.settings, pageType, pageID );
+  this.generatePixels( this.data, this.config, pageType, pageID );
 };
 
 
@@ -2923,7 +3018,7 @@ Pixel.prototype.storeConfig = function ( config ) {
  */
 
 Pixel.prototype.logger = function ( ) {
-  this.log = logger('pixel:' + this.type + ':' + this.id);
+  this.log = logger('ve:pixel:' + this.type + ':' + this.id);
 };
 
 
@@ -2965,7 +3060,7 @@ Pixel.prototype.checkOverrides = function (pageType, pageID) {
     return true;
   }
 
-  this.log( 'The pixel has been OVERRIDEN' );
+  this.log( 'The pixel has been OVERRIDDEN' );
   return false;
 };
 
@@ -2979,13 +3074,13 @@ Pixel.prototype.checkOverrides = function (pageType, pageID) {
  * can be called here.
  *
  * @param  {Object} data        Dynamically generated data from dataElements
- * @param  {Object} settings    The hardcoded settings directly from the tool
+ * @param  {Object} config      The hardcoded config object directly from the tool
  * @param  {String} pageType    The page type calling firing for this pixel
  * @param  {Number} pageID      The unique page ID of the calling page
  * @return {Null}
  */
-Pixel.prototype.generatePixels = function ( data, settings, pageType, pageID ) {
-  var runners;
+Pixel.prototype.generatePixels = function ( data, config, pageType, pageID ) {
+  var runners, _this = this;
 
   // Check whether we have any overrides
   if ( !this.checkOverrides(pageType, pageID) ) {
@@ -3004,10 +3099,11 @@ Pixel.prototype.generatePixels = function ( data, settings, pageType, pageID ) {
   this.log( 'Generating Pixel(s) for: ' + this.name + 'with type: ' + this.type );
 
   $.each(runners, function( index, runner ) {
-    var src = runner( data, settings );
+    var src = runner( data, config );
+
     if (src) {
       utils.getImage( src );
-      this.log( 'Image pixel generated with `src`: ' + src );
+      _this.log( 'Image pixel generated with `src`: ' + src );
     }
   });
 
@@ -3020,24 +3116,24 @@ Pixel.prototype.generatePixels = function ( data, settings, pageType, pageID ) {
 
 module.exports = Pixel;
 
-},{"../common/debug":6,"../common/jq":9,"../common/utils":12,"./type":24}],19:[function(require,module,exports){
+},{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"./type":24}],19:[function(require,module,exports){
 'use strict';
 
 module.exports = {
 
   product: {
     needs: ['productId'],
-    produces: []
+    produces: [product]
   },
 
   conversion: {
     needs: ['orderVal', 'orderId', 'currency'],
-    produces: []
+    produces: [conversion]
   },
 
   ros: {
     needs: [],
-    produces: []
+    produces: [ros]
   }
 
 };
@@ -3060,13 +3156,14 @@ function product(data, config) {
 
 },{}],20:[function(require,module,exports){
 var utils = require( '../../common/utils' );
+var log = require( '../../common/debug' )('ve:pixels:type:customConversion');
 
 
 module.exports = {
 
   conversion: {
-    needs: [conversion],
-    produces: []
+    needs: [],
+    produces: [conversion]
   }
 };
 
@@ -3075,22 +3172,23 @@ module.exports = {
 
 function conversion( data, config ) {
   if ( config.type === 'script' && config.src ) {
-    utils.getScript( src );
+    log('adding script to the page');
+    utils.getScript( config.src );
     return false; // no image pixel required
   } else {
     return src;
   }
 }
 
-},{"../../common/utils":12}],21:[function(require,module,exports){
+},{"../../common/debug":5,"../../common/utils":11}],21:[function(require,module,exports){
 var utils = require( '../../common/utils' );
 
 
 module.exports = {
 
   ros: {
-    needs: [ros],
-    produces: []
+    needs: [],
+    produces: [ros]
   }
 };
 
@@ -3098,15 +3196,16 @@ module.exports = {
 
 
 function ros( data, config ) {
+//   console.log(data, config);
   if ( config.type === 'script' && config.src ) {
     utils.getScript( src );
     return false; // no image pixel required
   } else {
-    return src;
+    return config.src;
   }
 }
 
-},{"../../common/utils":12}],22:[function(require,module,exports){
+},{"../../common/utils":11}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3131,9 +3230,10 @@ module.exports = {
 
 
 function ros( data, config ) {
-  var random = (Math.Random() + '') * 10000000000000;
+  console.info(data, config);
+  var random = (Math.random() + '') * 10000000000000;
   return 'https://ad.doubleclick.net/ddm/activity/src=' + config.src +
-  ';type=invmedia;cat=' + config.catROS + 'iektney2;ord=' + random;
+  ';type=invmedia;cat=' + config.catROS + ';ord=' + random;
 }
 
 function conversion( data, config ) {
@@ -3165,7 +3265,7 @@ module.exports = {
  */
 
 function ros(data, config) {
-  var flexId = config.flexId;
+  var flexId = config.flexId, iatDev;
 
   (function(a) {
     var d = document,
@@ -3356,10 +3456,12 @@ function generateItemString( list ) {
   return itemString;
 }
 
-},{"../../common/jq":9}],26:[function(require,module,exports){
+},{"../../common/jq":8}],26:[function(require,module,exports){
 /**
-* Settings that may be called at any time during the app runtime
-*/
+ * Settings that may be called at any time during the app runtime
+ */
+
+var log = require('./common/debug')('ve:settings');
 
 module.exports = {
 
@@ -3398,14 +3500,102 @@ module.exports = {
     try {
       return window.veTagData.settings.veAds.config[name];
     } catch(err) {
-      throw Error( 'Unable to load veAds config');
+      log( 'Unable to load veAds config', err );
     }
   }
 
 
 };
 
-},{}],27:[function(require,module,exports){
+},{"./common/debug":5}],27:[function(require,module,exports){
+'use strict';
+
+/*\
+|*|
+|*|  :: cookies.js ::
+|*|
+|*|  A complete cookies reader/writer framework with full unicode support.
+|*|
+|*|  Revision #1 - September 4, 2014
+|*|
+|*|  https://developer.mozilla.org/en-US/docs/Web/API/document.cookie
+|*|  https://developer.mozilla.org/User:fusionchess
+|*|
+|*|  This framework is released under the GNU Public License, version 3 or later.
+|*|  http://www.gnu.org/licenses/gpl-3.0-standalone.html
+|*|
+|*|  Syntaxes:
+|*|
+|*|  * docCookies.setItem(name, value[, end[, path[, domain[, secure]]]])
+|*|  * docCookies.getItem(name)
+|*|  * docCookies.removeItem(name[, path[, domain]])
+|*|  * docCookies.hasItem(name)
+|*|  * docCookies.keys()
+|*|
+\*/
+
+var docCookies = {
+  getItem: function(sKey) {
+    if (!sKey) {
+      return null;
+    }
+    return decodeURIComponent(document.cookie.replace(new RegExp('(?:(?:^|.*;)\\s*' + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=\\s*([^;]*).*$)|^.*$'), '$1')) || null;
+  },
+
+  setItem: function(sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+    if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
+      return false;
+    }
+    var sExpires = '';
+    if (vEnd) {
+      switch (vEnd.constructor) {
+        case Number:
+          sExpires = vEnd === Infinity ? '; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + vEnd;
+          break;
+        case String:
+          sExpires = '; expires=' + vEnd;
+          break;
+        case Date:
+          sExpires = '; expires=' + vEnd.toUTCString();
+          break;
+      }
+    }
+    document.cookie = encodeURIComponent(sKey) + '=' + encodeURIComponent(sValue) + sExpires + (sDomain ? '; domain=' + sDomain : '') + (sPath ? '; path=' + sPath : '') + (bSecure ? '; secure' : '');
+    return true;
+  },
+
+  removeItem: function(sKey, sPath, sDomain) {
+    if (!this.hasItem(sKey)) {
+      return false;
+    }
+    document.cookie = encodeURIComponent(sKey) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT' + (sDomain ? '; domain=' + sDomain : '') + (sPath ? '; path=' + sPath : '');
+    return true;
+  },
+
+  hasItem: function(sKey) {
+    if (!sKey) {
+      return false;
+    }
+    return (new RegExp('(?:^|;\\s*)' + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=')).test(document.cookie);
+  },
+
+  keys: function() {
+    var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, '').split(/\s*(?:\=[^;]*)?;\s*/);
+    for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) {
+      aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]);
+    }
+    return aKeys;
+  }
+};
+
+
+/**
+ * Exports `cookies`
+ */
+
+module.exports = docCookies;
+
+},{}],28:[function(require,module,exports){
 'use strict';
 /**
  * @module `store/store`
@@ -3423,7 +3613,10 @@ var store = {},
 	localStorageName = 'localStorage',
 	scriptTag = 'script',
 	storage,
-  utils = require( '../common/utils' );
+  utils = require( '../common/utils' ),
+	useCookies = require('../settings' ).fromObjectConfig('storageAcrossProtocols'),
+	cookies = require( './cookies' );
+
 
 store.disabled = false;
 store.version = '1.3.17';
@@ -3491,17 +3684,27 @@ if ( isLocalStorageNameSupported() ) {
 	storage = win[localStorageName];
 
 	store.set = function(key, val) {
-		if ( utils.type('undefined') ) {
+		if ( utils.type(val, 'undefined') ) {
       return store.remove(key);
     }
 
 		storage.setItem( key, store.serialize(val) );
+
+		if ( useCookies ) {
+			cookies.setItem(key, store.serialize(val), 2592000); // 30 days
+		}
+
 		return val;
 	};
 
 
 	store.get = function(key, defaultVal) {
 		var val = store.deserialize(storage.getItem(key));
+
+		if ( !val ) {
+			val = store.deserialize(cookies.getItem(key));
+		}
+
 		return (val === undefined ? defaultVal : val);
 	};
 
@@ -3657,4 +3860,4 @@ store.enabled = !store.disabled;
 
 module.exports = store;
 
-},{"../common/utils":12}]},{},[1]);
+},{"../common/utils":11,"../settings":26,"./cookies":27}]},{},[15]);

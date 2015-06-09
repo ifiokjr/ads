@@ -4,8 +4,8 @@ var utils = require( '../../common/utils' );
 module.exports = {
 
   ros: {
-    needs: [ros],
-    produces: []
+    needs: [],
+    produces: [ros]
   }
 };
 
@@ -13,10 +13,11 @@ module.exports = {
 
 
 function ros( data, config ) {
+//   console.log(data, config);
   if ( config.type === 'script' && config.src ) {
     utils.getScript( src );
     return false; // no image pixel required
   } else {
-    return src;
+    return config.src;
   }
 }

@@ -10,7 +10,7 @@ var nestedNoop = function() {
 
 
 if ( window.debugVeAds && window.debugVeAds.enable ) {
-  window.debugVeAds.enable('ve:*');
+  window.debugVeAds.enable('*');
 }
 
 /**

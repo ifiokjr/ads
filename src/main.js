@@ -165,19 +165,19 @@ function propertyValueInObjectArray(array, property, value) {
 Main.prototype.instantiatePages = function( ) {
   this.log( 'Instantiating PAGES' );
   var _this = this;
-  this.log(this.veAdsConfig.pages, 1);
 
   if ( !propertyValueInObjectArray(this.veAdsConfig.pages, 'type', 'ros') ){
     this.veAdsConfig.pages.unshift(injectableROS); // Add ROS page to the front of the queue
   }
-  _this.veAdsConfig.pages.sort(pageSort); // Sort the pages according to type.
+  this.veAdsConfig.pages.sort(pageSort); // Sort the pages according to type.
 
-  this.log(this.veAdsConfig.pages, 1);
+  this.log('Pages have been sorted into a running order', this.veAdsConfig.pages);
   $.each( _this.veAdsConfig.pages, function( index, pageObj ) {
     if ( pageObj[settings.MAIN_PAGE_PROPERTY] ) { return 'continue'; } // Only generate instance if none currently exists
 
     var page = new Page( pageObj ); // CHECK: This may need certain parameters
     pageObj[settings.MAIN_PAGE_PROPERTY] = page;
+    _this.setupPageListeners( page );
   });
 };
 
@@ -201,6 +201,9 @@ Main.prototype.setupPageListeners = function(page) {
   page.once('success', $.proxy(this.runPagePixels, this, page));
 
   page.once('fail', $.proxy(page.off, page));
+  
+  // Launch this
+  page.checkURLs();
 
 };
 

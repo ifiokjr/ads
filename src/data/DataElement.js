@@ -14,7 +14,8 @@ var utils = require( '../common/utils' ),
     settings = require( '../settings' ),
     $ = require( '../common/jq' ),
     Page = require( '../pages/Page' ),
-    types = require( './types' );
+    types = require( './types' ),
+    debug = require( '../common/debug' );
 
 
 
@@ -55,6 +56,7 @@ function DataElement( config, page ) {
 
   page = page || {};
   this.storeConfig( config, page );
+  
 
 }
 
@@ -80,15 +82,25 @@ DataElement.prototype.storeConfig = function ( config, page ) {
   this.fallback = config.fallback; // the value to use if nothing else can be found.
 
   this.urlData = page.matchingURLs || [{}];
+  this.logger();
 };
 
+/**
+ * @method logger
+ * 
+ * Set up logging for this class
+ */
+
+DataElement.prototype.logger = function() {
+  this.log = debug('ve:data:' + this.type + ':' + this.id);
+}
 
 
 /**
  * Capture the element from the page
  */
 DataElement.prototype.setData = function ( ) {
-
+  this.log( 'About to set data with the following object', this.config )
   capture[this.capture.type]( this.config, this );
 
 };

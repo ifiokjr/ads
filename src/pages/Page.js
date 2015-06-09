@@ -13,8 +13,8 @@ var utils = require( '../common/utils' ),
     $ = require( '../common/jq' ),
     settings = require( '../settings' ),
     elements = require( '../common/elements' ),
-    criteria = require( '../common/criteria' );
-
+    criteria = require( '../common/criteria' ),
+    debug = require( '../common/debug' );
 
 
 
@@ -30,15 +30,21 @@ var utils = require( '../common/utils' ),
  */
 
 function Page( config ) {
+  
+  //TODO: Avoid throwing errors here. 
   if ( !utils.type(config, 'object' ) ) {
     throw new Error ( 'Pages need to be called with a configuration object' );
   }
 
   this.storeConfig( config );
+  this.logger();
+  
   this.matchingURLs = [ ];
 
   this.dynamic = this._checkDynamic( ); // Boolean
   // this.checkURLs(); // Only check urls at the right time
+  
+  this.log('Page object created');
 }
 
 
@@ -63,7 +69,7 @@ Emitter( Page.prototype );
 
 Page.prototype.checkURLs = function( ) {
   var _this = this;
-
+  this.log('Checking through URLs');
   $.each(this.urls, function( index, url ) {
     var matches = matcher.match( url );
 
@@ -81,6 +87,7 @@ Page.prototype.checkURLs = function( ) {
     this.runDynamics( );
   } else {
     this.emit( 'fail' );
+    this.log( 'ZERO MATCHES for: ' + this.name );
   }
 
 };
@@ -99,26 +106,34 @@ Page.prototype.checkURLs = function( ) {
 Page.prototype.runDynamics = function( ) {
   var promises = [],
       _this = this;
-
+  
+  this.log('Dynamically testing');
   $.each( this.dynamicIdentifiers, function( index, identifier) {
     var promise;
     // Stop if there is no selector, or criteria without a value.
-    if ( !identifier.selector || (identifier.criteria && !identifier.values) ) return;
+    if ( !identifier.selector || (identifier.criteria && !identifier.values) ) {
+      _this.log( 'Dynamic Identifier: ' + index+ 1 + ' can\'t run', identifier );
+      return 'continue';
+    }
 
 
     promise = elements.progressCheck( identifier.selector );
     promises.push( promise );
     // check current value against criteria each time.
     promise.progress( function( $el, obj ) {
-
-      $.each(identifier.values, function( index, value ) {
-        if ( criteria[identifier.criteria](obj.value, identifier.values) ) {
-          obj.complete = true; // Cause promise to be resolved.
+      _this.log( 'Update in element value', $el, obj );
+      $.each( identifier.values, function( index, value ) {
+        _this.log('Checking agains: ' + value );
+        if ( criteria[identifier.criteria](value, obj.value) ) {
+          _this.log('Value has been found for: ' + obj.value );
+          obj.remove( true ); // Cause promise to be resolved.
+          return false; // Stop the iteration
         }
       });
 
-      if ( this.stopChecks ) {
-        obj.fail = true; // Cause promise to fail.
+      if ( _this.stopChecks ) {
+        _this.log( 'Another dynamic Identifier has already passed' );
+        obj.remove( ); // Cause promise to fail.
       }
     });
   });
@@ -127,7 +142,8 @@ Page.prototype.runDynamics = function( ) {
   // TODO: Fix problem with ghost identifiers running long after resolution
   utils.whenAny( promises )
   .done( function( $el ) {
-    _this.pageIdentified;
+    
+    _this.pageIdentified( );
   });
 };
 
@@ -143,8 +159,10 @@ Page.prototype.runDynamics = function( ) {
  */
 
 Page.prototype.pageIdentified = function( $el ) {
+  this.log( 'Page Matches for: ' + this.name, this.matchingURLs );
   this.stopChecks = true; // Stops any other intervals from running;
   this.emit( 'success', this );
+  
 };
 
 
@@ -177,6 +195,15 @@ Page.prototype.storeConfig = function( config ) {
   this.name = config.name;
 };
 
+
+/**
+ * @method
+ * 
+ * Set up logger for this instance of page
+ */
+Page.prototype.logger = function() {
+  this.log = debug( 've:page:' + this.type +':' + this.id );
+};
 
 
 /**
