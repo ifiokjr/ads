@@ -159,8 +159,8 @@ Matcher.prototype.match = function( pattern ) {
   }
 
   urlMatches = this.checkPatternMatches( obj.url );
+  console.log(urlMatches)
   paramMatches = this.checkParamMatches( obj.params );
-
   if ( urlMatches[ MATCH_PROPERTY ] && paramMatches[ MATCH_PROPERTY ] ) {
     return $.extend( { }, urlMatches, paramMatches );
   }
@@ -220,35 +220,37 @@ Matcher.prototype.checkPatternMatches = function( pattern, item ) {
  */
 
 Matcher.prototype.checkParamMatches = function( params ) {
-  var obj, dObj, bound = { }, _this = this;
+  var obj, decodedObj, bound = { }, _this = this;
 
   bound[ MATCH_PROPERTY ] = true; // default to matching
 
   if ( !utils.objectLength( params ) ) { return bound; }
 
   $.each( params, function(key, value) {
-    var dValue;
+    var decodedValue;
+
 
     key = String( key );
     value = String( value );
-    dValue = decodeURIComponent( value );
+    decodedValue = decodeURIComponent( value );
 
+    // debugger;
     if ( _this.searchObject[key] == null ) {
       bound[ MATCH_PROPERTY ] = false;
       return false; // Break out from jQuery loop
     }
 
-    obj = !_this.checkPatternMatches( value, _this.searchObject[key] );
-    dObj = !_this.checkPatternMatches( dValue, _this.searchObject[key] );
+    obj = _this.checkPatternMatches( value, _this.searchObject[key] );
+    decodedObj = _this.checkPatternMatches( decodedValue, _this.searchObject[key] );
 
     if ( obj[ MATCH_PROPERTY ] ) {
       $.extend( bound, obj );
-      return; // Continue jQuery loop
+      return 'continue'; // Continue jQuery loop
     }
 
-    else if ( dObj[ MATCH_PROPERTY ] ) {
-      $.extend( bound, dObj );
-      return; // Continue jQuery loop
+    else if ( decodedObj[ MATCH_PROPERTY ] ) {
+      $.extend( bound, decodedObj );
+      return 'continue'; // Continue jQuery loop
     }
 
     else {

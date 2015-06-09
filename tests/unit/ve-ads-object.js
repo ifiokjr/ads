@@ -25,6 +25,11 @@ var validVeAds = {
     uuid: 'abcd5678',
 
 
+    // Experimental: Needs permission since it uses cookies
+
+    storageAcrossProtocols: true,
+
+
     /*
      * Rather than inserting img pixels into the DOM it's possible to generate
      *the same request using JavaScript. This is much more performant.

@@ -1,6 +1,8 @@
 /**
-* Settings that may be called at any time during the app runtime
-*/
+ * Settings that may be called at any time during the app runtime
+ */
+
+var log = require('./common/debug')('ve:settings');
 
 module.exports = {
 
@@ -39,7 +41,7 @@ module.exports = {
     try {
       return window.veTagData.settings.veAds.config[name];
     } catch(err) {
-      throw Error( 'Unable to load veAds config');
+      log( 'Unable to load veAds config', err );
     }
   }
 

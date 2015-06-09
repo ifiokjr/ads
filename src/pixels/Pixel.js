@@ -9,6 +9,7 @@
 
 
 var utils = require( '../common/utils' ),
+    Emitter = require( '../common/emitter' ),
     pixelType = require( './type' ),
     logger = require( '../common/debug' ),
     $ = require( '../common/jq' );
@@ -33,6 +34,7 @@ function Pixel( config, getData ) {
 }
 
 
+Emitter( Pixel.prototype );
 
 /**
  * @method run
@@ -122,7 +124,7 @@ Pixel.prototype.checkOverrides = function (pageType, pageID) {
     return true;
   }
 
-  this.log( 'The pixel has been OVERRIDEN' );
+  this.log( 'The pixel has been OVERRIDDEN' );
   return false;
 };
 

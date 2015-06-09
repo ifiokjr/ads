@@ -15,7 +15,10 @@ var store = {},
 	localStorageName = 'localStorage',
 	scriptTag = 'script',
 	storage,
-  utils = require( '../common/utils' );
+  utils = require( '../common/utils' ),
+	useCookies = require('../settings' ).fromObjectConfig('storageAcrossProtocols'),
+	cookies = require( './cookies' );
+
 
 store.disabled = false;
 store.version = '1.3.17';
@@ -83,17 +86,27 @@ if ( isLocalStorageNameSupported() ) {
 	storage = win[localStorageName];
 
 	store.set = function(key, val) {
-		if ( utils.type('undefined') ) {
+		if ( utils.type(val, 'undefined') ) {
       return store.remove(key);
     }
 
 		storage.setItem( key, store.serialize(val) );
+
+		if ( useCookies ) {
+			cookies.setItem(key, store.serialize(val), 2592000); // 30 days
+		}
+
 		return val;
 	};
 
 
 	store.get = function(key, defaultVal) {
 		var val = store.deserialize(storage.getItem(key));
+
+		if ( !val ) {
+			val = store.deserialize(cookies.getItem(key));
+		}
+
 		return (val === undefined ? defaultVal : val);
 	};
 
