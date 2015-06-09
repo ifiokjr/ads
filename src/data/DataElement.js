@@ -12,24 +12,24 @@ var utils = require( '../common/utils' ),
     Emitter = require( '../common/emitter' ),
     store = require( '../storage/store' ),
     settings = require( '../settings' ),
-    Page = require( '../pages/Page' );
+    $ = require( '../common/jq' ),
+    Page = require( '../pages/Page' ),
+    types = require( './types' );
+
+
+
+
 
 
 /**
- * Type of dataElements and whether they store lists or single values.
+ * Fallback defaults, cached here  - FIXME:
  * @type {Object}
  */
 
-var types = {
-
-  orderId: 'single',
-  orderVal: 'single',
-  productId: 'single',
-  productList: 'list', // from basket page and category pages (limited to 5)
-  productPrices: 'list', // from basket and category pages
-  currency: 'single'
+var fallbacks = {
+  '__timestamp__': $.now(),
+  '__random__': ('0000' + (Math.random()*Math.pow(36,4) << 0).toString(36)).slice(-4)
 };
-
 
 /**
  * @class
@@ -95,12 +95,16 @@ DataElement.prototype.setData = function ( ) {
 
 
 /**
- * obtain data from the storage
+ * @method getValue
+ * @api public
  *
- * @return {Mixed} value based on the key
+ * obtain value from the cache, currently doesn't do much. However this should
+ * be used rather than direct access to future proof the code.
+ *
+ * @return {String|Array} value based on the key
  */
-DataElement.prototype.getData = function ( ) {
-
+DataElement.prototype.getValue = function ( ) {
+  return this.value || (this.valueType === 'list') ? [] : '';
 };
 
 
@@ -121,10 +125,23 @@ DataElement.prototype.generateKey = function ( ) {
  */
 
 DataElement.prototype.cacheValue = function( value ) {
-  this.lastUpdated = (new Date()).now(); // currently not used but available for optimisations
+  this.lastUpdated = ($.now()); // currently not used but available for optimisations
   this.value = value;
 };
 
+
+/**
+ * @method getFallback
+ * @api public
+ *
+ * Either use the fallback value provided or if special case return a generated
+ * timestamp or random number
+ *
+ * @return {String} Fallback value to return
+ */
+DataElement.prototype.getFallback = function ( ) {
+  return String( fallbacks[this.fallback] || this.fallback );
+};
 
 
 /**
