@@ -2,11 +2,11 @@
  * The main entry point of our code.
  */
 
-var log = require('debug')('run');
+var log = require('./common/debug')('run');
 
 try {
   log('Code is starting');
-  require( 'main' );
+  require( './main' );
 }
 
 catch ( err ) {

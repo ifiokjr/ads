@@ -12,7 +12,7 @@ var utils = require( './common/utils' ),
     settings = require( './settings' ),
     pixelTypes = require( './pixels/type' ),
     debug = require( './common/debug' ),
-    elementTypes = require( '/data/types' ),
+    elementTypes = require( './data/types' ),
     Pixel = require( './pixels/Pixel' );
 
 

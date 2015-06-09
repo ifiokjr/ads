@@ -236,7 +236,6 @@ function getImage( src ) {
       deferred = $.Deferred( );
 
   image.onload = function() {
-    console.log('YAY!!')
     deferred.resolve( );
   };
 
@@ -244,5 +243,3 @@ function getImage( src ) {
 
   return deferred.promise( );
 }
-
-global.getImage = getImage;

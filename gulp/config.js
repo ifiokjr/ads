@@ -19,21 +19,27 @@ module.exports = {
     // A separate bundle will be generated for each
     // bundle config in the list below
     bundleConfigs: [{
-      entries: src + '/index.js',
+      entries: src + '/run.js',
       dest: dest,
-      outputName: 'gdm.js',
+      outputName: 've-ads.js',
       // list of externally available modules to exclude from the bundle
       external: ['jquery']
     }, {
-      entries: src + '/dev-entry.js',
+      entries: src + '/dev.js',
       dest: dest,
-      outputName: 'gdm.dev-entry.js',
+      outputName: 've-ads-dev.js',
+      // list of externally available modules to exclude from the bundle
+      external: ['jquery']
+    }, {
+      entries: src + '/custom-debug.js',
+      dest: dest,
+      outputName: 'custom-debug.js',
       // list of externally available modules to exclude from the bundle
       external: ['jquery']
     }]
   },
   production: {
-    jsSrc: dest + '/gdm.js',
+    jsSrc: dest + '/ve-ads.js',
     dest: dest
   }
 };
