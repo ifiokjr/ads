@@ -157,7 +157,7 @@ function dynamicCheck( selector ) {
  * Immediately check for the existence of the selector, notify on change,
  * only stop when context argument is edited
  *
- * :FIXME - Currently only gets cleaned after udpate
+ * :FIXME - Currently only gets cleaned after update
  *
  * @param {String} selector - the string used to check for element presence
  *
