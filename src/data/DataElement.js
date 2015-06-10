@@ -73,8 +73,7 @@ Emitter( DataElement.prototype );
 
 DataElement.prototype.storeConfig = function ( config, page ) {
   this.config = config;
-
-  this.key = this.generateKey(); // used for storage
+  this.name = config.name;
   this.type = config.type;
   this.valueType = types[config.type]; // single or list
   this.id = config.id;
@@ -82,6 +81,8 @@ DataElement.prototype.storeConfig = function ( config, page ) {
   this.fallback = config.fallback; // the value to use if nothing else can be found.
 
   this.urlData = page.matchingURLs || [{}];
+  this.key = this.generateKey(); // used for storage
+
   this.logger();
 };
 
@@ -92,15 +93,15 @@ DataElement.prototype.storeConfig = function ( config, page ) {
  */
 
 DataElement.prototype.logger = function() {
-  this.log = debug('ve:data:' + this.type + ':' + this.id);
-}
+  this.log = debug('ve:dataElement:' + this.type + ':' + this.id);
+};
 
 
 /**
  * Capture the element from the page
  */
 DataElement.prototype.setData = function ( ) {
-  this.log( 'About to set data with the following object', this.config )
+  this.log( 'About to set data with the following object', this.config );
   capture[this.capture.type]( this.config, this );
 
 };
@@ -115,8 +116,12 @@ DataElement.prototype.setData = function ( ) {
  *
  * @return {String|Array} value based on the key
  */
+
 DataElement.prototype.getValue = function ( ) {
-  return this.value || (this.valueType === 'list') ? [] : '';
+  this.log('VALUE!!', this.value);
+  var val = this.value || ((this.valueType === 'list') ? [] : '');
+  this.log('#getValue with value', val);
+  return val;
 };
 
 
@@ -138,6 +143,7 @@ DataElement.prototype.generateKey = function ( ) {
 
 DataElement.prototype.cacheValue = function( value ) {
   this.lastUpdated = ($.now()); // currently not used but available for optimisations
+  this.log('Caching value', value, this.lastUpdated);
   this.value = value;
 };
 
@@ -152,7 +158,8 @@ DataElement.prototype.cacheValue = function( value ) {
  * @return {String} Fallback value to return
  */
 DataElement.prototype.getFallback = function ( ) {
-  return String( fallbacks[this.fallback] || this.fallback );
+  var fallback =  String( fallbacks[this.fallback] || this.fallback );
+  this.log('#getFallback - The fallback value being obtained', fallback);
 };
 
 

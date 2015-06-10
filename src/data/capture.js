@@ -125,14 +125,13 @@ function match( value, inclusions ) {
 
 
 
-
-
 /**
  * Transform the value passed in with the automatic masks that are run.
  * @param  {String} value current value
  * @param  {String} mask  masking function to be used
  * @return {String}       Value run through strings
  */
+
 function runMasks( value, mask ) {
   var fn = masks[mask] || masks['nothing'];
   return fn(value);
@@ -225,7 +224,7 @@ var singleOrList = {
 function storeData( dataElement, value ) {
   
   dataElement.cacheValue( value );
-  dataElement.emit( 'store', value );
+  dataElement.emit( 'store' );
 }
 
 
@@ -316,10 +315,10 @@ function globalVariable ( config, dataElement ) {
  */
 function url( config, dataElement ) {
   var value = '';
-  $.each(dataElement.urlData, function( index, url ) {
-    if ( url[config.capture.element] ) {
-      value = url[config.capture.element];
-      return; // break the loop
+  $.each(dataElement.urlData, function( index, obj ) {
+    if ( obj.matches[config.capture.element] ) {
+      value = obj.matches[config.capture.element];
+      return false; // break the loop
     }
   });
 

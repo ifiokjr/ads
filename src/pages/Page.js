@@ -74,16 +74,17 @@ Page.prototype.checkURLs = function( ) {
     var matches = matcher.match( url );
 
     if ( matches[matcher.MATCH_PROPERTY] ) {
-      _this.matchingURLs.push( {url: url, mathches: matches} );
+      _this.matchingURLs.push( {url: url, matches: matches} );
     }
   });
 
   // emit matched URLs with the matched URLs when a match is found
   // debugger;
   if ( this.matchingURLs.length && !this.dynamic ) {
-    // this.emit( 'success', this );
+    this.log('Page URL matches with object', this.matchingURLs);
     this.pageIdentified( );
   } else if ( this.matchingURLs.length && this.dynamic ) {
+    this.log('Page URL matches but dynamic tests are needed', this.matchingURLs);
     this.runDynamics( );
   } else {
     this.emit( 'fail' );

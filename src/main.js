@@ -217,7 +217,8 @@ Main.prototype.setupPageListeners = function(page) {
  */
 
 Main.prototype.setupDataListeners = function ( dataElement ) {
-  dataElement.once('set', $.proxy(this.storeValue, this, dataElement.value, dataElement.key));
+  this.log('#setupDataListeners - setting up data listeners for: ' + dataElement.name, dataElement);
+  dataElement.once('store', $.proxy(this.storeValue, this, dataElement));
 };
 
 
@@ -229,7 +230,9 @@ Main.prototype.setupDataListeners = function ( dataElement ) {
  * @param  {String} value - Value to be saved between pages
  * @param  {String} key   - Key used to reference the value between pages
  */
-Main.prototype.storeValue = function (value, key) {
+Main.prototype.storeValue = function ( dataElement ) {
+  var key = dataElement.key, value = dataElement.getValue();
+  this.log('#storeValue - storing key: ' + key + ', with value: ' + value );
   return store.set( key, value );
 };
 
@@ -267,13 +270,16 @@ function pageSort ( a, b ) {
  */
 
 Main.prototype.setPageElements = function ( page ) {
-
+  this.log( 'Setting DataElements for identified page ' + page.name, page );
+  var _this = this;
+  
   // Loop through and check the elements that need to be set on this page.
   $.each(this.veAdsConfig.dataElements, function( index, dataElementConfig ) {
     var dataElementObject;
 
     // Data Element has already been set
     if ( dataElementConfig[settings.MAIN_DATA_ELEMENT] ) {
+      _this.log( 'dataElement object already exists for dataElement: '+ dataElementConfig.name, dataElementConfig );
       dataElementObject = dataElementConfig[settings.MAIN_DATA_ELEMENT];
       dataElementObject.setData( );
       return 'continue'; // Move onto the next one.
@@ -285,7 +291,7 @@ Main.prototype.setPageElements = function ( page ) {
       dataElementObject = new DataElement( dataElementConfig, page );
 
       dataElementConfig[settings.MAIN_DATA_ELEMENT] = dataElementObject; // Store it, to avoid duplicates
-
+      _this.setupDataListeners( dataElementObject );
       dataElementObject.setData( ); // Obtain and store the data to cookies or localStorage
     }
 
@@ -324,10 +330,8 @@ Main.prototype.runPagePixels = function ( page ) {
       pixel = new Pixel( pixelConfig, getDataFn );
       pixelConfig[settings.MAIN_PIXEL] = pixel;
     }
-
     pixel.run( getDataFn, page.type, page.id );
   });
-
 };
 
 

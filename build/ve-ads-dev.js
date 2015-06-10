@@ -1232,7 +1232,6 @@ Matcher.prototype.match = function( pattern ) {
   }
 
   urlMatches = this.checkPatternMatches( obj.url );
-  console.log(urlMatches)
   paramMatches = this.checkParamMatches( obj.params );
   if ( urlMatches[ MATCH_PROPERTY ] && paramMatches[ MATCH_PROPERTY ] ) {
     return $.extend( { }, urlMatches, paramMatches );
@@ -1761,8 +1760,7 @@ Emitter( DataElement.prototype );
 
 DataElement.prototype.storeConfig = function ( config, page ) {
   this.config = config;
-
-  this.key = this.generateKey(); // used for storage
+  this.name = config.name;
   this.type = config.type;
   this.valueType = types[config.type]; // single or list
   this.id = config.id;
@@ -1770,6 +1768,8 @@ DataElement.prototype.storeConfig = function ( config, page ) {
   this.fallback = config.fallback; // the value to use if nothing else can be found.
 
   this.urlData = page.matchingURLs || [{}];
+  this.key = this.generateKey(); // used for storage
+
   this.logger();
 };
 
@@ -1780,15 +1780,15 @@ DataElement.prototype.storeConfig = function ( config, page ) {
  */
 
 DataElement.prototype.logger = function() {
-  this.log = debug('ve:data:' + this.type + ':' + this.id);
-}
+  this.log = debug('ve:dataElement:' + this.type + ':' + this.id);
+};
 
 
 /**
  * Capture the element from the page
  */
 DataElement.prototype.setData = function ( ) {
-  this.log( 'About to set data with the following object', this.config )
+  this.log( 'About to set data with the following object', this.config );
   capture[this.capture.type]( this.config, this );
 
 };
@@ -1803,8 +1803,12 @@ DataElement.prototype.setData = function ( ) {
  *
  * @return {String|Array} value based on the key
  */
+
 DataElement.prototype.getValue = function ( ) {
-  return this.value || (this.valueType === 'list') ? [] : '';
+  this.log('VALUE!!', this.value);
+  var val = this.value || ((this.valueType === 'list') ? [] : '');
+  this.log('#getValue with value', val);
+  return val;
 };
 
 
@@ -1826,6 +1830,7 @@ DataElement.prototype.generateKey = function ( ) {
 
 DataElement.prototype.cacheValue = function( value ) {
   this.lastUpdated = ($.now()); // currently not used but available for optimisations
+  this.log('Caching value', value, this.lastUpdated);
   this.value = value;
 };
 
@@ -1840,7 +1845,8 @@ DataElement.prototype.cacheValue = function( value ) {
  * @return {String} Fallback value to return
  */
 DataElement.prototype.getFallback = function ( ) {
-  return String( fallbacks[this.fallback] || this.fallback );
+  var fallback =  String( fallbacks[this.fallback] || this.fallback );
+  this.log('#getFallback - The fallback value being obtained', fallback);
 };
 
 
@@ -1978,14 +1984,13 @@ function match( value, inclusions ) {
 
 
 
-
-
 /**
  * Transform the value passed in with the automatic masks that are run.
  * @param  {String} value current value
  * @param  {String} mask  masking function to be used
  * @return {String}       Value run through strings
  */
+
 function runMasks( value, mask ) {
   var fn = masks[mask] || masks['nothing'];
   return fn(value);
@@ -2076,8 +2081,9 @@ var singleOrList = {
  * @param  {DataElement} dataElement - the dataElement being set.
  */
 function storeData( dataElement, value ) {
+  
   dataElement.cacheValue( value );
-  dataElement.emit( 'store', value );
+  dataElement.emit( 'store' );
 }
 
 
@@ -2168,10 +2174,10 @@ function globalVariable ( config, dataElement ) {
  */
 function url( config, dataElement ) {
   var value = '';
-  $.each(dataElement.urlData, function( index, url ) {
-    if ( url[config.capture.element] ) {
-      value = url[config.capture.element];
-      return; // break the loop
+  $.each(dataElement.urlData, function( index, obj ) {
+    if ( obj.matches[config.capture.element] ) {
+      value = obj.matches[config.capture.element];
+      return false; // break the loop
     }
   });
 
@@ -2240,8 +2246,8 @@ var types = {
   orderId: 'single',
   orderVal: 'single',
   productId: 'single',
-  productList: 'list', // from basket page and category pages (limited to 5)
-  productPrices: 'list', // from basket and category pages
+  idList: 'list', // from basket page and category pages (limited to 5)
+  itemString: 'list', // from basket and category pages
   currency: 'single'
 };
 
@@ -2479,7 +2485,8 @@ Main.prototype.setupPageListeners = function(page) {
  */
 
 Main.prototype.setupDataListeners = function ( dataElement ) {
-  dataElement.once('set', $.proxy(this.storeValue, this, dataElement.value, dataElement.key));
+  this.log('#setupDataListeners - setting up data listeners for: ' + dataElement.name, dataElement);
+  dataElement.once('store', $.proxy(this.storeValue, this, dataElement));
 };
 
 
@@ -2491,7 +2498,9 @@ Main.prototype.setupDataListeners = function ( dataElement ) {
  * @param  {String} value - Value to be saved between pages
  * @param  {String} key   - Key used to reference the value between pages
  */
-Main.prototype.storeValue = function (value, key) {
+Main.prototype.storeValue = function ( dataElement ) {
+  var key = dataElement.key, value = dataElement.getValue();
+  this.log('#storeValue - storing key: ' + key + ', with value: ' + value );
   return store.set( key, value );
 };
 
@@ -2529,13 +2538,16 @@ function pageSort ( a, b ) {
  */
 
 Main.prototype.setPageElements = function ( page ) {
-
+  this.log( 'Setting DataElements for identified page ' + page.name, page );
+  var _this = this;
+  
   // Loop through and check the elements that need to be set on this page.
   $.each(this.veAdsConfig.dataElements, function( index, dataElementConfig ) {
     var dataElementObject;
 
     // Data Element has already been set
     if ( dataElementConfig[settings.MAIN_DATA_ELEMENT] ) {
+      _this.log( 'dataElement object already exists for dataElement: '+ dataElementConfig.name, dataElementConfig );
       dataElementObject = dataElementConfig[settings.MAIN_DATA_ELEMENT];
       dataElementObject.setData( );
       return 'continue'; // Move onto the next one.
@@ -2547,7 +2559,7 @@ Main.prototype.setPageElements = function ( page ) {
       dataElementObject = new DataElement( dataElementConfig, page );
 
       dataElementConfig[settings.MAIN_DATA_ELEMENT] = dataElementObject; // Store it, to avoid duplicates
-
+      _this.setupDataListeners( dataElementObject );
       dataElementObject.setData( ); // Obtain and store the data to cookies or localStorage
     }
 
@@ -2586,10 +2598,8 @@ Main.prototype.runPagePixels = function ( page ) {
       pixel = new Pixel( pixelConfig, getDataFn );
       pixelConfig[settings.MAIN_PIXEL] = pixel;
     }
-
     pixel.run( getDataFn, page.type, page.id );
   });
-
 };
 
 
@@ -2782,16 +2792,17 @@ Page.prototype.checkURLs = function( ) {
     var matches = matcher.match( url );
 
     if ( matches[matcher.MATCH_PROPERTY] ) {
-      _this.matchingURLs.push( {url: url, mathches: matches} );
+      _this.matchingURLs.push( {url: url, matches: matches} );
     }
   });
 
   // emit matched URLs with the matched URLs when a match is found
   // debugger;
   if ( this.matchingURLs.length && !this.dynamic ) {
-    // this.emit( 'success', this );
+    this.log('Page URL matches with object', this.matchingURLs);
     this.pageIdentified( );
   } else if ( this.matchingURLs.length && this.dynamic ) {
+    this.log('Page URL matches but dynamic tests are needed', this.matchingURLs);
     this.runDynamics( );
   } else {
     this.emit( 'fail' );
@@ -3118,6 +3129,7 @@ module.exports = Pixel;
 
 },{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"./type":24}],19:[function(require,module,exports){
 'use strict';
+var log = require( '../../common/debug' )('ve:pixels:type:appNexus');
 
 module.exports = {
 
@@ -3141,9 +3153,10 @@ module.exports = {
 
 
 function conversion(data, config) {
+  log('#conversion - 0.data 1.config', data, config);
   return 'https://secure.adnxs.com/px?id=' + config.conversionId +
          '&seg=' + config.segmentConversion + '&order_id=' + data.orderId +
-         '&value=' + data.oderVal + '&other=' + data.currency + '&t=2';
+         '&value=' + data.orderVal + '&other=' + data.currency + '&t=2';
 }
 
 function ros(data, config) {
@@ -3154,7 +3167,7 @@ function product(data, config) {
   return '//secure.adnxs.com/seg?add=' + config.segmentProduct + '&t=2';
 }
 
-},{}],20:[function(require,module,exports){
+},{"../../common/debug":5}],20:[function(require,module,exports){
 var utils = require( '../../common/utils' );
 var log = require( '../../common/debug' )('ve:pixels:type:customConversion');
 

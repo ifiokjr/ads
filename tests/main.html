@@ -209,32 +209,57 @@
           }
 
         }
-        //,
-//         {
-//           id: 2,
-//           name: 'Order ID',
-//           type: 'orderId', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
-//           pages: [ 1 ],
-//           fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
+        ,
+        {
+          id: 2,
+          name: 'Order ID',
+          type: 'orderId', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+          pages: [ 2 ],
+          fallback: '__timestamp__', // any value set to __timestamp__ for a timestamp to be used.
 
-//           regex: {
-//             include: [ ';kj;k' ], // Matches are run first
-//             exclude: [ '' ] // Exclude whatever is matched here
-//           },
-//           mask: 'currency', // [number, alphanumeric, currency, symbol, nothing]
-//           mapping: {
-//             'GBP': '',
-//             'AUD': '$'
-//           },
-//           capture: {
-//             type: 'selector',
-//             useMappings: false,
-//             mappingCriteria: 'contains', // [contains, equal]
-//             element: '#awesome', // depends on capture.type ( either jQuery selector or globalVariable)
-//             keepChecking: false // will return as soon as it resolves, only for selector
-//           }
+          regex: {
+            include: [], // Matches are run first
+            exclude: [] // Exclude whatever is matched here
+          },
+          mask: 'nothing', // [number, alphanumeric, currency, symbol, nothing]
+          mapping: {
+           
+          },
+          capture: {
+            type: 'selector',
+            useMappings: false,
+            mappingCriteria: 'contains', // [contains, equal]
+            element: '#orderId', // depends on capture.type ( either jQuery selector or globalVariable)
+            keepChecking: false // will return as soon as it resolves, only for selector
+          }
 
-//         }, {
+        }
+        ,
+        {
+          id: 3,
+          name: 'Order ID From URL',
+          type: 'orderId', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+          pages: [ 2 ],
+          fallback: '__random__', // any value set to __timestamp__ for a timestamp to be used.
+
+          regex: {
+            include: [], // Matches are run first
+            exclude: [] // Exclude whatever is matched here
+          },
+          mask: 'nothing', // [number, alphanumeric, currency, symbol, nothing]
+          mapping: {
+           
+          },
+          capture: {
+            type: 'url',
+            useMappings: false,
+            mappingCriteria: 'contains', // [contains, equal]
+            element: 'orderId', // depends on capture.type ( either jQuery selector or globalVariable)
+            keepChecking: false // will return as soon as it resolves, only for selector
+          }
+
+        }
+//         , {
 //           id: 1,
 //           name: 'Order Value',
 //           type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']

@@ -159,7 +159,6 @@ Matcher.prototype.match = function( pattern ) {
   }
 
   urlMatches = this.checkPatternMatches( obj.url );
-  console.log(urlMatches)
   paramMatches = this.checkParamMatches( obj.params );
   if ( urlMatches[ MATCH_PROPERTY ] && paramMatches[ MATCH_PROPERTY ] ) {
     return $.extend( { }, urlMatches, paramMatches );
