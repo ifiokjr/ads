@@ -20,6 +20,7 @@ var elements;
  */
 
 module.exports = elements = {
+  
   instantCheck: instantCheck,
 
   dynamicCheck: dynamicCheck,
@@ -66,12 +67,13 @@ function obtainValue( $el ) {
  */
 function obtainValues( $el ) {
   var values = [];
-
+//   window.REMOVEME = $el;
 
   $el.each( function( index, el ) {
-    var value = obtainValue( el );
-    values.push( el );
+    var value = obtainValue( $(el) );
+    values.push( $.trim(value) );
   });
+  return values;
 }
 
 

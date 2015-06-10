@@ -15,11 +15,11 @@
       <p id="dynamicId">Not yet!</p>
       <table>
         <tr>
-          <td class="productId">12</td>
+          <td class="productId">I AM AN ID</td>
           <td class="productValue">$45,07</td>
         </tr>
         <tr>
-          <td class="productId">14</td>
+          <td class="productId">WOAH NELLY</td>
           <td class="productValue">$95,00</td>
         </tr>
       </table>
@@ -80,7 +80,7 @@
                 page: 'complete'
               }
             },
-          ],
+          ], 
           dynamicIdentifiers: [
             {
               selector: '#dynamicId',
@@ -88,6 +88,21 @@
               values: ['Complete Page', 'Página Completa']
             },
           ]
+        },
+          
+          {
+          id: 2,
+          name: 'Product Page',
+          type: 'product',
+          urls: [
+            {
+              url: 'ranger-quiet.codio.io/tests/*',
+              params: {
+                page: 'product'
+              }
+            },
+          ],
+          dynamicIdentifiers: [ ]
         },
 
         {
@@ -237,10 +252,10 @@
         ,
         {
           id: 3,
-          name: 'Order ID From URL',
-          type: 'orderId', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
-          pages: [ 2 ],
-          fallback: '__random__', // any value set to __timestamp__ for a timestamp to be used.
+          name: 'Product List',
+          type: 'productList', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
+          pages: [ 1 ],
+          fallback: '', // any value set to __timestamp__ for a timestamp to be used.
 
           regex: {
             include: [], // Matches are run first
@@ -251,10 +266,33 @@
 
           },
           capture: {
-            type: 'url',
+            type: 'selector',
             useMappings: false,
             mappingCriteria: 'contains', // [contains, equal]
-            element: 'orderId', // depends on capture.type ( either jQuery selector or globalVariable)
+            element: '.productId', // depends on capture.type ( either jQuery selector or globalVariable)
+            keepChecking: false // will return as soon as it resolves, only for selector
+          }
+
+        }, {
+          id: 4,
+          name: 'Price List',
+          type: 'priceList', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
+          pages: [ 1 ],
+          fallback: '', // any value set to __timestamp__ for a timestamp to be used.
+
+          regex: {
+            include: [], // Matches are run first
+            exclude: [] // Exclude whatever is matched here
+          },
+          mask: 'currency', // [number, alphanumeric, currency, symbol, nothing]
+          mapping: {
+
+          },
+          capture: {
+            type: 'selector',
+            useMappings: false,
+            mappingCriteria: 'contains', // [contains, equal]
+            element: '.productValue', // depends on capture.type ( either jQuery selector or globalVariable)
             keepChecking: false // will return as soon as it resolves, only for selector
           }
 

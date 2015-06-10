@@ -151,6 +151,7 @@ var elements;
  */
 
 module.exports = elements = {
+  
   instantCheck: instantCheck,
 
   dynamicCheck: dynamicCheck,
@@ -197,12 +198,13 @@ function obtainValue( $el ) {
  */
 function obtainValues( $el ) {
   var values = [];
-
+//   window.REMOVEME = $el;
 
   $el.each( function( index, el ) {
-    var value = obtainValue( el );
-    values.push( el );
+    var value = obtainValue( $(el) );
+    values.push( $.trim(value) );
   });
+  return values;
 }
 
 
@@ -1528,14 +1530,14 @@ function runMappings( value, mappings ) {
 
 function runTransformations( values, config ) {
   if ( utils.type(values, 'array') ) {
-    log('#runTransformations - running on an array of values');
+    log('#runTransformations - running on a LIST of values');
     $.each(values, function( index, value ) {
-      values[index] = transform( value );
+      values[index] = transform( value, config );
     });
     return values;
   }
   
-  log('#runTransformations - single value type');
+  log('#runTransformations - SINLE value type');
   return transform(values, config);
 }
 
@@ -1564,6 +1566,7 @@ var singleOrList = {
    * @return {String}     The value from the element
    */
   single: function( $el ) {
+    log('#singleOrList.single - Obtaining single value from element.');
     return elements.obtainValue( $el );
   },
 
@@ -1573,6 +1576,7 @@ var singleOrList = {
    * @return {Array}     - An array of values to be transformed
    */
   list: function( $el ) {
+    log('#singleOrList.list - Obtaining multiple values from element.');
     return elements.obtainValues( $el );
   }
 };
@@ -1584,6 +1588,7 @@ var singleOrList = {
  *
  * @param  {DataElement} dataElement - the dataElement being set.
  */
+
 function storeData( dataElement, value ) {
   
   dataElement.cacheValue( value );
@@ -1633,9 +1638,11 @@ function selector( config, dataElement ) {
   var sel = config.capture.element,
       arrValue = [], value = '',
   fn = function ( $el, obj ) {
-    log('#selector value found about to run transformations');
+    log('#selector value found about to run transformations', $el);
     value = singleOrList[dataElement.valueType]($el);
+    log('#selector VALUES', value, dataElement);
     value = runTransformations(value, config);
+
     storeData( dataElement, value );
   };
 
@@ -2605,8 +2612,8 @@ Pixel.prototype.generatePixels = function ( data, config, pageType, pageID ) {
     return;
   }
 
-  this.log( 'Generating Pixel(s) for: ' + this.name + 'with type: ' + this.type );
-
+  this.log( 'Generating Pixel(s) for: ' + this.name + ' with type: ' + this.type );
+  this.log( 'Data to be passed in will be ', data, config );
   $.each(runners, function( index, runner ) {
     var src = runner( data, config );
 
