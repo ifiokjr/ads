@@ -22,7 +22,7 @@ var validVeAds = {
     // A random alphanumeric string of characters, used to namespace storage
     // Can be changed in order to clear all stored elements for future updates
 
-    uuid: 'abcd5678',
+    uuid: 'abcd',
 
 
     // Experimental: Needs permission since it uses cookies
@@ -35,7 +35,7 @@ var validVeAds = {
      *the same request using JavaScript. This is much more performant.
      */
 
-    avoidDOM: false
+    avoidDOM: true
   },
 
 
@@ -125,7 +125,7 @@ var validVeAds = {
           // jQuery Selector
           selector: '#progress',
 
-          // [contains, equals, notcontains, alwaysMatch{blank}]
+          // [contains, equals, notcontains, always]
           criteria: 'contains',
 
           // Array of value which can cause matches for this selector
@@ -331,7 +331,8 @@ var validVeAds = {
 
       pages: [ 1 ],
 
-      fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
+      fallback: '10', // any value set to [__timestamp__, __random__]for a timestamp to be used.
+
 
 
       /**
@@ -344,12 +345,14 @@ var validVeAds = {
        */
 
       regex: {
-        include: [ ';kj;k' ], // Matches are run first
-        exclude: [ '' ] // Exclude whatever is matched here
+        include: [ '(awesome)Person', '(awe)' ], // Matches are run first
+        exclude: [ 'w' ] // Exclude whatever is matched here
       },
 
 
       mask: 'currency', // [number, alphanumeric, currency, symbol, nothing]
+
+
 
       /**
        * The key is replaced by the value. This transformation is run
@@ -383,7 +386,6 @@ var validVeAds = {
       }
 
     }
-
   ]
 };
 
