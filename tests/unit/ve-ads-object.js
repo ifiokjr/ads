@@ -305,8 +305,8 @@ var validVeAds = {
   |**|  - **orderId**: single value
   |**|  - **orderVal**: single value
   |**|  - **productId**: single value
-  |**|  - **idList**: list value
-  |**|  - **itemString**: list value
+  |**|  - **productList**: list value
+  |**|  - **priceList**: list value
   |**|  - **currency**: single value uses the mappings extensively
   |**|
   |**|  @property {Number} id - if this is ever changed you will need to reset the uuid
@@ -327,7 +327,7 @@ var validVeAds = {
 
       name: 'Order Value',
 
-      type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+      type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
 
       pages: [ 1 ],
 

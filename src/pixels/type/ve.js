@@ -16,9 +16,9 @@
  * Data Required
  * {
  *   product: [productId],
- *   conversion: [orderVal, orderId, idList, itemString],
- *   basket: [idList, itemString],
- *   category: [idList]
+ *   conversion: [orderVal, orderId, productList, priceList],
+ *   basket: [productList, priceList],
+ *   category: [productList]
  * }
  |   hardcoded: journeyCode
  *
@@ -40,17 +40,17 @@ module.exports = {
   },
 
   conversion: {
-    needs: ['orderVal', 'orderId', 'idList', 'itemString'],
+    needs: ['orderVal', 'orderId', 'productList', 'priceList'],
     produces: [conversion, conversionItems, conversionNew, conversionItemsNew]
   },
 
   basket: {
-    needs: ['idList', 'itemString'],
+    needs: ['productList', 'priceList'],
     produces: [basket, basketNew]
   },
 
   category: {
-    needs: ['idList'],
+    needs: ['productList'],
     produces: [category, categoryNew]
   }
 };
@@ -69,10 +69,10 @@ function productNew( data, config ) {
 
 
 function conversion( data, config, base ) {
-  var itemString = generateItemString( data.itemString );
+  var priceList = generateItemString( data.priceList );
 
   return (base || '//adverts.adgenie.co.uk/conversion.php?companyId=') +
-         config.journeyCode + '&items=' + (itemString ? itemString + '|' : '') +
+         config.journeyCode + '&items=' + (priceList ? priceList + '|' : '') +
          'BASKETVAL:' + data.orderVal + '&orderId=' + data.orderId;
 }
 
@@ -83,7 +83,7 @@ function conversionNew( data, config ) {
 
 
 function conversionItems( data, config, base ) {
-  var purchasedItems = generateIdList( data.idList );
+  var purchasedItems = generateIdList( data.productList );
 
   return (base || '//adverts.adgenie.co.uk/genieTracker.php?adgCompanyID=') +
          config.journeyCode + '&adgPurchasedItems=' + purchasedItems;
@@ -99,7 +99,7 @@ function conversionItemsNew( data, config ) {
 
 function category( data, config, base ) {
   return (base || '//adverts.adgenie.co.uk/genieTracker.php?adgCompanyID=') +
-         config.journeyCode + '&adgItem=' + generateIdList( data.idList );
+         config.journeyCode + '&adgItem=' + generateIdList( data.productList );
 }
 
 function categoryNew( data, config, base ) {
@@ -111,7 +111,7 @@ function categoryNew( data, config, base ) {
 
 function basket( data, config, base ) {
   return (base || '//adverts.adgenie.co.uk/genieTracker.php?adgCompanyID=') +
-         config.journeyCode + '&adgBasketItems=' + generateIdList( data.idList );
+         config.journeyCode + '&adgBasketItems=' + generateIdList( data.productList );
 }
 
 function basketNew( data, config ) {
@@ -127,33 +127,33 @@ function basketNew( data, config ) {
  */
 
 function generateIdList( list ) {
-  var idList = '';
+  var productList = '';
   list = list || [];
 
   $.each(list, function( index, value ) {
     value = encodeURIComponent( value ); // Usable as a url.
-    idList += value + (index < (list.length - 1) ? '|' : '');
+    productList += value + (index < (list.length - 1) ? '|' : '');
   });
 
-  return idList;
+  return productList;
 }
 
 
 /**
- * Takes a list and returns the itemString with prices as a string.
+ * Takes a list and returns the priceList with prices as a string.
  * @param  {Array} list - The array of values to transform
  * @return {String}     - The formatted string as outlined in the specs
  */
 
 function generateItemString( list ) {
-  var itemString = '';
+  var priceList = '';
   list = list || [];
 
   $.each(list, function( index, value ) {
     value = encodeURIComponent( value ); // Usable as a url.
-    itemString += 'PROD' + (index + 1) + ':' + value +
+    priceList += 'PROD' + (index + 1) + ':' + value +
                   (index < (list.length - 1) ? '|' : '');
   });
 
-  return itemString;
+  return priceList;
 }

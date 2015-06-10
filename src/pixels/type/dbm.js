@@ -10,7 +10,7 @@
 module.exports = {
 
   conversion: {
-    needs: ['orderVal', 'orderId', 'idList'],
+    needs: ['orderVal', 'orderId', 'productList'],
     produces: [conversion]
   },
 
@@ -29,8 +29,8 @@ function ros( data, config ) {
 }
 
 function conversion( data, config ) {
-  var qty = data.idList && data.idList.length;
+  var qty = data.productList && data.productList.length;
   return 'https://ad.doubleclick.net/ddm/activity/src=' + config.src +
-  ';type=sales;cat=' + config.catConversion + ';qty=' + data.idList.length +
+  ';type=sales;cat=' + config.catConversion + ';qty=' + data.productList.length +
   ';cost=' + data.orderVal + ';ord=' + data.orderId + '?';
 }

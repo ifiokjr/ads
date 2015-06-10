@@ -159,7 +159,7 @@ veAds: {
   dataElements: [{
     id: 1,
     name: 'Order Value One',
-    type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+    type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
     pagesToRunOn: [1],
     // All regex are placed as strings in the object to make it easier to update
     regex: {

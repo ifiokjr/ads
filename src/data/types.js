@@ -8,8 +8,8 @@ var types = {
   orderId: 'single',
   orderVal: 'single',
   productId: 'single',
-  idList: 'list', // from basket page and category pages (limited to 5)
-  itemString: 'list', // from basket and category pages
+  productList: 'list', // from basket page and category pages (limited to 5)
+  priceList: 'list', // from basket and category pages
   currency: 'single'
 };
 

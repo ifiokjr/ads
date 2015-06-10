@@ -23,14 +23,14 @@
           <td class="productValue">$95,00</td>
         </tr>
       </table>
-      
+
       <input type="hidden" value="PRODUCT001" id="pp">
     </div>
     <div id="mocha"></div>
 <!--     <script src="../node_modules/mocha/mocha.js"></script> -->
     <script src="../node_modules/jquery/dist/jquery.min.js"></script>
     <script src="../build/custom-debug.js"></script>
-<!-- 
+<!--
     <script src="../node_modules/sinon/pkg/sinon.js"></script>
     <script src="../node_modules/chai/chai.js"></script>
     <script src="../node_modules/chai-jquery/chai-jquery.js"></script>
@@ -43,7 +43,7 @@
     <script>
      window.veTagData = {};
      veTagData.settings = {}
-     
+
      veTagData.settings.veAds = {
 
       config: {
@@ -174,7 +174,7 @@
 
         {
           id: 6,
-          name: 'Custom conversion pixel', 
+          name: 'Custom conversion pixel',
           type: 'customConversion',
           config: {
             type: 'script', // options: ['script'|'img']
@@ -187,7 +187,7 @@
         {
           id: 1,
           name: 'Order Value',
-          type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+          type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
           pages: [ 2 ],
           fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
 
@@ -213,7 +213,7 @@
         {
           id: 2,
           name: 'Order ID',
-          type: 'orderId', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+          type: 'orderId', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
           pages: [ 2 ],
           fallback: '__timestamp__', // any value set to __timestamp__ for a timestamp to be used.
 
@@ -223,7 +223,7 @@
           },
           mask: 'nothing', // [number, alphanumeric, currency, symbol, nothing]
           mapping: {
-           
+
           },
           capture: {
             type: 'selector',
@@ -238,7 +238,7 @@
         {
           id: 3,
           name: 'Order ID From URL',
-          type: 'orderId', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+          type: 'orderId', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
           pages: [ 2 ],
           fallback: '__random__', // any value set to __timestamp__ for a timestamp to be used.
 
@@ -248,7 +248,7 @@
           },
           mask: 'nothing', // [number, alphanumeric, currency, symbol, nothing]
           mapping: {
-           
+
           },
           capture: {
             type: 'url',
@@ -262,7 +262,7 @@
 //         , {
 //           id: 1,
 //           name: 'Order Value',
-//           type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+//           type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
 //           pages: [ 1 ],
 //           fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
 
@@ -286,7 +286,7 @@
 //         },{
 //           id: 1,
 //           name: 'Order Value',
-//           type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'idList', 'itemString', 'currency', 'other']
+//           type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
 //           pages: [ 1 ],
 //           fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
 
@@ -345,10 +345,10 @@
 //                   urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
 //               },
 //               'regex': null
-//           }, 
+//           },
 //           basketPages: {
 //               selectors: {
-//                   productId: '.productId', 
+//                   productId: '.productId',
 //                   productPrice: '.productValue'
 //               },
 //              'default': '1.00',
@@ -369,22 +369,22 @@
 //               updates: !!~document.URL.indexOf('updates') ? true : false,
 //               'regex': /[^0-9,\.]/g
 //           },
-       
-       
+
+
 //           completePage: {
 //               page: {
 //                   params: { page: 'complete'  },
-//                   urls: [ 'ranger-quiet.codio.io/tests/*'  ]                  
-//               },  
+//                   urls: [ 'ranger-quiet.codio.io/tests/*'  ]
+//               },
 
-//               dynamicIdentifier: { 
+//               dynamicIdentifier: {
 //                   selector: '#dynamicId',
 //                   criteria: 'contains',
 //                   value: 'Complete Page'
 //               }
 //           }
 //       }
-     
+
      setTimeout(function() {
        $('#dynamicId').text('This is the Complete Page');
        $('.orderValue').text('$100.00');
@@ -398,5 +398,3 @@
     </script> -->
   </body>
 </html>
-
-
