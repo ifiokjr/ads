@@ -254,7 +254,8 @@ var validVeAds = {
       id: 3,
       type: 'dbm',
       config: {
-        cat: 'asdf',
+        catROS: 'asdf',
+        catConversion: 'asdf',
         src: 'fdas'
       },
       overrides: {}

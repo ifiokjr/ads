@@ -1,51 +1,9 @@
-### File Structure
+VeAds Script
+============
 
-The following provides the structure for the main files and folders.
+###Example Object
 
--->**integrations**
-  |
-  -->index.js # Definition of the integration class within here
-  -->ve.js
-  -->dbm.js
-  -->flex.js
-  -->custom.js
-
--->**page**
-  |
-  -->index.js
-  -->url-matching.js
-
--->**data**
-  |
-  -->index.js
-
--->**common**
-  |
-  -->index.js
-
-
-### Running Unit Tests
-
-Testem is being used within this system.
-
-Make sure that node.js is installed.
-
-At the command line type:
-
-`npm install -g testem gulp browserify phantomjs`
-`npm install`
-
-And finally run the tests
-`testem`
-
-
-Good work!
-
-
-### Writing Test
-
-
-#### Example Object
+The following is an example of the object that this script takes in.
 
 ```javascript
 veAds: {
@@ -296,7 +254,8 @@ veAds: {
       id: 3,
       type: 'dbm',
       config: {
-        cat: 'asdf',
+        catROS: 'asdf',
+        catConversion: 'asdf',
         src: 'fdas'
       },
       overrides: {}
@@ -431,3 +390,16 @@ veAds: {
   ]
 }
 ```
+
+
+### Running Tests
+
+Make sure **node** is installed.
+
+`npm install && npm install -g gulp testem phantomjs`
+
+And then run:
+`testem`
+
+Any browser can be opened to the URL shown on the screen to add more browsers
+to the test environment.

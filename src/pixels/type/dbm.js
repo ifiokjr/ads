@@ -22,7 +22,6 @@ module.exports = {
 
 
 function ros( data, config ) {
-  console.info(data, config);
   var random = (Math.random() + '') * 10000000000000;
   return 'https://ad.doubleclick.net/ddm/activity/src=' + config.src +
   ';type=invmedia;cat=' + config.catROS + ';ord=' + random;
