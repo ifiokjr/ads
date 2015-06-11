@@ -4,7 +4,7 @@ var log = require( '../../common/debug' )('ve:pixels:type:appNexus');
 module.exports = {
 
   product: {
-    needs: ['productId'],
+    needs: [],
     produces: [product]
   },
 
