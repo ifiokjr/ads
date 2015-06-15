@@ -172,7 +172,7 @@ function progressCheck( selector ) {
       oldVal = null,
       $el = instantCheck( selector ),
       deferred = $.Deferred( );
-  log( 'inside #progressCheck' );
+  
   // it doen't feel right setting values.
   obj.remove = function (success) {
     if ( success ) { obj.complete = true; }
@@ -193,9 +193,9 @@ function progressCheck( selector ) {
     deferred.reject( );
     return true; // Clears the interval
   }
-
+  log( '#progressCheck - calling interval', obj );
   interval( function( ) {
-    log( 'inside #progressCheck interval', obj)
+//     log( 'inside #progressCheck interval', obj);
     $el = instantCheck( selector );
     obj.value = obtainValue( $el );
     if ( !utils.type(obj.value, 'nan') && !utils.type(obj.value, 'undefined') &&
@@ -207,11 +207,15 @@ function progressCheck( selector ) {
     
     if ( obj.complete ) {
       deferred.resolve( $el );
+      log( '#progressCheck - success', obj );
+
       return true; // Clears the interval
     }
 
     if ( obj.fail ) {
       deferred.reject( );
+      log( '#progressCheck - rejection', obj );
+
       return true; // Clears the interval
     }
     

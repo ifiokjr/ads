@@ -124,7 +124,7 @@ Page.prototype.runDynamics = function( ) {
     promise.progress( function( $el, obj ) {
       _this.log( 'Update in element value', $el, obj );
       $.each( identifier.values, function( index, value ) {
-        _this.log('Checking agains: ' + value );
+        _this.log('Checking against: ' + value );
         if ( criteria[identifier.criteria](value, obj.value) ) {
           _this.log('Value has been found for: ' + obj.value );
           obj.remove( true ); // Cause promise to be resolved.
