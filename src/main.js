@@ -418,13 +418,8 @@ function listChecks( dataElement, currentValue, context ) {
   }
 
   // Look within storage
-  var storageValue = context.getValue(dataElement.key);
-
-  if( storageValue.length ) {
-    return storageValue;
-  }
-
-  return currentValue || [];
+  var storageValue = context.getValue(dataElement.key) || [];
+  return storageValue;
 }
 
 
