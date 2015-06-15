@@ -86,7 +86,7 @@
               selector: '#dynamicId',
               criteria: 'contains',
               values: ['Complete Page', 'Página Completa']
-            },
+            }
           ]
         },
           
@@ -248,8 +248,7 @@
             keepChecking: false // will return as soon as it resolves, only for selector
           }
 
-        }
-        ,
+        },
         {
           id: 3,
           name: 'Product List',
@@ -273,7 +272,8 @@
             keepChecking: false // will return as soon as it resolves, only for selector
           }
 
-        }, {
+        }, 
+        {
           id: 4,
           name: 'Price List',
           type: 'priceList', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
@@ -297,34 +297,31 @@
           }
 
         }
-//         , {
-//           id: 1,
-//           name: 'Order Value',
-//           type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
-//           pages: [ 1 ],
-//           fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
+      , {
+          id: 5,
+          name: 'Currency Symbol',
+          type: 'currency', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
+          pages: [ 1, 2, 3, 4 ],
+          fallback: '', // any value set to __timestamp__ for a timestamp to be used.
 
-//           regex: {
-//             include: [ ';kj;k' ], // Matches are run first
-//             exclude: [ '' ] // Exclude whatever is matched here
-//           },
-//           mask: 'currency', // [number, alphanumeric, currency, symbol, nothing]
-//           mapping: {
-//             'GBP': '',
-//             'AUD': '$'
-//           },
-//           capture: {
-//             type: 'selector',
-//             useMappings: false,
-//             mappingCriteria: 'contains', // [contains, equal]
-//             element: '#awesome', // depends on capture.type ( either jQuery selector or globalVariable)
-//             keepChecking: false // will return as soon as it resolves, only for selector
-//           }
+          regex: {
+            include: [  ], // Matches are run first
+            exclude: [  ] // Exclude whatever is matched here
+          },
+          mask: 'symbol', // [number, alphanumeric, currency, symbol, nothing]
+          mapping: {
+            
+          },
+          capture: {
+            type: 'selector',
+            element: '.orderValue' // depends on capture.type ( either jQuery selector or globalVariable)
+          }
 
-//         },{
+        }
+//      ,   {
 //           id: 1,
-//           name: 'Order Value',
-//           type: 'orderVal', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
+//           name: 'Currency Symbol',
+//           type: 'currency', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
 //           pages: [ 1 ],
 //           fallback: '10', // any value set to __timestamp__ for a timestamp to be used.
 
