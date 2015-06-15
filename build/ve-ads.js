@@ -100,7 +100,7 @@ module.exports = criteria = {
 
   notContains: function( str, value, caseSensitive ) {
     return !criteria.contains( str, value, caseSensitive );
-  },
+  }
 
 };
 
