@@ -30,6 +30,6 @@ function ros( data, config ) {
 function conversion( data, config ) {
   var qty = data.productList && data.productList.length;
   return 'https://ad.doubleclick.net/ddm/activity/src=' + config.src +
-  ';type=sales;cat=' + config.catConversion + ';qty=' + data.productList.length +
+  ';type=sales;cat=' + config.catConversion + ';qty=' + (data.productList.length || 1) +
   ';cost=' + data.orderVal + ';ord=' + data.orderId + '?';
 }
