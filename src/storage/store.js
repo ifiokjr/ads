@@ -93,7 +93,7 @@ if ( isLocalStorageNameSupported() ) {
 		storage.setItem( key, store.serialize(val) );
 
 		if ( useCookies ) {
-			cookies.setItem(key, store.serialize(val), 2592000); // 30 days
+			cookies.setItem(key, store.serialize(val));
 		}
 
 		return val;
