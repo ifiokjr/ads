@@ -59,7 +59,7 @@ module.exports = {
 
 function product(data, config, base) {
   return (base || '//adverts.adgenie.co.uk/genieTracker.php?adgCompanyID=') +
-         config.journeyCode + '&adgItem=' + data.productId;
+         config.journeyCode + '&adgItem=' + encodeURIComponent(data.productId);
 }
 
 function productNew( data, config ) {
