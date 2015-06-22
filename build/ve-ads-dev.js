@@ -1,4 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function (global){
+global.debugVeAds = require( 'debug' ); // Make debug available by default when running tests
+var Main = require( './main' );
+var main = new Main( );
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./main":16,"debug":2}],2:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -168,7 +174,7 @@ function localstorage(){
   } catch (e) {}
 }
 
-},{"./debug":2}],2:[function(require,module,exports){
+},{"./debug":3}],3:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -367,7 +373,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":3}],3:[function(require,module,exports){
+},{"ms":4}],4:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -494,7 +500,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 /**
@@ -600,7 +606,7 @@ module.exports = criteria = {
 
 };
 
-},{"./utils":11}],5:[function(require,module,exports){
+},{"./utils":12}],6:[function(require,module,exports){
 'use strict';
 
 /**
@@ -624,7 +630,7 @@ if ( window.debugVeAds && window.debugVeAds.enable ) {
 
 module.exports = window.debugVeAds || nestedNoop;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 /**
@@ -852,7 +858,7 @@ function progressCheck( selector ) {
   return deferred.promise( );
 }
 
-},{"../settings":26,"./debug":5,"./jq":8,"./utils":11}],7:[function(require,module,exports){
+},{"../settings":26,"./debug":6,"./jq":9,"./utils":12}],8:[function(require,module,exports){
 'use strict';
 
 
@@ -1016,7 +1022,7 @@ Emitter.prototype.listeners = function(event){
 Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 
@@ -1025,7 +1031,7 @@ Emitter.prototype.hasListeners = function(event){
 */
 
 module.exports = window.VEjQuery || window.$;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1076,7 +1082,7 @@ masks = {
 
 module.exports = masks;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 
@@ -1443,7 +1449,7 @@ function cleanURL(dirtyURL) {
   }
 }
 
-},{"./jq":8,"./utils":11}],11:[function(require,module,exports){
+},{"./jq":9,"./utils":12}],12:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1690,7 +1696,7 @@ function getImage( src ) {
   return deferred.promise( );
 }
 
-},{"./jq":8}],12:[function(require,module,exports){
+},{"./jq":9}],13:[function(require,module,exports){
 'use strict';
 
 /*************************************************************************************
@@ -1862,7 +1868,7 @@ DataElement.prototype.getFallback = function ( ) {
 
 module.exports = DataElement;
 
-},{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"../pages/Page":17,"../settings":26,"../storage/store":28,"./capture":13,"./types":14}],13:[function(require,module,exports){
+},{"../common/debug":6,"../common/emitter":8,"../common/jq":9,"../common/utils":12,"../pages/Page":17,"../settings":26,"../storage/store":28,"./capture":14,"./types":15}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2246,7 +2252,7 @@ function dataLayerReverse( config, dataElement ) {
   dataLayer( config, dataElement, true );
 }
 
-},{"../common/debug":5,"../common/elements":6,"../common/jq":8,"../common/masks":9,"../common/url-matcher":10,"../common/utils":11}],14:[function(require,module,exports){
+},{"../common/debug":6,"../common/elements":7,"../common/jq":9,"../common/masks":10,"../common/url-matcher":11,"../common/utils":12}],15:[function(require,module,exports){
 /**
  * Type of dataElements and whether they store lists or single values.
  * @type {Object}
@@ -2270,13 +2276,7 @@ var types = {
 
 module.exports = types;
 
-},{}],15:[function(require,module,exports){
-(function (global){
-global.debugVeAds = require( 'debug' ); // Make debug available by default when running tests
-var Main = require( './main' );
-var main = new Main( );
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./main":16,"debug":1}],16:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2721,7 +2721,7 @@ function generateArrayOfMatchingTypes (objects, type) {
   return arr;
 }
 
-},{"./common/debug":5,"./common/jq":8,"./common/utils":11,"./data/DataElement":12,"./data/types":14,"./pages/Page":17,"./pixels/Pixel":18,"./pixels/type":24,"./settings":26,"./storage/store":28}],17:[function(require,module,exports){
+},{"./common/debug":6,"./common/jq":9,"./common/utils":12,"./data/DataElement":13,"./data/types":15,"./pages/Page":17,"./pixels/Pixel":18,"./pixels/type":24,"./settings":26,"./storage/store":28}],17:[function(require,module,exports){
 'use strict';
 
 
@@ -2950,7 +2950,7 @@ Page.prototype._checkDynamic = function(  ) {
 
 module.exports = Page;
 
-},{"../common/criteria":4,"../common/debug":5,"../common/elements":6,"../common/emitter":7,"../common/jq":8,"../common/url-matcher":10,"../common/utils":11,"../settings":26}],18:[function(require,module,exports){
+},{"../common/criteria":5,"../common/debug":6,"../common/elements":7,"../common/emitter":8,"../common/jq":9,"../common/url-matcher":11,"../common/utils":12,"../settings":26}],18:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3133,7 +3133,7 @@ Pixel.prototype.generatePixels = function ( data, config, pageType, pageID ) {
 
 module.exports = Pixel;
 
-},{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"./type":24}],19:[function(require,module,exports){
+},{"../common/debug":6,"../common/emitter":8,"../common/jq":9,"../common/utils":12,"./type":24}],19:[function(require,module,exports){
 'use strict';
 var log = require( '../../common/debug' )('ve:pixels:type:appNexus');
 
@@ -3173,7 +3173,7 @@ function product(data, config) {
   return '//secure.adnxs.com/seg?add=' + config.segmentProduct + '&t=2';
 }
 
-},{"../../common/debug":5}],20:[function(require,module,exports){
+},{"../../common/debug":6}],20:[function(require,module,exports){
 var utils = require( '../../common/utils' );
 var log = require( '../../common/debug' )('ve:pixels:type:customConversion');
 
@@ -3199,7 +3199,7 @@ function conversion( data, config ) {
   }
 }
 
-},{"../../common/debug":5,"../../common/utils":11}],21:[function(require,module,exports){
+},{"../../common/debug":6,"../../common/utils":12}],21:[function(require,module,exports){
 var utils = require( '../../common/utils' );
 
 
@@ -3224,7 +3224,7 @@ function ros( data, config ) {
   }
 }
 
-},{"../../common/utils":11}],22:[function(require,module,exports){
+},{"../../common/utils":12}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3257,7 +3257,7 @@ function ros( data, config ) {
 function conversion( data, config ) {
   var qty = data.productList && data.productList.length;
   return 'https://ad.doubleclick.net/ddm/activity/src=' + config.src +
-  ';type=sales;cat=' + config.catConversion + ';qty=' + data.productList.length +
+  ';type=sales;cat=' + config.catConversion + ';qty=' + (data.productList.length || 1) +
   ';cost=' + data.orderVal + ';ord=' + data.orderId + '?';
 }
 
@@ -3474,7 +3474,7 @@ function generateItemString( list ) {
   return priceList;
 }
 
-},{"../../common/jq":8}],26:[function(require,module,exports){
+},{"../../common/jq":9}],26:[function(require,module,exports){
 /**
  * Settings that may be called at any time during the app runtime
  */
@@ -3525,7 +3525,7 @@ module.exports = {
 
 };
 
-},{"./common/debug":5}],27:[function(require,module,exports){
+},{"./common/debug":6}],27:[function(require,module,exports){
 'use strict';
 
 /*\
@@ -3878,4 +3878,4 @@ store.enabled = !store.disabled;
 
 module.exports = store;
 
-},{"../common/utils":11,"../settings":26,"./cookies":27}]},{},[15]);
+},{"../common/utils":12,"../settings":26,"./cookies":27}]},{},[1]);
