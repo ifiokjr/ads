@@ -160,6 +160,7 @@ DataElement.prototype.cacheValue = function( value ) {
 DataElement.prototype.getFallback = function ( ) {
   var fallback =  String( fallbacks[this.fallback] || this.fallback );
   this.log('#getFallback - The fallback value being obtained', fallback);
+  return fallback;
 };
 
 

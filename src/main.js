@@ -184,9 +184,9 @@ Main.prototype.instantiatePages = function( ) {
 
 /**
  * @method setupPageListener
- * @
+ * 
  *
- *  Pages have been instantiated so add listeners to them.
+ * Pages have been instantiated so add listeners to them.
  */
 
 Main.prototype.setupPageListeners = function(page) {
@@ -394,9 +394,11 @@ Main.prototype._obtainDataValue = function( elements, valueType ) {
 
   // Only run this to obtain fallbacks and only when `valueType` is single
   if ( valueType === 'single' && !currentValue ) {
+    this.log('FALLBACK: No value has been found checking for fallbacks');
     $.each( elements, function (index, element) {
       var dataElement = element[settings.MAIN_DATA_ELEMENT];
       currentValue = dataElement.getFallback();
+      _this.log('FALLBACK VALUE USED: Current value found for this.', currentValue, dataElement);
     });
   }
 
