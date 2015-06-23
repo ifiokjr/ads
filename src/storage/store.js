@@ -20,6 +20,9 @@ var store = {},
 	cookies = require( './cookies' );
 
 
+// Constants
+var COOKIE_TIME = 60 * 60; // 60 minutes time to store a cookie
+
 store.disabled = false;
 store.version = '1.3.17';
 
@@ -93,7 +96,7 @@ if ( isLocalStorageNameSupported() ) {
 		storage.setItem( key, store.serialize(val) );
 
 		if ( useCookies ) {
-			cookies.setItem(key, store.serialize(val));
+			cookies.setItem(key, store.serialize(val), COOKIE_TIME);
 		}
 
 		return val;
