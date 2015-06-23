@@ -1853,6 +1853,7 @@ DataElement.prototype.cacheValue = function( value ) {
 DataElement.prototype.getFallback = function ( ) {
   var fallback =  String( fallbacks[this.fallback] || this.fallback );
   this.log('#getFallback - The fallback value being obtained', fallback);
+  return fallback;
 };
 
 
@@ -2463,9 +2464,9 @@ Main.prototype.instantiatePages = function( ) {
 
 /**
  * @method setupPageListener
- * @
+ * 
  *
- *  Pages have been instantiated so add listeners to them.
+ * Pages have been instantiated so add listeners to them.
  */
 
 Main.prototype.setupPageListeners = function(page) {
@@ -2673,9 +2674,11 @@ Main.prototype._obtainDataValue = function( elements, valueType ) {
 
   // Only run this to obtain fallbacks and only when `valueType` is single
   if ( valueType === 'single' && !currentValue ) {
+    this.log('FALLBACK: No value has been found checking for fallbacks');
     $.each( elements, function (index, element) {
       var dataElement = element[settings.MAIN_DATA_ELEMENT];
       currentValue = dataElement.getFallback();
+      _this.log('FALLBACK VALUE USED: Current value found for this.', currentValue, dataElement);
     });
   }
 
@@ -3636,6 +3639,9 @@ var store = {},
 	cookies = require( './cookies' );
 
 
+// Constants
+var COOKIE_TIME = 60 * 60; // 60 minutes time to store a cookie
+
 store.disabled = false;
 store.version = '1.3.17';
 
@@ -3709,7 +3715,7 @@ if ( isLocalStorageNameSupported() ) {
 		storage.setItem( key, store.serialize(val) );
 
 		if ( useCookies ) {
-			cookies.setItem(key, store.serialize(val));
+			cookies.setItem(key, store.serialize(val), COOKIE_TIME);
 		}
 
 		return val;

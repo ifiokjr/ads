@@ -498,5 +498,7 @@ function plural(ms, n, name) {
 (function (global){
 global.debugVeAds = require( 'debug' ); // Make debug available by default when running tests
 global.debugVeAds('ve')('EVERYTHING SHOULD BE WORKING!!!');
+
+global.debugVeAds.enable('*');
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"debug":1}]},{},[4]);
