@@ -229,11 +229,11 @@
           id: 2,
           name: 'Order ID',
           type: 'orderId', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
-          pages: [ 2 ],
+          pages: [ 1, 2 ],
           fallback: '__timestamp__', // any value set to __timestamp__ for a timestamp to be used.
 
           regex: {
-            include: [], // Matches are run first
+            include: ['page\\=(\\w+)'], // Matches are run first
             exclude: [] // Exclude whatever is matched here
           },
           mask: 'nothing', // [number, alphanumeric, currency, symbol, nothing]
@@ -241,10 +241,10 @@
 
           },
           capture: {
-            type: 'selector',
+            type: 'globalVariable',
             useMappings: false,
             mappingCriteria: 'contains', // [contains, equal]
-            element: '#orderId', // depends on capture.type ( either jQuery selector or globalVariable)
+            element: 'window.location.href', // depends on capture.type ( either jQuery selector or globalVariable)
             keepChecking: false // will return as soon as it resolves, only for selector
           }
 

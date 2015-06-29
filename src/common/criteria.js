@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @module `common/contains`
+ * @module `common/criteria`
  */
 
 var type = require('./utils').type,
@@ -9,7 +9,7 @@ var type = require('./utils').type,
 
 
 /**
- * Exports contains object
+ * @exports criteria object
  */
 
 module.exports = criteria = {

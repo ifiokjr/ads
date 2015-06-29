@@ -2,7 +2,7 @@
 'use strict';
 
 /**
- * @module `common/contains`
+ * @module `common/criteria`
  */
 
 var type = require('./utils').type,
@@ -10,7 +10,7 @@ var type = require('./utils').type,
 
 
 /**
- * Exports contains object
+ * @exports criteria object
  */
 
 module.exports = criteria = {
@@ -1481,15 +1481,15 @@ function replace( value, exclusions ) {
 function match( value, inclusions ) {
   $.each( inclusions, function( index, regexString ) {
     var regexObj;
-
-    // Make sure string properly escaped
-    regexString = regexString.replace( escapeRegExp, '\\$&' );
+    console.info(value);
 
     // currently hardcode global replace
-    regexObj = new RegExp( regexString, 'gi');
-    value = value.match(regexObj)[1] || value; // If no match found we keep the value;
+    regexObj = new RegExp( regexString, 'i');
+    console.info(regexObj);
+    value = (value.match(regexObj) && value.match(regexObj)[1]) || value; // If no match found we keep the value;
+    
   });
-
+  log('Matching with REGEX', value, inclusions);
   return value;
 }
 
@@ -1676,7 +1676,7 @@ function selector( config, dataElement ) {
 
 function globalVariable ( config, dataElement ) {
   var value = parseGlobals(config.capture.element);
-
+  value = runTransformations(value, config);
   // cache the value
   storeData( dataElement, value );
 }
@@ -1696,7 +1696,7 @@ function url( config, dataElement ) {
       return false; // break the loop
     }
   });
-
+  value = runTransformations(value, config);
   storeData( dataElement, value );
 }
 
@@ -1733,7 +1733,7 @@ function getFromDataLayer(key, reverse) {
 
 function dataLayer( config, dataElement, reverse ) {
   var value = getFromDataLayer( config.capture.element, reverse );
-
+  value = runTransformations(value, config);
   storeData( dataElement, value );
 }
 
