@@ -15,7 +15,7 @@ module.exports = {
 function ros( data, config ) {
 //   console.log(data, config);
   if ( config.type === 'script' && config.src ) {
-    utils.getScript( src );
+    utils.getScript( config.src );
     return false; // no image pixel required
   } else {
     return config.src;
