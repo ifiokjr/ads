@@ -3023,8 +3023,8 @@ module.exports = {
    * Element Constants
    */
 
-  ELEMENT_MS: 500, // milliseconds between checks
-  ELEMENT_MAX_RETRIES: 1000, // Maximum number of retries
+  ELEMENT_MS: 750, // milliseconds between checks
+  ELEMENT_MAX_RETRIES: 3000, // Maximum number of retries
 
 
   /**
