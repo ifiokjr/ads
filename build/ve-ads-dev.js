@@ -852,7 +852,7 @@ function progressCheck( selector ) {
   return deferred.promise( );
 }
 
-},{"../settings":26,"./debug":5,"./jq":8,"./utils":11}],7:[function(require,module,exports){
+},{"../settings":27,"./debug":5,"./jq":8,"./utils":11}],7:[function(require,module,exports){
 'use strict';
 
 
@@ -1864,7 +1864,7 @@ DataElement.prototype.getFallback = function ( ) {
 
 module.exports = DataElement;
 
-},{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"../pages/Page":17,"../settings":26,"../storage/store":28,"./capture":13,"./types":14}],13:[function(require,module,exports){
+},{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"../pages/Page":17,"../settings":27,"../storage/store":29,"./capture":13,"./types":14}],13:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2725,7 +2725,7 @@ function generateArrayOfMatchingTypes (objects, type) {
   return arr;
 }
 
-},{"./common/debug":5,"./common/jq":8,"./common/utils":11,"./data/DataElement":12,"./data/types":14,"./pages/Page":17,"./pixels/Pixel":18,"./pixels/type":24,"./settings":26,"./storage/store":28}],17:[function(require,module,exports){
+},{"./common/debug":5,"./common/jq":8,"./common/utils":11,"./data/DataElement":12,"./data/types":14,"./pages/Page":17,"./pixels/Pixel":18,"./pixels/type":25,"./settings":27,"./storage/store":29}],17:[function(require,module,exports){
 'use strict';
 
 
@@ -2954,7 +2954,7 @@ Page.prototype._checkDynamic = function(  ) {
 
 module.exports = Page;
 
-},{"../common/criteria":4,"../common/debug":5,"../common/elements":6,"../common/emitter":7,"../common/jq":8,"../common/url-matcher":10,"../common/utils":11,"../settings":26}],18:[function(require,module,exports){
+},{"../common/criteria":4,"../common/debug":5,"../common/elements":6,"../common/emitter":7,"../common/jq":8,"../common/url-matcher":10,"../common/utils":11,"../settings":27}],18:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3120,7 +3120,7 @@ Pixel.prototype.generatePixels = function ( data, config, pageType, pageID ) {
   this.log( 'Generating Pixel(s) for: ' + this.name + ' with type: ' + this.type );
   this.log( 'Data to be passed in will be ', data, config );
   $.each(runners, function( index, runner ) {
-    var src = runner( data, config );
+    var src = runner( data, config, pageID );
 
     if (src) {
       utils.getImage( src );
@@ -3137,7 +3137,7 @@ Pixel.prototype.generatePixels = function ( data, config, pageType, pageID ) {
 
 module.exports = Pixel;
 
-},{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"./type":24}],19:[function(require,module,exports){
+},{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"./type":25}],19:[function(require,module,exports){
 'use strict';
 var log = require( '../../common/debug' )('ve:pixels:type:appNexus');
 
@@ -3204,6 +3204,41 @@ function conversion( data, config ) {
 }
 
 },{"../../common/debug":5,"../../common/utils":11}],21:[function(require,module,exports){
+/**
+ * Type customPage
+ */
+
+'use strict';
+
+var utils = require( '../../common/utils' );
+var $ = require( '../../common/jq' );
+var log = require( '../../common/debug' )('ve:pixels:type:customPage');
+
+
+module.exports = {
+
+  custom: {
+    needs: [],
+    produces: [custom]
+  }
+};
+
+function custom( data, config, pageID ) {
+  log('Checking customPage Pixel', utils.type(config.pages, 'array'), $.inArray(pageID, config.pages));
+  if ( utils.type(config.pages, 'array') && ($.inArray(pageID, config.pages) === -1) ) {
+    
+    return false;
+  }
+  
+  if ( config.type === 'script' && config.src ) {
+    utils.getScript( config.src );
+    return false; // no image pixel required
+  } else {
+    return config.src;
+  }
+}
+
+},{"../../common/debug":5,"../../common/jq":8,"../../common/utils":11}],22:[function(require,module,exports){
 var utils = require( '../../common/utils' );
 
 
@@ -3228,7 +3263,7 @@ function ros( data, config ) {
   }
 }
 
-},{"../../common/utils":11}],22:[function(require,module,exports){
+},{"../../common/utils":11}],23:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3265,7 +3300,7 @@ function conversion( data, config ) {
   ';cost=' + data.orderVal + ';ord=' + data.orderId + '?';
 }
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -3298,7 +3333,7 @@ function ros(data, config) {
   return false;
 }
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 
@@ -3313,11 +3348,12 @@ module.exports = {
   flex: require( './flex' ),
   appNexus: require( './appNexus' ),
   customROS: require( './customROS' ),
-  customConversion: require( './customConversion' )
+  customConversion: require( './customConversion' ),
+  customPage: require( './customPage' )
 
 };
 
-},{"./appNexus":19,"./customConversion":20,"./customROS":21,"./dbm":22,"./flex":23,"./ve":25}],25:[function(require,module,exports){
+},{"./appNexus":19,"./customConversion":20,"./customPage":21,"./customROS":22,"./dbm":23,"./flex":24,"./ve":26}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3478,7 +3514,7 @@ function generateItemString( list ) {
   return priceList;
 }
 
-},{"../../common/jq":8}],26:[function(require,module,exports){
+},{"../../common/jq":8}],27:[function(require,module,exports){
 /**
  * Settings that may be called at any time during the app runtime
  */
@@ -3529,7 +3565,7 @@ module.exports = {
 
 };
 
-},{"./common/debug":5}],27:[function(require,module,exports){
+},{"./common/debug":5}],28:[function(require,module,exports){
 'use strict';
 
 /*\
@@ -3617,7 +3653,7 @@ var docCookies = {
 
 module.exports = docCookies;
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 /**
  * @module `store/store`
@@ -3885,4 +3921,4 @@ store.enabled = !store.disabled;
 
 module.exports = store;
 
-},{"../common/utils":11,"../settings":26,"./cookies":27}]},{},[15]);
+},{"../common/utils":11,"../settings":27,"./cookies":28}]},{},[15]);

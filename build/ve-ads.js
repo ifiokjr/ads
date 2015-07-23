@@ -356,7 +356,7 @@ function progressCheck( selector ) {
   return deferred.promise( );
 }
 
-},{"../settings":23,"./debug":2,"./jq":5,"./utils":8}],4:[function(require,module,exports){
+},{"../settings":24,"./debug":2,"./jq":5,"./utils":8}],4:[function(require,module,exports){
 'use strict';
 
 
@@ -1368,7 +1368,7 @@ DataElement.prototype.getFallback = function ( ) {
 
 module.exports = DataElement;
 
-},{"../common/debug":2,"../common/emitter":4,"../common/jq":5,"../common/utils":8,"../pages/Page":13,"../settings":23,"../storage/store":25,"./capture":10,"./types":11}],10:[function(require,module,exports){
+},{"../common/debug":2,"../common/emitter":4,"../common/jq":5,"../common/utils":8,"../pages/Page":13,"../settings":24,"../storage/store":26,"./capture":10,"./types":11}],10:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2223,7 +2223,7 @@ function generateArrayOfMatchingTypes (objects, type) {
   return arr;
 }
 
-},{"./common/debug":2,"./common/jq":5,"./common/utils":8,"./data/DataElement":9,"./data/types":11,"./pages/Page":13,"./pixels/Pixel":14,"./pixels/type":20,"./settings":23,"./storage/store":25}],13:[function(require,module,exports){
+},{"./common/debug":2,"./common/jq":5,"./common/utils":8,"./data/DataElement":9,"./data/types":11,"./pages/Page":13,"./pixels/Pixel":14,"./pixels/type":21,"./settings":24,"./storage/store":26}],13:[function(require,module,exports){
 'use strict';
 
 
@@ -2452,7 +2452,7 @@ Page.prototype._checkDynamic = function(  ) {
 
 module.exports = Page;
 
-},{"../common/criteria":1,"../common/debug":2,"../common/elements":3,"../common/emitter":4,"../common/jq":5,"../common/url-matcher":7,"../common/utils":8,"../settings":23}],14:[function(require,module,exports){
+},{"../common/criteria":1,"../common/debug":2,"../common/elements":3,"../common/emitter":4,"../common/jq":5,"../common/url-matcher":7,"../common/utils":8,"../settings":24}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2618,7 +2618,7 @@ Pixel.prototype.generatePixels = function ( data, config, pageType, pageID ) {
   this.log( 'Generating Pixel(s) for: ' + this.name + ' with type: ' + this.type );
   this.log( 'Data to be passed in will be ', data, config );
   $.each(runners, function( index, runner ) {
-    var src = runner( data, config );
+    var src = runner( data, config, pageID );
 
     if (src) {
       utils.getImage( src );
@@ -2635,7 +2635,7 @@ Pixel.prototype.generatePixels = function ( data, config, pageType, pageID ) {
 
 module.exports = Pixel;
 
-},{"../common/debug":2,"../common/emitter":4,"../common/jq":5,"../common/utils":8,"./type":20}],15:[function(require,module,exports){
+},{"../common/debug":2,"../common/emitter":4,"../common/jq":5,"../common/utils":8,"./type":21}],15:[function(require,module,exports){
 'use strict';
 var log = require( '../../common/debug' )('ve:pixels:type:appNexus');
 
@@ -2702,6 +2702,41 @@ function conversion( data, config ) {
 }
 
 },{"../../common/debug":2,"../../common/utils":8}],17:[function(require,module,exports){
+/**
+ * Type customPage
+ */
+
+'use strict';
+
+var utils = require( '../../common/utils' );
+var $ = require( '../../common/jq' );
+var log = require( '../../common/debug' )('ve:pixels:type:customPage');
+
+
+module.exports = {
+
+  custom: {
+    needs: [],
+    produces: [custom]
+  }
+};
+
+function custom( data, config, pageID ) {
+  log('Checking customPage Pixel', utils.type(config.pages, 'array'), $.inArray(pageID, config.pages));
+  if ( utils.type(config.pages, 'array') && ($.inArray(pageID, config.pages) === -1) ) {
+    
+    return false;
+  }
+  
+  if ( config.type === 'script' && config.src ) {
+    utils.getScript( config.src );
+    return false; // no image pixel required
+  } else {
+    return config.src;
+  }
+}
+
+},{"../../common/debug":2,"../../common/jq":5,"../../common/utils":8}],18:[function(require,module,exports){
 var utils = require( '../../common/utils' );
 
 
@@ -2726,7 +2761,7 @@ function ros( data, config ) {
   }
 }
 
-},{"../../common/utils":8}],18:[function(require,module,exports){
+},{"../../common/utils":8}],19:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2763,7 +2798,7 @@ function conversion( data, config ) {
   ';cost=' + data.orderVal + ';ord=' + data.orderId + '?';
 }
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -2796,7 +2831,7 @@ function ros(data, config) {
   return false;
 }
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 
@@ -2811,11 +2846,12 @@ module.exports = {
   flex: require( './flex' ),
   appNexus: require( './appNexus' ),
   customROS: require( './customROS' ),
-  customConversion: require( './customConversion' )
+  customConversion: require( './customConversion' ),
+  customPage: require( './customPage' )
 
 };
 
-},{"./appNexus":15,"./customConversion":16,"./customROS":17,"./dbm":18,"./flex":19,"./ve":21}],21:[function(require,module,exports){
+},{"./appNexus":15,"./customConversion":16,"./customPage":17,"./customROS":18,"./dbm":19,"./flex":20,"./ve":22}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2976,7 +3012,7 @@ function generateItemString( list ) {
   return priceList;
 }
 
-},{"../../common/jq":5}],22:[function(require,module,exports){
+},{"../../common/jq":5}],23:[function(require,module,exports){
 /**
  * The main entry point of our code.
  */
@@ -2993,7 +3029,7 @@ catch ( err ) {
   log('There was an error OOPS', err);
 }
 
-},{"./common/debug":2,"./main":12}],23:[function(require,module,exports){
+},{"./common/debug":2,"./main":12}],24:[function(require,module,exports){
 /**
  * Settings that may be called at any time during the app runtime
  */
@@ -3044,7 +3080,7 @@ module.exports = {
 
 };
 
-},{"./common/debug":2}],24:[function(require,module,exports){
+},{"./common/debug":2}],25:[function(require,module,exports){
 'use strict';
 
 /*\
@@ -3132,7 +3168,7 @@ var docCookies = {
 
 module.exports = docCookies;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 /**
  * @module `store/store`
@@ -3400,4 +3436,4 @@ store.enabled = !store.disabled;
 
 module.exports = store;
 
-},{"../common/utils":8,"../settings":23,"./cookies":24}]},{},[22]);
+},{"../common/utils":8,"../settings":24,"./cookies":25}]},{},[23]);

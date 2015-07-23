@@ -12,6 +12,7 @@ module.exports = {
   flex: require( './flex' ),
   appNexus: require( './appNexus' ),
   customROS: require( './customROS' ),
-  customConversion: require( './customConversion' )
+  customConversion: require( './customConversion' ),
+  customPage: require( './customPage' )
 
 };

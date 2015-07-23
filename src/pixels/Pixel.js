@@ -163,7 +163,7 @@ Pixel.prototype.generatePixels = function ( data, config, pageType, pageID ) {
   this.log( 'Generating Pixel(s) for: ' + this.name + ' with type: ' + this.type );
   this.log( 'Data to be passed in will be ', data, config );
   $.each(runners, function( index, runner ) {
-    var src = runner( data, config );
+    var src = runner( data, config, pageID );
 
     if (src) {
       utils.getImage( src );

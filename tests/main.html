@@ -109,7 +109,14 @@
           id: 3,
           name: 'Custom Page',
           type: 'custom',
-          urls: [],
+          urls: [
+            {
+              url: '**',
+              params: {
+                page: 'custom'
+              }
+            }
+          ],
           dynamicIdentifiers: []
         },
 
@@ -194,6 +201,18 @@
           config: {
             type: 'script', // options: ['script'|'img']
             src: 'https://trackingpixels.com/i/?know=what&you=bought'
+          },
+          overrides: {}
+        },
+        
+        {
+          id: 7,
+          name: 'Custom Page Pixel',
+          type: 'customPage',
+          config: {
+            type: 'img', // options: ['script'|'img']
+            src: 'https://trackingpixels.com/custom',
+            pages: [3]
           },
           overrides: {}
         }
