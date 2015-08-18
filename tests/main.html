@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.16/require.min.js"></script>
   </head>
   <body>
-    <div id='fixtures' style="display: none">
+    <div id="fixtures" style="display: none">
       <p id="orderId">09809</p>
       <p class="orderValue">569.67</p>
       <p class="orderValue">£569.67</p>
@@ -61,7 +61,7 @@
           type: 'basket', // Page where the products in the basket are captured and placed within
           urls: [
             {
-              url: 'ranger-quiet.codio.io/tests/*',
+              url: '**/tests/*',
               params: {page: 'basket'}
             },
             'awesome.com/*/cart.html'
@@ -74,13 +74,13 @@
           type: 'conversion',
           urls: [
             {
-              url: 'ranger-quiet.codio.io/tests/*',
+              url: '**/tests/*',
               params: {
                 orderId: ':orderId',
                 page: 'complete'
               }
             },
-          ], 
+          ],
           dynamicIdentifiers: [
             {
               selector: '#dynamicId',
@@ -89,14 +89,14 @@
             }
           ]
         },
-          
+
           {
           id: 2,
           name: 'Product Page',
           type: 'product',
           urls: [
             {
-              url: 'ranger-quiet.codio.io/tests/*',
+              url: '**/tests/*',
               params: {
                 page: 'product'
               }
@@ -189,7 +189,7 @@
           type: 'customROS',
           config: {
             type: 'script', // options: ['script'|'img']
-            src: 'https://ranger-quiet.codio.io/custom.js' // full url with protocol
+            src: 'https://**/custom.js' // full url with protocol
           },
           overrides: {}
         },
@@ -204,7 +204,7 @@
           },
           overrides: {}
         },
-        
+
         {
           id: 7,
           name: 'Custom Page Pixel',
@@ -215,7 +215,17 @@
             pages: [3]
           },
           overrides: {}
-        }
+        },
+
+        {
+          id: 8,
+          name: 'smart flex Pixel',
+          type: 'smartFlex',
+          config: {
+            flexId: '546' // Used to call in the flex tracking script
+          },
+          overrides: {}
+        },
       ],
       dataElements: [
         {
@@ -291,7 +301,7 @@
             keepChecking: false // will return as soon as it resolves, only for selector
           }
 
-        }, 
+        },
         {
           id: 4,
           name: 'Price List',
@@ -329,7 +339,7 @@
           },
           mask: 'symbol', // [number, alphanumeric, currency, symbol, nothing]
           mapping: {
-            
+
           },
           capture: {
             type: 'selector',
@@ -366,7 +376,7 @@
       ]
     };
 
-     
+
 //      veTagData.settings.gdm = {
 //           exclude: false,
 //           ros: true,
@@ -396,7 +406,7 @@
 //               'default': '000000',
 //               page: {
 //                   params: { page: 'product' },
-//                   urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
+//                   urls: [ '**/tests/main.*' ]
 //               },
 //               'regex': null
 //           },
@@ -408,7 +418,7 @@
 //              'default': '1.00',
 //               page: {
 //                   params: { page: 'basket' },
-//                   urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
+//                   urls: [ '**/tests/main.*' ]
 //               },
 //               'regex': /[^0-9,\.]/g
 //           },
@@ -418,7 +428,7 @@
 //                mask: '',
 //               page: {
 //                   params: {  },
-//                   urls: [ 'ranger-quiet.codio.io/tests/main.*' ]
+//                   urls: [ '**/tests/main.*' ]
 //               },
 //               updates: !!~document.URL.indexOf('updates') ? true : false,
 //               'regex': /[^0-9,\.]/g
@@ -428,7 +438,7 @@
 //           completePage: {
 //               page: {
 //                   params: { page: 'complete'  },
-//                   urls: [ 'ranger-quiet.codio.io/tests/*'  ]
+//                   urls: [ '**/tests/*'  ]
 //               },
 
 //               dynamicIdentifier: {

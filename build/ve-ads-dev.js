@@ -852,7 +852,7 @@ function progressCheck( selector ) {
   return deferred.promise( );
 }
 
-},{"../settings":27,"./debug":5,"./jq":8,"./utils":11}],7:[function(require,module,exports){
+},{"../settings":28,"./debug":5,"./jq":8,"./utils":11}],7:[function(require,module,exports){
 'use strict';
 
 
@@ -1864,7 +1864,7 @@ DataElement.prototype.getFallback = function ( ) {
 
 module.exports = DataElement;
 
-},{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"../pages/Page":17,"../settings":27,"../storage/store":29,"./capture":13,"./types":14}],13:[function(require,module,exports){
+},{"../common/debug":5,"../common/emitter":7,"../common/jq":8,"../common/utils":11,"../pages/Page":17,"../settings":28,"../storage/store":30,"./capture":13,"./types":14}],13:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2725,7 +2725,7 @@ function generateArrayOfMatchingTypes (objects, type) {
   return arr;
 }
 
-},{"./common/debug":5,"./common/jq":8,"./common/utils":11,"./data/DataElement":12,"./data/types":14,"./pages/Page":17,"./pixels/Pixel":18,"./pixels/type":25,"./settings":27,"./storage/store":29}],17:[function(require,module,exports){
+},{"./common/debug":5,"./common/jq":8,"./common/utils":11,"./data/DataElement":12,"./data/types":14,"./pages/Page":17,"./pixels/Pixel":18,"./pixels/type":25,"./settings":28,"./storage/store":30}],17:[function(require,module,exports){
 'use strict';
 
 
@@ -2954,7 +2954,7 @@ Page.prototype._checkDynamic = function(  ) {
 
 module.exports = Page;
 
-},{"../common/criteria":4,"../common/debug":5,"../common/elements":6,"../common/emitter":7,"../common/jq":8,"../common/url-matcher":10,"../common/utils":11,"../settings":27}],18:[function(require,module,exports){
+},{"../common/criteria":4,"../common/debug":5,"../common/elements":6,"../common/emitter":7,"../common/jq":8,"../common/url-matcher":10,"../common/utils":11,"../settings":28}],18:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3346,6 +3346,7 @@ module.exports = {
   ve: require( './ve' ),
   dbm: require( './dbm' ),
   flex: require( './flex' ),
+  smartFlex: require( './smartFlex'),
   appNexus: require( './appNexus' ),
   customROS: require( './customROS' ),
   customConversion: require( './customConversion' ),
@@ -3353,7 +3354,40 @@ module.exports = {
 
 };
 
-},{"./appNexus":19,"./customConversion":20,"./customPage":21,"./customROS":22,"./dbm":23,"./flex":24,"./ve":26}],26:[function(require,module,exports){
+},{"./appNexus":19,"./customConversion":20,"./customPage":21,"./customROS":22,"./dbm":23,"./flex":24,"./smartFlex":26,"./ve":27}],26:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  ros: {
+    needs: [],
+    produces: [ros]
+  }
+};
+
+
+/**
+ * Produce a flex script on the ROS page.
+ *
+ * At the moment this is just left as is.
+ *
+ * @param  {Object} data   - dynamically obtained data
+ * @param  {Object} config - hardcoded data provided
+ * @return {String|Boolean}        - If `false` is returned then does the action and nothing more.
+ */
+
+function ros(data, config) {
+  var flexId = config.flexId,
+    iatDev;
+
+  (function(e) {
+    var t = document,
+      n = t.createElement("script");
+    n.async = !0, n.defer = !0, n.src = e, t.getElementsByTagName("head")[0].appendChild(n)
+  })("//c.vepxl1.net/4-" + flexId + ".js?id=" + flexId + "&m=4")
+  return false;
+}
+
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3514,7 +3548,7 @@ function generateItemString( list ) {
   return priceList;
 }
 
-},{"../../common/jq":8}],27:[function(require,module,exports){
+},{"../../common/jq":8}],28:[function(require,module,exports){
 /**
  * Settings that may be called at any time during the app runtime
  */
@@ -3565,7 +3599,7 @@ module.exports = {
 
 };
 
-},{"./common/debug":5}],28:[function(require,module,exports){
+},{"./common/debug":5}],29:[function(require,module,exports){
 'use strict';
 
 /*\
@@ -3653,7 +3687,7 @@ var docCookies = {
 
 module.exports = docCookies;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 /**
  * @module `store/store`
@@ -3921,4 +3955,4 @@ store.enabled = !store.disabled;
 
 module.exports = store;
 
-},{"../common/utils":11,"../settings":27,"./cookies":28}]},{},[15]);
+},{"../common/utils":11,"../settings":28,"./cookies":29}]},{},[15]);

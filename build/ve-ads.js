@@ -356,7 +356,7 @@ function progressCheck( selector ) {
   return deferred.promise( );
 }
 
-},{"../settings":24,"./debug":2,"./jq":5,"./utils":8}],4:[function(require,module,exports){
+},{"../settings":25,"./debug":2,"./jq":5,"./utils":8}],4:[function(require,module,exports){
 'use strict';
 
 
@@ -1368,7 +1368,7 @@ DataElement.prototype.getFallback = function ( ) {
 
 module.exports = DataElement;
 
-},{"../common/debug":2,"../common/emitter":4,"../common/jq":5,"../common/utils":8,"../pages/Page":13,"../settings":24,"../storage/store":26,"./capture":10,"./types":11}],10:[function(require,module,exports){
+},{"../common/debug":2,"../common/emitter":4,"../common/jq":5,"../common/utils":8,"../pages/Page":13,"../settings":25,"../storage/store":27,"./capture":10,"./types":11}],10:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2223,7 +2223,7 @@ function generateArrayOfMatchingTypes (objects, type) {
   return arr;
 }
 
-},{"./common/debug":2,"./common/jq":5,"./common/utils":8,"./data/DataElement":9,"./data/types":11,"./pages/Page":13,"./pixels/Pixel":14,"./pixels/type":21,"./settings":24,"./storage/store":26}],13:[function(require,module,exports){
+},{"./common/debug":2,"./common/jq":5,"./common/utils":8,"./data/DataElement":9,"./data/types":11,"./pages/Page":13,"./pixels/Pixel":14,"./pixels/type":21,"./settings":25,"./storage/store":27}],13:[function(require,module,exports){
 'use strict';
 
 
@@ -2452,7 +2452,7 @@ Page.prototype._checkDynamic = function(  ) {
 
 module.exports = Page;
 
-},{"../common/criteria":1,"../common/debug":2,"../common/elements":3,"../common/emitter":4,"../common/jq":5,"../common/url-matcher":7,"../common/utils":8,"../settings":24}],14:[function(require,module,exports){
+},{"../common/criteria":1,"../common/debug":2,"../common/elements":3,"../common/emitter":4,"../common/jq":5,"../common/url-matcher":7,"../common/utils":8,"../settings":25}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2844,6 +2844,7 @@ module.exports = {
   ve: require( './ve' ),
   dbm: require( './dbm' ),
   flex: require( './flex' ),
+  smartFlex: require( './smartFlex'),
   appNexus: require( './appNexus' ),
   customROS: require( './customROS' ),
   customConversion: require( './customConversion' ),
@@ -2851,7 +2852,40 @@ module.exports = {
 
 };
 
-},{"./appNexus":15,"./customConversion":16,"./customPage":17,"./customROS":18,"./dbm":19,"./flex":20,"./ve":22}],22:[function(require,module,exports){
+},{"./appNexus":15,"./customConversion":16,"./customPage":17,"./customROS":18,"./dbm":19,"./flex":20,"./smartFlex":22,"./ve":23}],22:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  ros: {
+    needs: [],
+    produces: [ros]
+  }
+};
+
+
+/**
+ * Produce a flex script on the ROS page.
+ *
+ * At the moment this is just left as is.
+ *
+ * @param  {Object} data   - dynamically obtained data
+ * @param  {Object} config - hardcoded data provided
+ * @return {String|Boolean}        - If `false` is returned then does the action and nothing more.
+ */
+
+function ros(data, config) {
+  var flexId = config.flexId,
+    iatDev;
+
+  (function(e) {
+    var t = document,
+      n = t.createElement("script");
+    n.async = !0, n.defer = !0, n.src = e, t.getElementsByTagName("head")[0].appendChild(n)
+  })("//c.vepxl1.net/4-" + flexId + ".js?id=" + flexId + "&m=4")
+  return false;
+}
+
+},{}],23:[function(require,module,exports){
 'use strict';
 
 /**
@@ -3012,7 +3046,7 @@ function generateItemString( list ) {
   return priceList;
 }
 
-},{"../../common/jq":5}],23:[function(require,module,exports){
+},{"../../common/jq":5}],24:[function(require,module,exports){
 /**
  * The main entry point of our code.
  */
@@ -3029,7 +3063,7 @@ catch ( err ) {
   log('There was an error OOPS', err);
 }
 
-},{"./common/debug":2,"./main":12}],24:[function(require,module,exports){
+},{"./common/debug":2,"./main":12}],25:[function(require,module,exports){
 /**
  * Settings that may be called at any time during the app runtime
  */
@@ -3080,7 +3114,7 @@ module.exports = {
 
 };
 
-},{"./common/debug":2}],25:[function(require,module,exports){
+},{"./common/debug":2}],26:[function(require,module,exports){
 'use strict';
 
 /*\
@@ -3168,7 +3202,7 @@ var docCookies = {
 
 module.exports = docCookies;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 /**
  * @module `store/store`
@@ -3436,4 +3470,4 @@ store.enabled = !store.disabled;
 
 module.exports = store;
 
-},{"../common/utils":8,"../settings":24,"./cookies":25}]},{},[23]);
+},{"../common/utils":8,"../settings":25,"./cookies":26}]},{},[24]);
