@@ -1,6 +1,6 @@
 /*
- * Set up all the tags and pixels for VeGenie to work properly. 
- * 
+ * Set up all the tags and pixels for VeGenie to work properly.
+ *
  */
 
 var store = require('./utils/store'),
@@ -45,9 +45,9 @@ function createCompletePagePixel(data) {
       idList = getValue(IDLIST) || null,
       journeyCode = config.journeyCode, segmentIds = '',
       dbmSrc = config.dbm.src, dbmCat = config.dbm.cat.conversion || config.dbm.cat.ros;
-  
-  
-  
+
+
+
 //   if (type(config.segmentIds, 'array') && completionId) {
 //     segmentIds = '&remove=' + config.segmentIds[0] + ',' + config.segmentIds[1];
 //     genieNexusSrc = '//secure.adnxs.com/px?id=' + completionId + segmentIds + '&order_id=' +
@@ -55,8 +55,8 @@ function createCompletePagePixel(data) {
 //     addPixel(genieNexusSrc);
 //     log('Genie App Nexus Completion Pixel added to complete page');
 //   }
-  
-  
+
+
   if (completionId) {
     nexusSrc = '//secure.adnxs.com/px?id=' + completionId + '&seg=' + config.segmentIds[1] + '&order_id=' +
       orderId + '&value=' + orderValue + '&t=2';
@@ -64,21 +64,21 @@ function createCompletePagePixel(data) {
     addPixel(nexusSrc);
     log('App Nexus Completion Pixel added to complete page');
   }
-  
-  
+
+
   if (journeyCode && journeyCode.length) {
-    
+
     var params = {
       companyId: journeyCode,
       items: (items ? items + '|' : '') + 'BASKETVAL' + ':' + orderValue,
       orderId: orderId
     };
-    
+
     genieSrc = pixelSrc.adgenie(params, true) ;
     log('adGenie Completion Pixel added to complete page');
     addPixel(genieSrc);
   }
-  
+
   if (dbmSrc && dbmCat) {
     var dbmParams = {
       src: dbmSrc,
@@ -86,27 +86,27 @@ function createCompletePagePixel(data) {
       orderId: orderId,
       orderValue: orderValue
     };
-    
+
     var dbmPixelSrc = pixelSrc.dbm.conversion(dbmParams);
     addPixel(dbmPixelSrc);
     log('Doubleclick Bid Manager Conversion Pixel added to complete page');
   }
-  
-  // remove zombie listeners once code has run.   
+
+  // remove zombie listeners once code has run.
   PubSub.clearAllSubscriptions();
 }
 
 
-// Add the ROS to the site when not on completion or product page. 
+// Add the ROS to the site when not on completion or product page.
 function createROSPixel (config) {
   var srcIb, srcSecure;
-  
+
   srcIb = pixelSrc.ros(config.segmentIds);
   srcSecure = pixelSrc.ros(config.segmentIds, true);
-  
+
   addPixel(srcIb);
   addPixel(srcSecure);
-    
+
   logROS('ROS Pixel added to the site.');
 }
 
@@ -115,46 +115,46 @@ function createDbmROSPixel (config) {
     src: config.dbm.src,
     cat: config.dbm.cat.ros
   };
-  
+
   srcDbm = pixelSrc.dbm.ros(params);
-  
-  
+
+
   addPixel(srcDbm);
-    
+
   logROS('DBM ROS Pixel added to the site.');
 }
 
 // Still to be implemented
 
 function buildProductPagePixel (productPageObj) {
-  // when default is provided we should fallback to it if not then 
+  // when default is provided we should fallback to it if not then
   // don't place a pixel on this page.
-  var noFallback = productPageObj['default'] ? false : true; // 
-  
+  var noFallback = productPageObj['default'] ? false : true; //
+
   var srcIb, srcSecure, genieSrc,
-      
+
       productId = getVal(productPageObj, noFallback),
       config = settings.genie,
       journeyCode = config.journeyCode;
-  
+
   if( !productId ) {
     logPP('No Default provided and product element not found on this page');
     rosPages(require('./settings').genie); // implement ROS if applicable
     return;
   }
-  
+
   srcIb = pixelSrc.product(config.segmentIds);
   srcSecure = pixelSrc.product(config.segmentIds, true);
-  
+
   addPixel(srcIb);
   addPixel(srcSecure);
-  
+
   var params = {
       adgCompanyID: journeyCode,
       adgItem: productId
     };
-  
-  
+
+
   genieSrc = pixelSrc.adgenie(params, false) ;
   logPP('Genie Src is:', genieSrc);
   addPixel(genieSrc);
@@ -169,8 +169,8 @@ function buildBasketPagePixel (idList) {
       adgCompanyID: journeyCode,
       adgBasketItems: idList
     };
-  
-  
+
+
   genieSrc = pixelSrc.adgenie(params, false) ;
   addPixel(genieSrc);
   logB('Basket pixel added added to the site.', genieSrc);
@@ -203,7 +203,7 @@ function rosPages(config) {
     logROS('Page qualifies for ROS');
     createROSPixel(config);
   }
-  
+
   if( config.dbm.ros && config.dbm.cat.ros) {
     logROS('Page qualifies for Doubleclick Bid Manager ROS');
     createDbmROSPixel(config);
@@ -217,23 +217,23 @@ function rosPages(config) {
 module.exports = {
   start: function(config) {
     var complete, orderVal, basket, product;
-    
+
     rosPages(config);
     // Are we on the order value page or orderIdPage?
     orderVal = pages.value.run();
     var orderId = pages.id.run();
-    
+
     // Are we on the complete page?
     complete = pages.complete.run();
-    
+
     // basket = basketPages(config);
-    
+
     if (!complete) {
       basket = pages.basket.run();
     }
-    
-    if (!complete && !basket ) { product = pages.product.run(); }
-    
+
+    if (!complete) { product = pages.product.run(); }
+
   }
 };
 
@@ -254,34 +254,34 @@ function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
 function getVal ( obj, noFallback ) {
   var $el = $(obj.selector),
       timestamp = (new Date()).getTime();
-  
+
   if (!$el.length) { return noFallback ? '' : obj['default'] || timestamp; }
-  
+
   var val = regexReplacementFromElement( $el, obj.regex, obj['default'], timestamp);
-     
+
   return encodeURIComponent(val);
 }
 
 
 function createBasketInformation(config) {
- 
+
   var $productIdEl = checkElement.check(config.selectors.productId),  // called synchronously
       $productPriceEl = checkElement.check(config.selectors.productPrice);  // called synchronously
-  
 
-  
+
+
   var itemString = createBasketString($productPriceEl, itemStringCallback);
   var idList = createBasketString($productIdEl, idListCallback);
-  
-  
+
+
   // TODO: This is called regardless of whether we have something to store or not. That is not good!
   setTimeout(function () {
     storeValue(itemString, ITEMSTRING);
     storeValue(idList, IDLIST);
   }, 0);
-  
+
   buildBasketPagePixel(idList);
-  
+
 }
 
 /*
@@ -292,7 +292,7 @@ function checkForOrderValueSelector(orderValueObject) {
   var check = (orderValueObject.updates && orderValueObject.urls.length) ? checkElement.checkUpdates : checkElement.check;
 
   logOV('Checking For Order Value' + dynamically);
-  
+
   check( orderValueObject.selector, function($el) {
     var val = masks[orderValueObject.mask || 'doNothing'](regexReplacementFromElement( $el, orderValueObject.regex, orderValueObject['default'] ));
     logOV('Order Value element found'+ dynamically + ' : ' + val);
@@ -301,11 +301,11 @@ function checkForOrderValueSelector(orderValueObject) {
 }
 
 function checkPageObject(obj) {
-  
+
   logID('Checking For order Id');
-  
+
   checkElement.check( obj.selector, function($el) {
-    
+
     var val = masks[obj.mask || 'doNothing'](regexReplacementFromElement( $el, obj.regex, obj['default'] ));
     logID( 'Order ID found ' + val );
     storeValue(val, ORDERID);
@@ -319,7 +319,7 @@ function storeValue(val, valName) {
 }
 
 
-// If order value should be called from the complete page - then run this instead. 
+// If order value should be called from the complete page - then run this instead.
 function orderValueOnCompletePage(orderValueObject) {}
 
 function getValue(valName) {
@@ -338,7 +338,7 @@ function idListCallback($el, len) {
   var idList = '';
   $el.each(function (idx, el) {
     var val = checkElement.getValOrText($(el));
-    
+
     // run through basket regex here. Using `regexReplacementFromElement`
     val = encodeURIComponent(val);
     idList += val + (idx < (len - 1) ? '|' : '');
@@ -360,14 +360,13 @@ function itemStringCallback($el, len) {
 }
 
 
-// This function allows us to create a string from the basket page using the 
-// function passed in as a second parameter. 
+// This function allows us to create a string from the basket page using the
+// function passed in as a second parameter.
 // [:TODO] Regex check needs to be perfomed
 function createBasketString($el, fn) {
   if(!$el || !$el.length || !fn ) {return '';}
-  
+
   var len = $el.length;
   if (!len) {return '';}
-  return fn($el, len); // return the value generated from the callback function  
+  return fn($el, len); // return the value generated from the callback function
 }
-

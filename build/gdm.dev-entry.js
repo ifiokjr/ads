@@ -1,11 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var debug = require('debug'),
-    log = debug('mode:debug');
-debug.enable('*');
-
-log('Launching application');
-require('./main');
-},{"./main":6,"debug":2}],2:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -19,17 +12,10 @@ exports.formatArgs = formatArgs;
 exports.save = save;
 exports.load = load;
 exports.useColors = useColors;
-
-/**
- * Use chrome.storage.local if we are in an app
- */
-
-var storage;
-
-if (typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined')
-  storage = chrome.storage.local;
-else
-  storage = localstorage();
+exports.storage = 'undefined' != typeof chrome
+               && 'undefined' != typeof chrome.storage
+                  ? chrome.storage.local
+                  : localstorage();
 
 /**
  * Colors.
@@ -137,9 +123,9 @@ function log() {
 function save(namespaces) {
   try {
     if (null == namespaces) {
-      storage.removeItem('debug');
+      exports.storage.removeItem('debug');
     } else {
-      storage.debug = namespaces;
+      exports.storage.debug = namespaces;
     }
   } catch(e) {}
 }
@@ -154,7 +140,7 @@ function save(namespaces) {
 function load() {
   var r;
   try {
-    r = storage.debug;
+    r = exports.storage.debug;
   } catch(e) {}
   return r;
 }
@@ -182,7 +168,7 @@ function localstorage(){
   } catch (e) {}
 }
 
-},{"./debug":3}],3:[function(require,module,exports){
+},{"./debug":2}],2:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -381,7 +367,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":4}],4:[function(require,module,exports){
+},{"ms":3}],3:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -422,6 +408,8 @@ module.exports = function(val, options){
  */
 
 function parse(str) {
+  str = '' + str;
+  if (str.length > 10000) return;
   var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
   if (!match) return;
   var n = parseFloat(match[1]);
@@ -506,7 +494,14 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
+var debug = require('debug'),
+    log = debug('mode:debug');
+debug.enable('*');
+
+log('Launching application');
+require('./main');
+},{"./main":6,"debug":1}],5:[function(require,module,exports){
 // Check if GDMHandler should be called. 
 
 var type = require('./utils/type'),
@@ -539,7 +534,7 @@ module.exports = {
     launchGDM(config.flexId);
   }
 };
-},{"./utils/type":20,"debug":2}],6:[function(require,module,exports){
+},{"./utils/type":20,"debug":1}],6:[function(require,module,exports){
 // Load Polyfills
 var log = require('debug')('main');
 
@@ -561,7 +556,7 @@ log('running main code');
 // Now we run the Genie specific tags. 
 run.start(settings.genie);
 
-},{"./gdmhandler":5,"./run":9,"./settings":10,"./utils/polyfills":18,"debug":2}],7:[function(require,module,exports){
+},{"./gdmhandler":5,"./run":9,"./settings":10,"./utils/polyfills":18,"debug":1}],7:[function(require,module,exports){
 var PubSub = require('./pubsub-js'),
   checkElement = require('./utils/checkElements'),
   type = require('./utils/type'),
@@ -682,7 +677,7 @@ module.exports = {
   id: new Page(pageObject.orderId, settings.orderId  ),
   complete: new Page(pageObject.completePage, settings.completePage)
 };
-},{"./pubsub-js":8,"./settings":10,"./utils/checkElements":13,"./utils/criteria":14,"./utils/jq":15,"./utils/type":20,"./utils/urls":22,"debug":2}],8:[function(require,module,exports){
+},{"./pubsub-js":8,"./settings":10,"./utils/checkElements":13,"./utils/criteria":14,"./utils/jq":15,"./utils/type":20,"./utils/urls":22,"debug":1}],8:[function(require,module,exports){
 'use strict';
 
 
@@ -901,8 +896,8 @@ PubSub.unsubscribe = function(value){
 module.exports = PubSub;
 },{}],9:[function(require,module,exports){
 /*
- * Set up all the tags and pixels for VeGenie to work properly. 
- * 
+ * Set up all the tags and pixels for VeGenie to work properly.
+ *
  */
 
 var store = require('./utils/store'),
@@ -947,9 +942,9 @@ function createCompletePagePixel(data) {
       idList = getValue(IDLIST) || null,
       journeyCode = config.journeyCode, segmentIds = '',
       dbmSrc = config.dbm.src, dbmCat = config.dbm.cat.conversion || config.dbm.cat.ros;
-  
-  
-  
+
+
+
 //   if (type(config.segmentIds, 'array') && completionId) {
 //     segmentIds = '&remove=' + config.segmentIds[0] + ',' + config.segmentIds[1];
 //     genieNexusSrc = '//secure.adnxs.com/px?id=' + completionId + segmentIds + '&order_id=' +
@@ -957,8 +952,8 @@ function createCompletePagePixel(data) {
 //     addPixel(genieNexusSrc);
 //     log('Genie App Nexus Completion Pixel added to complete page');
 //   }
-  
-  
+
+
   if (completionId) {
     nexusSrc = '//secure.adnxs.com/px?id=' + completionId + '&seg=' + config.segmentIds[1] + '&order_id=' +
       orderId + '&value=' + orderValue + '&t=2';
@@ -966,21 +961,21 @@ function createCompletePagePixel(data) {
     addPixel(nexusSrc);
     log('App Nexus Completion Pixel added to complete page');
   }
-  
-  
+
+
   if (journeyCode && journeyCode.length) {
-    
+
     var params = {
       companyId: journeyCode,
       items: (items ? items + '|' : '') + 'BASKETVAL' + ':' + orderValue,
       orderId: orderId
     };
-    
+
     genieSrc = pixelSrc.adgenie(params, true) ;
     log('adGenie Completion Pixel added to complete page');
     addPixel(genieSrc);
   }
-  
+
   if (dbmSrc && dbmCat) {
     var dbmParams = {
       src: dbmSrc,
@@ -988,27 +983,27 @@ function createCompletePagePixel(data) {
       orderId: orderId,
       orderValue: orderValue
     };
-    
+
     var dbmPixelSrc = pixelSrc.dbm.conversion(dbmParams);
     addPixel(dbmPixelSrc);
     log('Doubleclick Bid Manager Conversion Pixel added to complete page');
   }
-  
-  // remove zombie listeners once code has run.   
+
+  // remove zombie listeners once code has run.
   PubSub.clearAllSubscriptions();
 }
 
 
-// Add the ROS to the site when not on completion or product page. 
+// Add the ROS to the site when not on completion or product page.
 function createROSPixel (config) {
   var srcIb, srcSecure;
-  
+
   srcIb = pixelSrc.ros(config.segmentIds);
   srcSecure = pixelSrc.ros(config.segmentIds, true);
-  
+
   addPixel(srcIb);
   addPixel(srcSecure);
-    
+
   logROS('ROS Pixel added to the site.');
 }
 
@@ -1017,46 +1012,46 @@ function createDbmROSPixel (config) {
     src: config.dbm.src,
     cat: config.dbm.cat.ros
   };
-  
+
   srcDbm = pixelSrc.dbm.ros(params);
-  
-  
+
+
   addPixel(srcDbm);
-    
+
   logROS('DBM ROS Pixel added to the site.');
 }
 
 // Still to be implemented
 
 function buildProductPagePixel (productPageObj) {
-  // when default is provided we should fallback to it if not then 
+  // when default is provided we should fallback to it if not then
   // don't place a pixel on this page.
-  var noFallback = productPageObj['default'] ? false : true; // 
-  
+  var noFallback = productPageObj['default'] ? false : true; //
+
   var srcIb, srcSecure, genieSrc,
-      
+
       productId = getVal(productPageObj, noFallback),
       config = settings.genie,
       journeyCode = config.journeyCode;
-  
+
   if( !productId ) {
     logPP('No Default provided and product element not found on this page');
     rosPages(require('./settings').genie); // implement ROS if applicable
     return;
   }
-  
+
   srcIb = pixelSrc.product(config.segmentIds);
   srcSecure = pixelSrc.product(config.segmentIds, true);
-  
+
   addPixel(srcIb);
   addPixel(srcSecure);
-  
+
   var params = {
       adgCompanyID: journeyCode,
       adgItem: productId
     };
-  
-  
+
+
   genieSrc = pixelSrc.adgenie(params, false) ;
   logPP('Genie Src is:', genieSrc);
   addPixel(genieSrc);
@@ -1071,8 +1066,8 @@ function buildBasketPagePixel (idList) {
       adgCompanyID: journeyCode,
       adgBasketItems: idList
     };
-  
-  
+
+
   genieSrc = pixelSrc.adgenie(params, false) ;
   addPixel(genieSrc);
   logB('Basket pixel added added to the site.', genieSrc);
@@ -1105,7 +1100,7 @@ function rosPages(config) {
     logROS('Page qualifies for ROS');
     createROSPixel(config);
   }
-  
+
   if( config.dbm.ros && config.dbm.cat.ros) {
     logROS('Page qualifies for Doubleclick Bid Manager ROS');
     createDbmROSPixel(config);
@@ -1119,23 +1114,23 @@ function rosPages(config) {
 module.exports = {
   start: function(config) {
     var complete, orderVal, basket, product;
-    
+
     rosPages(config);
     // Are we on the order value page or orderIdPage?
     orderVal = pages.value.run();
     var orderId = pages.id.run();
-    
+
     // Are we on the complete page?
     complete = pages.complete.run();
-    
+
     // basket = basketPages(config);
-    
+
     if (!complete) {
       basket = pages.basket.run();
     }
-    
-    if (!complete && !basket ) { product = pages.product.run(); }
-    
+
+    if (!complete) { product = pages.product.run(); }
+
   }
 };
 
@@ -1156,34 +1151,34 @@ function regexReplacementFromElement( $el, regex, fallback, lastResort ) {
 function getVal ( obj, noFallback ) {
   var $el = $(obj.selector),
       timestamp = (new Date()).getTime();
-  
+
   if (!$el.length) { return noFallback ? '' : obj['default'] || timestamp; }
-  
+
   var val = regexReplacementFromElement( $el, obj.regex, obj['default'], timestamp);
-     
+
   return encodeURIComponent(val);
 }
 
 
 function createBasketInformation(config) {
- 
+
   var $productIdEl = checkElement.check(config.selectors.productId),  // called synchronously
       $productPriceEl = checkElement.check(config.selectors.productPrice);  // called synchronously
-  
 
-  
+
+
   var itemString = createBasketString($productPriceEl, itemStringCallback);
   var idList = createBasketString($productIdEl, idListCallback);
-  
-  
+
+
   // TODO: This is called regardless of whether we have something to store or not. That is not good!
   setTimeout(function () {
     storeValue(itemString, ITEMSTRING);
     storeValue(idList, IDLIST);
   }, 0);
-  
+
   buildBasketPagePixel(idList);
-  
+
 }
 
 /*
@@ -1194,7 +1189,7 @@ function checkForOrderValueSelector(orderValueObject) {
   var check = (orderValueObject.updates && orderValueObject.urls.length) ? checkElement.checkUpdates : checkElement.check;
 
   logOV('Checking For Order Value' + dynamically);
-  
+
   check( orderValueObject.selector, function($el) {
     var val = masks[orderValueObject.mask || 'doNothing'](regexReplacementFromElement( $el, orderValueObject.regex, orderValueObject['default'] ));
     logOV('Order Value element found'+ dynamically + ' : ' + val);
@@ -1203,11 +1198,11 @@ function checkForOrderValueSelector(orderValueObject) {
 }
 
 function checkPageObject(obj) {
-  
+
   logID('Checking For order Id');
-  
+
   checkElement.check( obj.selector, function($el) {
-    
+
     var val = masks[obj.mask || 'doNothing'](regexReplacementFromElement( $el, obj.regex, obj['default'] ));
     logID( 'Order ID found ' + val );
     storeValue(val, ORDERID);
@@ -1221,7 +1216,7 @@ function storeValue(val, valName) {
 }
 
 
-// If order value should be called from the complete page - then run this instead. 
+// If order value should be called from the complete page - then run this instead.
 function orderValueOnCompletePage(orderValueObject) {}
 
 function getValue(valName) {
@@ -1240,7 +1235,7 @@ function idListCallback($el, len) {
   var idList = '';
   $el.each(function (idx, el) {
     var val = checkElement.getValOrText($(el));
-    
+
     // run through basket regex here. Using `regexReplacementFromElement`
     val = encodeURIComponent(val);
     idList += val + (idx < (len - 1) ? '|' : '');
@@ -1262,19 +1257,18 @@ function itemStringCallback($el, len) {
 }
 
 
-// This function allows us to create a string from the basket page using the 
-// function passed in as a second parameter. 
+// This function allows us to create a string from the basket page using the
+// function passed in as a second parameter.
 // [:TODO] Regex check needs to be perfomed
 function createBasketString($el, fn) {
   if(!$el || !$el.length || !fn ) {return '';}
-  
+
   var len = $el.length;
   if (!len) {return '';}
-  return fn($el, len); // return the value generated from the callback function  
+  return fn($el, len); // return the value generated from the callback function
 }
 
-
-},{"./pages":7,"./pubsub-js":8,"./settings":10,"./utils/addPixel":12,"./utils/checkElements":13,"./utils/criteria":14,"./utils/jq":15,"./utils/pixelSrc":17,"./utils/store":19,"./utils/type":20,"./utils/urls":22,"debug":2}],10:[function(require,module,exports){
+},{"./pages":7,"./pubsub-js":8,"./settings":10,"./utils/addPixel":12,"./utils/checkElements":13,"./utils/criteria":14,"./utils/jq":15,"./utils/pixelSrc":17,"./utils/store":19,"./utils/type":20,"./utils/urls":22,"debug":1}],10:[function(require,module,exports){
 /*
  *
  * This module is what determine the settings
@@ -1611,7 +1605,7 @@ function getValOrText($el) {
   if ( type($el, 'string') ) { $el = $($el); }
   return $el.length ? ($el.val() && $el.val().trim()) || ($el.text() && $el.text().trim()) : '';
 }
-},{"./jq":15,"./type":20,"debug":2}],14:[function(require,module,exports){
+},{"./jq":15,"./type":20,"debug":1}],14:[function(require,module,exports){
 var type = require('./type');
 
 var criteria = {
@@ -2183,4 +2177,4 @@ module.exports = {
   }
   
 };
-},{"./jq":15,"./url-pattern":21,"debug":2}]},{},[1]);
+},{"./jq":15,"./url-pattern":21,"debug":1}]},{},[4]);
