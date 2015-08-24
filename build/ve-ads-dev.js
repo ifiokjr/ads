@@ -2276,7 +2276,9 @@ module.exports = types;
 (function (global){
 global.debugVeAds = require( 'debug' ); // Make debug available by default when running tests
 var Main = require( './main' );
+
 var main = new Main( );
+
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./main":16,"debug":1}],16:[function(require,module,exports){
 'use strict';
@@ -2728,7 +2730,6 @@ function generateArrayOfMatchingTypes (objects, type) {
 },{"./common/debug":5,"./common/jq":8,"./common/utils":11,"./data/DataElement":12,"./data/types":14,"./pages/Page":17,"./pixels/Pixel":18,"./pixels/type":25,"./settings":28,"./storage/store":30}],17:[function(require,module,exports){
 'use strict';
 
-
 /**
  * @module pages/Page
  *
@@ -2758,20 +2759,20 @@ var utils = require( '../common/utils' ),
  */
 
 function Page( config ) {
-  
-  //TODO: Avoid throwing errors here. 
+
+  //TODO: Avoid throwing errors here.
   if ( !utils.type(config, 'object' ) ) {
     throw new Error ( 'Pages need to be called with a configuration object' );
   }
 
   this.storeConfig( config );
   this.logger();
-  
+
   this.matchingURLs = [ ];
 
   this.dynamic = this._checkDynamic( ); // Boolean
   // this.checkURLs(); // Only check urls at the right time
-  
+
   this.log('Page object created');
 }
 
@@ -2798,6 +2799,7 @@ Emitter( Page.prototype );
 Page.prototype.checkURLs = function( ) {
   var _this = this;
   this.log('Checking through URLs');
+  
   $.each(this.urls, function( index, url ) {
     var matches = matcher.match( url );
 
@@ -2835,7 +2837,7 @@ Page.prototype.checkURLs = function( ) {
 Page.prototype.runDynamics = function( ) {
   var promises = [],
       _this = this;
-  
+
   this.log('Dynamically testing');
   $.each( this.dynamicIdentifiers, function( index, identifier) {
     var promise;
@@ -2871,7 +2873,7 @@ Page.prototype.runDynamics = function( ) {
   // TODO: Fix problem with ghost identifiers running long after resolution
   utils.whenAny( promises )
   .done( function( $el ) {
-    
+
     _this.pageIdentified( );
   });
 };
@@ -2891,7 +2893,7 @@ Page.prototype.pageIdentified = function( $el ) {
   this.log( 'Page Matches for: ' + this.name, this.matchingURLs );
   this.stopChecks = true; // Stops any other intervals from running;
   this.emit( 'success', this );
-  
+
 };
 
 
@@ -2927,7 +2929,7 @@ Page.prototype.storeConfig = function( config ) {
 
 /**
  * @method
- * 
+ *
  * Set up logger for this instance of page
  */
 Page.prototype.logger = function() {
@@ -3071,7 +3073,7 @@ Pixel.prototype.checkOverrides = function (pageType, pageID) {
   if ( !this.overrides.active ) { return true; } // Don't worry - run as normal
 
   // ROS is acceptable can
-  if ( this.overrides.ros && pageType === 'ros' ) { return true; }
+  if ( this.overrides.ros && (pageType === 'ros') && !this.overrides.pages.length ) { return true; }
 
   if ( !this.overrides.pages.length ) { return true; } // no page overrides run as normal
 
@@ -3249,9 +3251,6 @@ module.exports = {
     produces: [ros]
   }
 };
-
-
-
 
 function ros( data, config ) {
 //   console.log(data, config);

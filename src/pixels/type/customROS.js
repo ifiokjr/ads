@@ -9,9 +9,6 @@ module.exports = {
   }
 };
 
-
-
-
 function ros( data, config ) {
 //   console.log(data, config);
   if ( config.type === 'script' && config.src ) {

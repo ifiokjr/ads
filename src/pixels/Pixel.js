@@ -114,7 +114,7 @@ Pixel.prototype.checkOverrides = function (pageType, pageID) {
   if ( !this.overrides.active ) { return true; } // Don't worry - run as normal
 
   // ROS is acceptable can
-  if ( this.overrides.ros && pageType === 'ros' ) { return true; }
+  if ( this.overrides.ros && (pageType === 'ros') && !this.overrides.pages.length ) { return true; }
 
   if ( !this.overrides.pages.length ) { return true; } // no page overrides run as normal
 

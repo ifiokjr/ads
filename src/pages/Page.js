@@ -1,6 +1,5 @@
 'use strict';
 
-
 /**
  * @module pages/Page
  *
@@ -30,20 +29,20 @@ var utils = require( '../common/utils' ),
  */
 
 function Page( config ) {
-  
-  //TODO: Avoid throwing errors here. 
+
+  //TODO: Avoid throwing errors here.
   if ( !utils.type(config, 'object' ) ) {
     throw new Error ( 'Pages need to be called with a configuration object' );
   }
 
   this.storeConfig( config );
   this.logger();
-  
+
   this.matchingURLs = [ ];
 
   this.dynamic = this._checkDynamic( ); // Boolean
   // this.checkURLs(); // Only check urls at the right time
-  
+
   this.log('Page object created');
 }
 
@@ -70,6 +69,7 @@ Emitter( Page.prototype );
 Page.prototype.checkURLs = function( ) {
   var _this = this;
   this.log('Checking through URLs');
+  
   $.each(this.urls, function( index, url ) {
     var matches = matcher.match( url );
 
@@ -107,7 +107,7 @@ Page.prototype.checkURLs = function( ) {
 Page.prototype.runDynamics = function( ) {
   var promises = [],
       _this = this;
-  
+
   this.log('Dynamically testing');
   $.each( this.dynamicIdentifiers, function( index, identifier) {
     var promise;
@@ -143,7 +143,7 @@ Page.prototype.runDynamics = function( ) {
   // TODO: Fix problem with ghost identifiers running long after resolution
   utils.whenAny( promises )
   .done( function( $el ) {
-    
+
     _this.pageIdentified( );
   });
 };
@@ -163,7 +163,7 @@ Page.prototype.pageIdentified = function( $el ) {
   this.log( 'Page Matches for: ' + this.name, this.matchingURLs );
   this.stopChecks = true; // Stops any other intervals from running;
   this.emit( 'success', this );
-  
+
 };
 
 
@@ -199,7 +199,7 @@ Page.prototype.storeConfig = function( config ) {
 
 /**
  * @method
- * 
+ *
  * Set up logger for this instance of page
  */
 Page.prototype.logger = function() {

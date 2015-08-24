@@ -124,9 +124,53 @@
           id: 4,
           name: 'Product Page',
           type: 'product',
-          urls: [],
+          urls: [{
+            url: '**',
+            params: {
+              page: 'product'
+            }
+          }],
           dynamicIdentifiers: []
-        }
+        },
+
+        {
+          id: 5,
+          name: 'ROS 1',
+          type: 'ros',
+          urls: [{
+            url: '**',
+            params: {
+              page: 'ros1'
+            }
+          }],
+          dynamicIdentifiers: []
+        },
+
+        {
+          id: 6,
+          name: 'ROS 2',
+          type: 'ros',
+          urls: [{
+            url: '**',
+            params: {
+              page: 'ros2'
+            }
+          }],
+          dynamicIdentifiers: []
+        },
+
+        {
+          id: 7,
+          name: 'ROS 3',
+          type: 'ros',
+          urls: [{
+            url: '**',
+            params: {
+              page: 'ros4'
+            }
+          }],
+          dynamicIdentifiers: []
+        },
       ],
       pixels: [
         {
@@ -159,16 +203,54 @@
 
         {
           id: 3,
-          name: 'DBM Pixel',
+          name: 'DBM Pixel ROS Page 5',
           type: 'dbm',
           config: {
-            catROS: 'asdf',
+            catROS: 'CAT1_PAGE5',
             catConversion: 'kjkjh',
             src: 'fdas'
           },
-          overrides: {}
+          overrides: {
+            active: true,
+            ros: true,
+            pages: [5],
+            dataElements: [],
+          }
         },
 
+        {
+          id: 30,
+          name: 'DBM Pixel ROS Page 6',
+          type: 'dbm',
+          config: {
+            catROS: 'CAT2_PAGE6',
+            catConversion: 'kjkjh',
+            src: 'fdas'
+          },
+          overrides: {
+            active: true,
+            ros: true,
+            pages: [6],
+            dataElements: [],
+          }
+        },
+
+        {
+          id: 31,
+          name: 'DBM Pixel ROS Page 7',
+          type: 'dbm',
+          config: {
+            catROS: 'CAT3_PAGE7',
+            catConversion: 'kjkjh',
+            src: 'fdas'
+          },
+          overrides: {
+            active: true,
+            ros: true,
+            pages: [7],
+            dataElements: [],
+          }
+        },
 
         {
           id: 4,
