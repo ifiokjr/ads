@@ -175,11 +175,8 @@
       pixels: [
         {
           id: 1,
-
           name: 'Main Products Integration',
-
           type: 've',
-
           config: {
             journeyCode: 'adsfasdf' // Identifies the website in our backend
           },
@@ -252,6 +249,17 @@
           }
         },
 
+        {
+          id: 32,
+          name: 'DBM Product Basket',
+          type: 'dbm',
+          config: {
+            catProduct: 'CAT4_PAGE_PRODUCT',
+            catBasket: 'CAT4_Basket_Page',
+            src: 'fdas'
+          },
+          overrides: {}
+        },
         {
           id: 4,
           name:'App Nexus Pixel',
@@ -457,79 +465,6 @@
 
       ]
     };
-
-
-//      veTagData.settings.gdm = {
-//           exclude: false,
-//           ros: true,
-//           flexId: '5032',
-//           dbm: {
-//             src: 'iamsrc',
-//             cat: {
-//               ros: 'iam-ros-cat',
-//               conversion: 'iam-conversion-cat'
-//             },
-//             ros: true
-//           },
-//           completionId: 10000,
-//           journeyCode: 'asdfasdf',
-//           segmentIds: [100, 200, 300],
-//           orderId: {
-//               selector: '#orderId',
-//               mask: '',
-//               'regex': /[^0-9]/g,
-//               page: {
-//                   params: { },
-//                   urls: [  ]
-//               }
-//           },
-//           productPages: {
-//               selector: '#pp',
-//               'default': '000000',
-//               page: {
-//                   params: { page: 'product' },
-//                   urls: [ '**/tests/main.*' ]
-//               },
-//               'regex': null
-//           },
-//           basketPages: {
-//               selectors: {
-//                   productId: '.productId',
-//                   productPrice: '.productValue'
-//               },
-//              'default': '1.00',
-//               page: {
-//                   params: { page: 'basket' },
-//                   urls: [ '**/tests/main.*' ]
-//               },
-//               'regex': /[^0-9,\.]/g
-//           },
-//           orderValue: {
-//               selector: '.orderValue',
-//               'default': '1.00',
-//                mask: '',
-//               page: {
-//                   params: {  },
-//                   urls: [ '**/tests/main.*' ]
-//               },
-//               updates: !!~document.URL.indexOf('updates') ? true : false,
-//               'regex': /[^0-9,\.]/g
-//           },
-
-
-//           completePage: {
-//               page: {
-//                   params: { page: 'complete'  },
-//                   urls: [ '**/tests/*'  ]
-//               },
-
-//               dynamicIdentifier: {
-//                   selector: '#dynamicId',
-//                   criteria: 'contains',
-//                   value: 'Complete Page'
-//               }
-//           }
-//       }
 
      setTimeout(function() {
        $('#dynamicId').text('This is the Complete Page');
