@@ -28,7 +28,7 @@ var utils = require( '../common/utils' ),
  */
 
 var fallbacks = {
-  '__timestamp__': $.now(),
+  '__timestamp__': (new Date()).toUTCString().replace(/[\s,]+/g,'-'),
   '__random__': ('0000' + (Math.random()*Math.pow(36,4) << 0).toString(36)).slice(-4)
 };
 
