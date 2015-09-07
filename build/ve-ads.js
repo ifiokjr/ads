@@ -2984,7 +2984,7 @@ module.exports = {
 
   conversion: {
     needs: ['orderVal', 'orderId', 'productList', 'priceList'],
-    produces: [conversion, conversionItems, conversionNew, conversionItemsNew]
+    produces: [conversion, conversionItems]
   },
 
   basket: {
@@ -3010,34 +3010,21 @@ function productNew( data, config ) {
 }
 
 
-
-function conversion( data, config, base ) {
+function conversion( data, config ) {
   var priceList = generateItemString( data.priceList );
 
-  return (base || '//adverts.adgenie.co.uk/conversion.php?companyId=') +
+  return '//veads.veinteractive.com/conversion.php?companyId=' +
          config.journeyCode + '&items=' + (priceList ? priceList + '|' : '') +
          'BASKETVAL:' + data.orderVal + '&orderId=' + data.orderId;
 }
 
-function conversionNew( data, config ) {
-  return conversion( data, config, '//veads.veinteractive.com/conversion.php?companyId=' );
-}
 
-
-
-function conversionItems( data, config, base ) {
+function conversionItems( data, config ) {
   var purchasedItems = generateIdList( data.productList );
 
-  return (base || '//adverts.adgenie.co.uk/genieTracker.php?adgCompanyID=') +
+  return '//veads.veinteractive.com/genieTracker.php?adgCompanyID=' +
          config.journeyCode + '&adgPurchasedItems=' + purchasedItems;
 }
-
-function conversionItemsNew( data, config ) {
-  return conversionItems( data, config, '//veads.veinteractive.com/genieTracker.php?adgCompanyID=');
-}
-
-
-
 
 
 function category( data, config, base ) {

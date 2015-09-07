@@ -200,19 +200,14 @@
 
         {
           id: 3,
-          name: 'DBM Pixel ROS Page 5',
+          name: 'DBM Standard Pixel',
           type: 'dbm',
           config: {
-            catROS: 'CAT1_PAGE5',
-            catConversion: 'kjkjh',
+            catROS: 'CAT1ALL_PAGE5',
+            catConversion: 'CONVERSIONDBMkjkjh',
             src: 'fdas'
           },
-          overrides: {
-            active: true,
-            ros: true,
-            pages: [5],
-            dataElements: [],
-          }
+          overrides: {}
         },
 
         {
@@ -469,7 +464,7 @@
      setTimeout(function() {
        $('#dynamicId').text('This is the Complete Page');
        $('.orderValue').text('$100.00');
-     }, 10000);
+     }, 100);
     </script>
     <script src="../build/ve-ads-dev.js"></script>
 <!--     <script>mocha.setup('bdd')</script> -->
