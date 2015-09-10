@@ -1722,7 +1722,7 @@ var utils = require( '../common/utils' ),
  */
 
 var fallbacks = {
-  '__timestamp__': $.now(),
+  '__timestamp__': (new Date()).toUTCString().replace(/[\s,]+/g,'-'),
   '__random__': ('0000' + (Math.random()*Math.pow(36,4) << 0).toString(36)).slice(-4)
 };
 
@@ -3483,7 +3483,7 @@ module.exports = {
 
   product: {
     needs: ['productId'],
-    produces: [product, productNew]
+    produces: [product]
   },
 
   conversion: {
@@ -3493,26 +3493,21 @@ module.exports = {
 
   basket: {
     needs: ['productList', 'priceList'],
-    produces: [basket, basketNew]
+    produces: [basket]
   },
 
   category: {
     needs: ['productList'],
-    produces: [category, categoryNew]
+    produces: [category]
   }
 };
 
 
 
 function product(data, config, base) {
-  return (base || '//adverts.adgenie.co.uk/genieTracker.php?adgCompanyID=') +
+  return '//veads.veinteractive.com/genieTracker.php?adgCompanyID=' +
          config.journeyCode + '&adgItem=' + encodeURIComponent(data.productId);
 }
-
-function productNew( data, config ) {
-  return product( data, config, '//veads.veinteractive.com/genieTracker.php?adgCompanyID=' );
-}
-
 
 function conversion( data, config ) {
   var priceList = generateItemString( data.priceList );
@@ -3531,25 +3526,16 @@ function conversionItems( data, config ) {
 }
 
 
-function category( data, config, base ) {
-  return (base || '//adverts.adgenie.co.uk/genieTracker.php?adgCompanyID=') +
+function category( data, config ) {
+  return '//veads.veinteractive.com/genieTracker.php?adgCompanyID=' +
          config.journeyCode + '&adgItem=' + generateIdList( data.productList );
 }
 
-function categoryNew( data, config, base ) {
-  return category( data, config, '//veads.veinteractive.com/genieTracker.php?adgCompanyID=');
-}
 
 
-
-
-function basket( data, config, base ) {
-  return (base || '//adverts.adgenie.co.uk/genieTracker.php?adgCompanyID=') +
+function basket( data, config ) {
+  return '//veads.veinteractive.com/genieTracker.php?adgCompanyID='
          config.journeyCode + '&adgBasketItems=' + generateIdList( data.productList );
-}
-
-function basketNew( data, config ) {
-  return basket(data, config, '//veads.veinteractive.com/genieTracker.php?adgCompanyID=');
 }
 
 
