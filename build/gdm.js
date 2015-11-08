@@ -495,7 +495,7 @@ function plural(ms, n, name) {
 }
 
 },{}],4:[function(require,module,exports){
-// Check if GDMHandler should be called. 
+// Check if GDMHandler should be called.
 
 var type = require('./utils/type'),
   log = require('debug')('GDM Handler');
@@ -505,16 +505,13 @@ var iatDev;
 
 function launchGDM(flexId) {
   'use strict';
-  
+
   log('Launching GDM Script');
-  (function(a) {
-    var d = document,
-      c = d.createElement("script");
-    c.async = !0;
-    c.defer = !0;
-    c.src = a;
-    d.getElementsByTagName('head')[0].appendChild(c);
-  })((iatDev = ( window.location.href.indexOf("iatDev=1") > -1 || document.cookie.indexOf("iatDev=1") > -1), "//" + (window.location.protocol === "http:" && !iatDev ? "h" : "") + "fp.gdmdigital.com/" + flexId + ".js?r=" + Math.random() * 1e16 + '&m=992&a=' + flexId + (iatDev ? "&d=1" : "")));
+  (function(e) {
+    var t = document,
+      n = t.createElement("script");
+    n.async = !0, n.defer = !0, n.src = e, t.getElementsByTagName("head")[0].appendChild(n)
+  })("//c.vepxl1.net/4-" + flexId + ".js?id=" + flexId + "&m=4");
 }
 module.exports = {
   start: function(config) {
@@ -527,6 +524,7 @@ module.exports = {
     launchGDM(config.flexId);
   }
 };
+
 },{"./utils/type":20,"debug":1}],5:[function(require,module,exports){
 var log = require('debug')('mode:production');
 log('launching application');
