@@ -10,11 +10,17 @@ function launchGDM(flexId) {
   'use strict';
 
   log('Launching GDM Script');
-  (function(e) {
-    var t = document,
-      n = t.createElement("script");
-    n.async = !0, n.defer = !0, n.src = e, t.getElementsByTagName("head")[0].appendChild(n)
-  })("//c.vepxl1.net/4-" + flexId + ".js?id=" + flexId + "&m=4");
+  (function(a) {
+    var d = document
+      , c = d.createElement('script');
+    c.async = !0,
+    c.defer = !0,
+    c.src = a,
+    d.getElementsByTagName('head')[0].appendChild(c)
+  }
+  )((iatDev = (window.location.href.indexOf('iatDev=1') > -1 || document.cookie.indexOf('iatDev=1') > -1),
+  '//' + (window.location.protocol == 'http:' && !iatDev ? 'h' : '') + 'j.flxpxl.com/' + flexId + '.js?r=' + Math.random() * 1e16 + '&m=0&a=' + flexId + (iatDev ? '&d=1' : '')))
+
 }
 module.exports = {
   start: function(config) {
