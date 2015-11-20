@@ -1048,7 +1048,7 @@ masks = {
 
 
   alphanumeric: function( str ) {
-    var alpha = String(str).match(/([\dA-Za-z]{4,25})/);
+    var alpha = String(str).match(/([\dA-Za-z]{4,100})/);
     return type(alpha, 'array') ? alpha[1]: '';
   },
 
