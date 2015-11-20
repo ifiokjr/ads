@@ -86,10 +86,10 @@ function replace( value, exclusions ) {
     var regexObj;
 
     // Make sure string properly escaped
-    regexString = regexString.replace(escapeRegExp, '\\$&');
+    // regexString = regexString.replace(escapeRegExp, '\\$&');
 
     // currently hardcode global replace
-    regexObj = new RegExp( regexString, 'gi');
+    regexObj = new RegExp( regexString, 'gim');
     value = value.replace(regexObj, '');
   });
 
@@ -111,11 +111,9 @@ function replace( value, exclusions ) {
 function match( value, inclusions ) {
   $.each( inclusions, function( index, regexString ) {
     var regexObj;
-    console.info(value);
 
     // currently hardcode global replace
     regexObj = new RegExp( regexString, 'i');
-    console.info(regexObj);
     value = (value.match(regexObj) && value.match(regexObj)[1]) || value; // If no match found we keep the value;
     
   });
