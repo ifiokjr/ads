@@ -15,7 +15,8 @@
       <p id="dynamicId">Not yet!</p>
       <table>
         <tr>
-          <td class="productId">I AM AN ID</td>
+          <!-- <td class="productId">I AM AN ID</td> -->
+          <input type="hidden" name="product_id" class="productId" value="1430611973">
           <td class="productValue">$45,07</td>
         </tr>
         <tr>
@@ -387,6 +388,32 @@
           }
 
         },
+
+        {
+          id: 7,
+          name: 'Product ID',
+          type: 'productId', // ['orderId', 'orderVal', 'productId', 'productList', 'priceList', 'currency', 'other']
+          pages: [ 4 ],
+          fallback: '', // any value set to __timestamp__ for a timestamp to be used.
+
+          regex: {
+            include: [], // Matches are run first
+            exclude: [] // Exclude whatever is matched here
+          },
+          mask: 'nothing', // [number, alphanumeric, currency, symbol, nothing]
+          mapping: {
+
+          },
+          capture: {
+            type: 'selector',
+            useMappings: false,
+            mappingCriteria: 'contains', // [contains, equal]
+            element: '.productId', // depends on capture.type ( either jQuery selector or globalVariable)
+            keepChecking: false // will return as soon as it resolves, only for selector
+          }
+
+        },
+
         {
           id: 4,
           name: 'Price List',

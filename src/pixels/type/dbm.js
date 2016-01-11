@@ -7,8 +7,7 @@
  *
  */
 
-var log = require( '../../common/debug' )('ve:pixels:type:dbm');
-
+var log = require('../../common/debug')('ve:pixels:type:dbm');
 
 /**
  * @description Pixel automation configuration object
@@ -33,8 +32,8 @@ module.exports = {
   },
 
   product: {
-    needs: [],
-    produces: [generic('Product')]
+    needs: ['productId'],
+    produces: [product]
   },
 
   basket: {
@@ -48,14 +47,13 @@ module.exports = {
   },
 };
 
-
-function ros( data, config ) {
+function ros(data, config) {
   var random = (Math.random() + '') * 10000000000000;
   return 'https://ad.doubleclick.net/ddm/activity/src=' + config.src +
   ';type=invmedia;cat=' + config.catROS + ';ord=' + random;
 }
 
-function conversion( data, config ) {
+function conversion(data, config) {
   // First check that this pixel needs to be placed on the conversion page
   if (!config.catConversion) {
     log('No catConversion provided for Conversion page');
@@ -65,6 +63,20 @@ function conversion( data, config ) {
   return 'https://ad.doubleclick.net/ddm/activity/src=' + config.src +
   ';type=sales;cat=' + config.catConversion + ';qty=' + (data.productList.length || 1) +
   ';cost=' + data.orderVal + ';ord=' + data.orderId + '?';
+}
+
+function product(data, config) {
+  var productId = data.productId;
+  var random = (Math.random() + '') * 10000000000000;
+  // First check that this pixel needs to be placed on the conversion page
+  if (!config.catProduct) {
+    log('No catProduct provided for Product page DBM Pixel');
+    return;
+  }
+
+  return 'https://ad.doubleclick.net/ddm/activity/src=' + config.src +
+  ';type=invmedia;cat=' + config.catProduct + ';u1=' + productId +
+  ';dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;ord=' + random + '?';
 }
 
 /**
